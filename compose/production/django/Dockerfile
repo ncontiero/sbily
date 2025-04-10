@@ -23,7 +23,7 @@ ENV DJANGO_GCP_STORAGE_BUCKET_NAME=${DJANGO_GCP_STORAGE_BUCKET_NAME}
 RUN pnpm run build
 
 # define an alias for the specific python version used in this file.
-FROM python:3.12.9-slim-bookworm AS python
+FROM python:3.12.10-slim-bookworm AS python
 
 # Python build stage
 FROM python AS python-build-stage
