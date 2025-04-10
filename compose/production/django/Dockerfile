@@ -10,8 +10,9 @@ WORKDIR /app
 FROM client-base AS client-deps
 
 COPY ./package.json ./pnpm-lock.yaml* ./
+RUN pnpm install --frozen-lockfile
 # RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-RUN --mount=type=cache,id=s/52301fa7-471b-41cd-b0d5-dcd490a9e485-/pnpm/store,target=/pnpm/store pnpm install --frozen-lockfile
+# RUN --mount=type=cache,id=s/<service id>-/pnpm/store,target=/pnpm/store pnpm install --frozen-lockfile
 
 FROM client-base AS client-builder
 COPY --from=client-deps /app/node_modules /app/node_modules
