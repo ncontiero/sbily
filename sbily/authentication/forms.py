@@ -111,7 +111,7 @@ class BaseEmailForm(BaseForm):
 
 class SignInWithEmailForm(BaseEmailForm):
     def clean_email(self):
-        super().clean_email(self)
+        super().clean_email()
 
         user = self.cleaned_data.get("user")
         if not user.login_with_email:
