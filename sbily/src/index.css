@@ -51,7 +51,7 @@
 
 @layer base {
   * {
-    @apply border-border selection:bg-primary/30;
+    @apply border-border selection:bg-primary/80 selection:text-primary-foreground;
   }
 
   html {
@@ -60,7 +60,7 @@
   }
 
   body {
-    @apply bg-background text-foreground font-inter relative;
+    @apply bg-background text-foreground font-inter relative min-h-screen;
   }
 
   body[data-scroll-locked] {

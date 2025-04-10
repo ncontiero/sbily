@@ -28,7 +28,7 @@
   </head>
   <body>
     {% block body %}
-      <header class="fixed h-16 inset-x-0 top-0 bg-secondary/60 backdrop-blur-md z-[9999] border-b">
+      <header class="sticky h-16 inset-x-0 top-0 bg-secondary/60 backdrop-blur-md z-[9999] border-b">
         <nav class="flex items-center justify-between px-4 md:px-12 size-full gap-4 container">
           <a class="link font-bold text-lg gap-2 group" href="{% url 'home' %}">
             <img
@@ -38,7 +38,9 @@
               width="40px"
               height="40px"
             />
-            Sbily
+            <div>
+              <span class="text-primary">Sb</span>ily
+            </div>
           </a>
           <div class="relative flex items-center gap-2">
             {% if request.user.is_authenticated %}
@@ -121,9 +123,64 @@
           </div>
         </nav>
       </header>
-      <div class="pt-16 sm:px-1 sm:container">
+      <div class="min-h-screen">
         {% block content %}{% endblock content %}
       </div>
+      <footer class="bg-secondary/60 py-12">
+        <div class="container">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+            <div>
+              <div class="flex items-center gap-2 mb-4">
+                <img src="{% static "images/favicons/logo.jpg" %}" alt="Sbily Logo" class="size-6 rounded-full" />
+                <h3 class="text-xl font-bold">
+                  <span class="text-primary">
+                    Sb<span class="text-foreground selection:bg-background/80 selection:text-primary">ily</span>
+                  </span>
+                </h3>
+              </div>
+              <p class="text-muted-foreground">A simple, fast, and secure Open-Source link shortener.</p>
+            </div>
+            {% comment %} <div>
+              <h4 class="font-bold mb-4">Product</h4>
+              <ul class="space-y-2">
+                <li><a href="#" class="text-muted-foreground hover:text-foreground duration-200">Features</a></li>
+                <li><a href="#" class="text-muted-foreground hover:text-foreground duration-200">Plans</a></li>
+                <li><a href="#" class="text-muted-foreground hover:text-foreground duration-200">FAQ</a></li>
+                <li><a href="#" class="text-muted-foreground hover:text-foreground duration-200">Roadmap</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="font-bold mb-4">Community</h4>
+              <ul class="space-y-2">
+                <li><a href="#" class="text-muted-foreground hover:text-foreground duration-200">GitHub</a></li>
+                <li><a href="#" class="text-muted-foreground hover:text-foreground duration-200">Discord</a></li>
+                <li><a href="#" class="text-muted-foreground hover:text-foreground duration-200">Twitter</a></li>
+                <li><a href="#" class="text-muted-foreground hover:text-foreground duration-200">Blog</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="font-bold mb-4">Legal</h4>
+              <ul class="space-y-2">
+                <li><a href="#" class="text-muted-foreground hover:text-foreground duration-200">Terms of Service</a></li>
+                <li><a href="#" class="text-muted-foreground hover:text-foreground duration-200">Privacy Policy</a></li>
+                <li><a href="#" class="text-muted-foreground hover:text-foreground duration-200">Cookies</a></li>
+              </ul>
+            </div> {% endcomment %}
+          </div>
+          <div class="separator"></div>
+          <div class="mt-8 flex flex-col md:flex-row justify-between items-center">
+            <p class="text-muted-foreground text-sm">&copy; 2025 Sbily. All rights reserved.</p>
+            <div class="flex gap-4 mt-4 md:mt-0">
+              <a
+                href="https://github.com/ncontiero/sbily"
+                class="text-muted-foreground hover:text-foreground duration-200"
+              >
+                <i data-lucide="github" class="size-5"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
     {% endblock body %}
     <div role="region" aria-label="Notifications" tabindex="-1">
       <ol tabindex="-1" id="toast-ol" class="toast-list"></ol>

@@ -1,16 +1,213 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Home{% endblock title %}
 
 {% block content %}
-  <div class="flex flex-col justify-center items-center my-10">
-    <div class="flex flex-col items-center text-center gap-2">
-      <h1 class="text-3xl font-bold">
-        Welcome to <span class="text-primary underline">Sbily</span>
-      </h1>
-      <p class="text-lg font-medium">A simple link shortener.</p>
-    </div>
-    <div class="separator mt-6 mb-10" role="separator"></div>
-    {% include "partials/create_link_form.html" %}
-  </div>
+  <main class="bg-[radial-gradient(hsl(var(--primary)/0.1)_1px,transparent_1px)] [background-size:16px_16px] dark:bg-[radial-gradient(hsl(var(--secondary)/0.5)_1px,transparent_1px)]">
+    <section class="relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-primary/30 to-background z-0"></div>
+      <div class="container mx-auto px-4 py-16 md:py-24 relative z-10">
+        <div class="text-center">
+          <h1 class="text-4xl md:text-6xl font-bold mb-4">
+            <span class="text-primary">
+              Sb<span class="text-foreground selection:bg-background/80 selection:text-primary">ily</span>
+            </span>
+          </h1>
+          <p class="text-xl md:text-2xl mb-8">A simple, fast, and secure Open-Source link shortener.</p>
+          <div class="max-w-3xl mx-auto">
+            <form class="flex flex-col md:flex-row gap-4 max-w-2xl mx-auto" method="post" action="{% url 'create_link' %}">
+              {% csrf_token %}
+              <label for="original_link" class="sr-only">Paste your link here</label>
+              <input
+                type="url"
+                placeholder="Paste your link here"
+                class="input flex-1"
+                name="original_link"
+                required
+              />
+              <button type="submit" class="button-primary">
+                Shorten
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-16 bg-secondary/40">
+      <div class="container">
+        <h2 class="text-3xl font-bold text-center mb-12">Why choose Sbily?</h2>
+
+        <div class="grid md:grid-cols-3 gap-8">
+          <div class="bg-background p-6 rounded-lg border border-border">
+            <div class="size-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+              <i data-lucide="file" class="text-primary size-6"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Easy to use</h3>
+            <p class="text-muted-foreground">Shorten your links in seconds, without complications. Intuitive and easy-to-use interface.</p>
+          </div>
+
+          <div class="bg-background p-6 rounded-lg border border-border">
+            <div class="size-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+              <i data-lucide="clock" class="text-primary size-6"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Temporary Links</h3>
+            <p class="text-muted-foreground">Create links that automatically expire after a period you determine.</p>
+          </div>
+
+          <div class="bg-background p-6 rounded-lg border border-border">
+            <div class="size-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+              <i data-lucide="globe" class="text-primary size-6"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Open Source</h3>
+            <p class="text-muted-foreground">Open-Source project, transparent and secure. Contribute to the development on GitHub.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-16">
+      <div class="container">
+        <div class="max-w-3xl mx-auto text-center">
+          <div class="badge-yellow mb-4">Coming soon</div>
+          <h2 class="text-3xl font-bold mb-6">New features are coming</h2>
+          <p class="text-lg mb-10 text-muted-foreground">We are working on new features to improve your experience with Sbily.</p>
+
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="p-6 border-2 border-dashed border-border rounded-lg">
+              <div class="flex items-center gap-3 mb-4">
+                <i data-lucide="chart-line" class="text-primary size-6"></i>
+                <h3 class="text-xl font-bold">Detailed statistics</h3>
+              </div>
+              <p class="text-muted-foreground text-left">Track the performance of your links with click analysis, geographic location, devices, and more.</p>
+            </div>
+
+            <div class="p-6 border-2 border-dashed border-border rounded-lg">
+              <div class="flex items-center gap-3 mb-4">
+                <i data-lucide="monitor" class="text-primary size-6"></i>
+                <h3 class="text-xl font-bold">Link monitoring</h3>
+              </div>
+              <p class="text-muted-foreground text-left">Receive real-time alerts about the status of your links and detect problems before your users do.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-16 bg-muted/50" id="plans">
+      <div class="container">
+        <h2 class="text-3xl font-bold text-center mb-4">Plans</h2>
+        <p class="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">Choose the plan that best suits your needs.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div class="bg-background rounded-lg border border-border p-8">
+            <h3 class="text-2xl font-bold mb-2">Free</h3>
+            <p class="text-muted-foreground mb-6">Perfect for personal and casual use</p>
+            <p class="text-4xl font-bold mb-6">$0 <span class="text-muted-foreground text-lg font-normal">/month</span></p>
+
+            <ul class="space-y-3 mb-8">
+              <li class="flex items-center gap-2">
+                <i data-lucide="check" class="size-4 text-primary"></i>
+                <span>Up to 5 permanent links</span>
+              </li>
+                <li class="flex items-center gap-2">
+                  <i data-lucide="check" class="size-4 text-primary"></i>
+                  <span>Up to 2 temporary links</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <i data-lucide="check" class="size-4 text-primary"></i>
+                  <span>Basic statistics</span>
+                </li>
+                <li class="flex items-center gap-2 text-muted-foreground">
+                  <i data-lucide="x" class="size-4"></i>
+                  <span>No monitoring</span>
+                </li>
+            </ul>
+
+            <a href="#" class="button-outline w-full text-center">Start Free</a>
+          </div>
+
+          <div class="bg-background rounded-lg border-2 border-primary p-8 relative">
+            <div class="badge-default absolute -top-3 left-1/2 transform -translate-x-1/2">Recommended</div>
+            <h3 class="text-2xl font-bold mb-2">Premium</h3>
+            <p class="text-muted-foreground mb-6">Ideal for professionals and small businesses</p>
+            <p class="text-4xl font-bold mb-6">$5 <span class="text-muted-foreground text-lg font-normal">/month</span></p>
+
+            <ul class="space-y-3 mb-8">
+              <li class="flex items-center gap-2">
+                <i data-lucide="check" class="size-4 text-primary"></i>
+                <span>Up to 10 permanent links</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i data-lucide="check" class="size-4 text-primary"></i>
+                <span>Up to 5 temporary links</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i data-lucide="check" class="size-4 text-primary"></i>
+                <span>Advanced statistics (coming soon)</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i data-lucide="check" class="size-4 text-primary"></i>
+                <span>Monitoring (coming soon)</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i data-lucide="check" class="size-4 text-primary"></i>
+                <span>Option to purchase more slots</span>
+              </li>
+            </ul>
+
+            <a href="#" class="button-primary w-full text-center">Subscribe Premium</a>
+          </div>
+        </div>
+
+        <div class="mt-12 max-w-lg mx-auto bg-secondary/40 p-6 rounded-lg text-center">
+          <h3 class="text-xl font-bold mb-3">Need more links?</h3>
+          <p class="mb-6">The Premium plan allows the purchase of additional slots to meet your needs.</p>
+          <a href="#" class="button-outline">See Prices</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-16">
+      <div class="container">
+        <h2 class="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
+        <div class="max-w-3xl mx-auto space-y-6">
+          <div class="bg-secondary/60 p-6 rounded-lg">
+            <h3 class="text-xl font-bold mb-2">What is Sbily?</h3>
+            <p>Sbily is an open-source link shortener that allows you to create shorter and easier-to-share links. With it, you can manage all your links in one place.</p>
+          </div>
+          <div class="bg-secondary/60 p-6 rounded-lg">
+            <h3 class="text-xl font-bold mb-2">How does a temporary link work?</h3>
+            <p>Temporary links automatically expire after the period you define. This is useful for sharing content that should only be available for a limited time.</p>
+          </div>
+          <div class="bg-secondary/60 p-6 rounded-lg">
+            <h3 class="text-xl font-bold mb-2">What happens if I reach my link limit?</h3>
+            <p>On the free plan, you will need to delete existing links to create new ones when you reach the limit. On the Premium plan, you can purchase additional slots to increase your capacity.</p>
+          </div>
+          <div class="bg-secondary/60 p-6 rounded-lg">
+            <h3 class="text-xl font-bold mb-2">How can I contribute to the project?</h3>
+            <p>As an open-source project, you can contribute code, report bugs, or suggest improvements through our repository on GitHub.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-16 bg-secondary/40">
+      <div class="container">
+        <div class="max-w-3xl mx-auto text-center">
+          <h2 class="text-3xl font-bold mb-6">Start shortening your links now</h2>
+          <p class="text-lg mb-8 text-muted-foreground">Simple, fast, and hassle-free. Try Sbily today.</p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            {% if request.user.is_authenticated %}
+              <a href="{% url "create_link" %}" class="button-primary">Create a link</a>
+            {% else %}
+              <a href="{% url "sign_up" %}" class="button-primary">Create free account</a>
+            {% endif %}
+            <a href="#plans" class="button-outline">See Plans</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
 {% endblock content %}
