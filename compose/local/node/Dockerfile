@@ -2,9 +2,14 @@ FROM node:22.14-bookworm-slim
 
 WORKDIR /app
 
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+
+RUN corepack enable pnpm
+
 COPY ./package.json /app
 
-RUN npm install && npm cache clean --force
+RUN pnpm install
 
 ENV PATH=./node_modules/.bin/:$PATH
 

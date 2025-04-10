@@ -1,17 +1,26 @@
-FROM node:22.14-bookworm-slim AS client-builder
+FROM node:22.14-bookworm-slim AS client-base
 
-ARG APP_HOME=/app
-WORKDIR ${APP_HOME}
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
 
-COPY ./package.json ${APP_HOME}
-RUN npm install && npm cache clean --force
+RUN corepack enable
 
-COPY . ${APP_HOME}
+WORKDIR /app
+
+FROM client-base AS client-deps
+
+COPY ./package.json ./pnpm-lock.yaml* ./
+# RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN --mount=type=cache,id=s/52301fa7-471b-41cd-b0d5-dcd490a9e485-/pnpm/store,target=/pnpm/store pnpm install --frozen-lockfile
+
+FROM client-base AS client-builder
+COPY --from=client-deps /app/node_modules /app/node_modules
+COPY . /app
 
 ARG DJANGO_GCP_STORAGE_BUCKET_NAME
 ENV DJANGO_GCP_STORAGE_BUCKET_NAME=${DJANGO_GCP_STORAGE_BUCKET_NAME}
 
-RUN npm run build
+RUN pnpm run build
 
 # define an alias for the specific python version used in this file.
 FROM python:3.12.9-slim-bookworm AS python
