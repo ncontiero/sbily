@@ -95,80 +95,6 @@
       </div>
     </section>
 
-    <section class="py-16 bg-muted/50" id="plans">
-      <div class="container">
-        <h2 class="text-3xl font-bold text-center mb-4">Plans</h2>
-        <p class="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">Choose the plan that best suits your needs.</p>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          <div class="bg-background rounded-lg border border-border p-8">
-            <h3 class="text-2xl font-bold mb-2">Free</h3>
-            <p class="text-muted-foreground mb-6">Perfect for personal and casual use</p>
-            <p class="text-4xl font-bold mb-6">$0 <span class="text-muted-foreground text-lg font-normal">/month</span></p>
-
-            <ul class="space-y-3 mb-8">
-              <li class="flex items-center gap-2">
-                <i data-lucide="check" class="size-4 text-primary"></i>
-                <span>Up to 5 permanent links</span>
-              </li>
-                <li class="flex items-center gap-2">
-                  <i data-lucide="check" class="size-4 text-primary"></i>
-                  <span>Up to 2 temporary links</span>
-                </li>
-                <li class="flex items-center gap-2">
-                  <i data-lucide="check" class="size-4 text-primary"></i>
-                  <span>Basic statistics</span>
-                </li>
-                <li class="flex items-center gap-2 text-muted-foreground">
-                  <i data-lucide="x" class="size-4"></i>
-                  <span>No monitoring</span>
-                </li>
-            </ul>
-
-            <a href="#" class="button-outline w-full text-center">Start Free</a>
-          </div>
-
-          <div class="bg-background rounded-lg border-2 border-primary p-8 relative">
-            <div class="badge-default absolute -top-3 left-1/2 transform -translate-x-1/2">Recommended</div>
-            <h3 class="text-2xl font-bold mb-2">Premium</h3>
-            <p class="text-muted-foreground mb-6">Ideal for professionals and small businesses</p>
-            <p class="text-4xl font-bold mb-6">$5 <span class="text-muted-foreground text-lg font-normal">/month</span></p>
-
-            <ul class="space-y-3 mb-8">
-              <li class="flex items-center gap-2">
-                <i data-lucide="check" class="size-4 text-primary"></i>
-                <span>Up to 10 permanent links</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <i data-lucide="check" class="size-4 text-primary"></i>
-                <span>Up to 5 temporary links</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <i data-lucide="check" class="size-4 text-primary"></i>
-                <span>Advanced statistics (coming soon)</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <i data-lucide="check" class="size-4 text-primary"></i>
-                <span>Monitoring (coming soon)</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <i data-lucide="check" class="size-4 text-primary"></i>
-                <span>Option to purchase more slots</span>
-              </li>
-            </ul>
-
-            <a href="#" class="button-primary w-full text-center">Subscribe Premium</a>
-          </div>
-        </div>
-
-        <div class="mt-12 max-w-lg mx-auto bg-secondary/40 p-6 rounded-lg text-center">
-          <h3 class="text-xl font-bold mb-3">Need more links?</h3>
-          <p class="mb-6">The Premium plan allows the purchase of additional slots to meet your needs.</p>
-          <a href="#" class="button-outline">See Prices</a>
-        </div>
-      </div>
-    </section>
-
     <section class="py-16">
       <div class="container">
         <h2 class="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
@@ -204,7 +130,7 @@
             {% else %}
               <a href="{% url "sign_up" %}" class="button-primary">Create free account</a>
             {% endif %}
-            <a href="#plans" class="button-outline">See Plans</a>
+            <a href="{% url "plans" %}" class="button-outline">See Plans</a>
           </div>
         </div>
       </div>

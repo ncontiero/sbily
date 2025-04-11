@@ -23,7 +23,7 @@ from .forms import SignUpForm
 from .tasks import send_sign_in_with_email
 
 
-def sign_up(request: HttpRequest):
+def sign_up(request: HttpRequest, plan: None | str = None):
     if request.user.is_authenticated:
         return redirect("home")
     if request.method != "POST":

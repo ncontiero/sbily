@@ -24,6 +24,10 @@ def home(request: HttpRequest):
     return render(request, "home.html", {"LINK_BASE_URL": LINK_BASE_URL})
 
 
+def plans(request: HttpRequest):
+    return render(request, "plans.html")
+
+
 def create_link(request: HttpRequest):
     if request.method != "POST":
         return render(request, "create_link.html", {"LINK_BASE_URL": LINK_BASE_URL})

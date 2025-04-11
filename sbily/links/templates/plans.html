@@ -1,0 +1,306 @@
+{% extends "base.html" %}
+
+{% block title %}Plans{% endblock title %}
+
+{% block content %}
+  <main class="bg-[radial-gradient(hsl(var(--primary)/0.1)_1px,transparent_1px)] [background-size:16px_16px] dark:bg-[radial-gradient(hsl(var(--secondary)/0.5)_1px,transparent_1px)]">
+    <section class="relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-primary/30 to-background z-0"></div>
+      <div class="container mx-auto px-4 py-16 md:py-20 relative z-10">
+        <div class="text-center">
+          <h1 class="text-4xl md:text-5xl font-bold mb-4">Choose Your Plan</h1>
+          <p class="text-lg md:text-xl mb-8 max-w-2xl mx-auto">Select the plan that best suits your link shortening needs. Scale up anytime as your requirements grow.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-16 bg-secondary/40">
+      <div class="container">
+        <h2 class="text-3xl font-bold text-center mb-12">Core Plans</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div class="bg-background rounded-lg border border-border p-8">
+            <h3 class="text-2xl font-bold mb-2">Free</h3>
+            <p class="text-muted-foreground mb-6">Perfect for personal and casual use</p>
+            <p class="text-4xl font-bold mb-6">$0 <span class="text-muted-foreground text-lg font-normal">/month</span></p>
+
+            <ul class="space-y-3 mb-8">
+              <li class="flex items-center gap-2">
+                <i data-lucide="check" class="size-4 text-primary"></i>
+                <span>Up to 5 permanent links</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i data-lucide="check" class="size-4 text-primary"></i>
+                <span>Up to 2 temporary links</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i data-lucide="check" class="size-4 text-primary"></i>
+                <span>Basic statistics</span>
+              </li>
+              <li class="flex items-center gap-2 text-muted-foreground">
+                <i data-lucide="x" class="size-4"></i>
+                <span>No monitoring</span>
+              </li>
+              <li class="flex items-center gap-2 text-muted-foreground">
+                <i data-lucide="x" class="size-4"></i>
+                <span>No additional links</span>
+              </li>
+            </ul>
+
+            <a href="{% url 'sign_up' %}" class="button-outline w-full text-center">Start Free</a>
+          </div>
+
+          <div class="bg-background rounded-lg border-2 border-primary p-8 relative">
+            <div class="badge-default absolute -top-3 left-1/2 transform -translate-x-1/2">Recommended</div>
+            <h3 class="text-2xl font-bold mb-2">Premium</h3>
+            <p class="text-muted-foreground mb-6">Ideal for professionals and small businesses</p>
+            <p class="text-4xl font-bold mb-6">$5 <span class="text-muted-foreground text-lg font-normal">/month</span></p>
+
+            <ul class="space-y-3 mb-8">
+              <li class="flex items-center gap-2">
+                <i data-lucide="check" class="size-4 text-primary"></i>
+                <span>Up to 10 permanent links</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i data-lucide="check" class="size-4 text-primary"></i>
+                <span>Up to 5 temporary links</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i data-lucide="check" class="size-4 text-primary"></i>
+                <span>Advanced statistics (coming soon)</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i data-lucide="check" class="size-4 text-primary"></i>
+                <span>Monitoring (coming soon)</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i data-lucide="check" class="size-4 text-primary"></i>
+                <span>Purchase additional links anytime</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i data-lucide="check" class="size-4 text-primary"></i>
+                <span>Priority support</span>
+              </li>
+            </ul>
+
+            <a href="{% url 'sign_up_with_plan' plan='premium' %}" class="button-primary w-full text-center">Subscribe Premium</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-16">
+      <div class="container">
+        <h2 class="text-3xl font-bold text-center mb-4">Need Additional Links?</h2>
+        <p class="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">Premium members can purchase additional link slots to increase their capacity.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div class="bg-background p-8 rounded-lg border border-border">
+            <div class="size-12 bg-primary/10 rounded-full flex items-center justify-center mb-4 mx-auto">
+              <i data-lucide="link" class="text-primary size-6"></i>
+            </div>
+            <h3 class="text-2xl font-bold mb-2 text-center">Permanent Links</h3>
+            <p class="text-4xl font-bold text-center mb-6">$1 <span class="text-muted-foreground text-lg font-normal">per link</span></p>
+
+            <div class="bg-secondary/40 p-4 rounded-lg mb-6 border">
+              <p class="text-center">Links that never expire, perfect for long-term content sharing.</p>
+            </div>
+
+            <div class="space-y-4 mb-8">
+              <div class="flex justify-between items-center border-b border-border pb-2">
+                <span>5 links</span>
+                <span class="font-bold">$5</span>
+              </div>
+              <div class="flex justify-between items-center border-b border-border pb-2">
+                <span>10 links</span>
+                <span class="font-bold">$10</span>
+              </div>
+              <div class="flex justify-between items-center border-b border-border pb-2">
+                <span>25 links</span>
+                <span class="font-bold">$25</span>
+              </div>
+              <div class="flex justify-between items-center border-b border-border pb-2">
+                <span>50 links</span>
+                <span class="font-bold">$50</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span>100 links</span>
+                <span class="text-primary font-bold">$90 <span class="text-xs text-muted-foreground">Save 10%</span></span>
+              </div>
+            </div>
+
+            {% if request.user.is_authenticated %}
+              <a href="#" class="button-primary w-full text-center">Purchase Permanent Links</a>
+              {% comment %} <a href="{% url 'purchase_links' type='permanent' %}" class="button-primary w-full text-center">Purchase Permanent Links</a> {% endcomment %}
+            {% else %}
+              <a href="{% url 'sign_in' %}?next=/purchase_links/permanent/" class="button-primary w-full text-center">Sign In to Purchase</a>
+            {% endif %}
+          </div>
+
+          <div class="bg-background p-8 rounded-lg border border-border">
+            <div class="size-12 bg-primary/10 rounded-full flex items-center justify-center mb-4 mx-auto">
+              <i data-lucide="hourglass" class="text-primary size-6"></i>
+            </div>
+            <h3 class="text-2xl font-bold mb-2 text-center">Temporary Links</h3>
+            <p class="text-4xl font-bold text-center mb-6">$2 <span class="text-muted-foreground text-lg font-normal">per link</span></p>
+
+            <div class="bg-secondary/40 p-4 rounded-lg mb-6 border">
+              <p class="text-center">Links that expire after a set time, great for time-sensitive content.</p>
+            </div>
+
+            <div class="space-y-4 mb-8">
+              <div class="flex justify-between items-center border-b border-border pb-2">
+                <span>5 links</span>
+                <span class="font-bold">$10</span>
+              </div>
+              <div class="flex justify-between items-center border-b border-border pb-2">
+                <span>10 links</span>
+                <span class="font-bold">$20</span>
+              </div>
+              <div class="flex justify-between items-center border-b border-border pb-2">
+                <span>25 links</span>
+                <span class="font-bold">$50</span>
+              </div>
+              <div class="flex justify-between items-center border-b border-border pb-2">
+                <span>50 links</span>
+                <span class="font-bold">$90</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span>100 links</span>
+                <span class="text-primary font-bold">$180 <span class="text-xs text-muted-foreground">Save 10%</span></span>
+              </div>
+            </div>
+
+            {% if request.user.is_authenticated %}
+              <a href="#" class="button-primary w-full text-center">Purchase Temporary Links</a>
+              {% comment %} <a href="{% url 'purchase_links' type='temporary' %}" class="button-primary w-full text-center">Purchase Temporary Links</a> {% endcomment %}
+            {% else %}
+              <a href="{% url 'sign_in' %}?next=/purchase_links/temporary/" class="button-primary w-full text-center">Sign In to Purchase</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-16 bg-muted/50">
+      <div class="container">
+        <h2 class="text-3xl font-bold text-center mb-12">Plans Comparison</h2>
+
+        <div class="overflow-x-auto">
+          <div class="w-full max-w-2xl mx-auto border rounded-lg overflow-hidden">
+            <table class="w-full">
+              <thead>
+                <tr class="text-left bg-secondary">
+                  <th class="p-4">Feature</th>
+                  <th class="p-4 text-center">Free</th>
+                  <th class="p-4 text-center">Premium</th>
+                </tr>
+              </thead>
+              <tbody class="bg-background">
+                <tr class="border-b border-dashed">
+                  <td class="p-4 font-medium">Permanent Links</td>
+                  <td class="p-4 text-center">5</td>
+                  <td class="p-4 text-center">10 + Additional</td>
+                </tr>
+                <tr class="border-b border-dashed">
+                  <td class="p-4 font-medium">Temporary Links</td>
+                  <td class="p-4 text-center">2</td>
+                  <td class="p-4 text-center">5 + Additional</td>
+                </tr>
+                <tr class="border-b border-dashed">
+                  <td class="p-4 font-medium">Basic Statistics</td>
+                  <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
+                  <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
+                </tr>
+                <tr class="border-b border-dashed">
+                  <td class="p-4 font-medium">Advanced Statistics</td>
+                  <td class="p-4 text-center"><i data-lucide="x" class="size-4 text-muted-foreground mx-auto"></i></td>
+                  <td class="p-4 text-center"><span class="badge-yellow text-xs">Coming Soon</span></td>
+                </tr>
+                <tr class="border-b border-dashed">
+                  <td class="p-4 font-medium">Link Monitoring</td>
+                  <td class="p-4 text-center"><i data-lucide="x" class="size-4 text-muted-foreground mx-auto"></i></td>
+                  <td class="p-4 text-center"><span class="badge-yellow text-xs">Coming Soon</span></td>
+                </tr>
+                <tr class="border-b border-dashed">
+                  <td class="p-4 font-medium">Additional Links Purchase</td>
+                  <td class="p-4 text-center"><i data-lucide="x" class="size-4 text-muted-foreground mx-auto"></i></td>
+                  <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
+                </tr>
+                <tr>
+                  <td class="p-4 font-medium">Priority Support</td>
+                  <td class="p-4 text-center"><i data-lucide="x" class="size-4 text-muted-foreground mx-auto"></i></td>
+                  <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-16">
+      <div class="container">
+        <h2 class="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
+        <div class="max-w-3xl mx-auto space-y-6">
+          <div class="bg-secondary/60 p-6 rounded-lg">
+            <h3 class="text-xl font-bold mb-2">How do I purchase additional links?</h3>
+            <p>Premium users can purchase additional links from their dashboard. Simply navigate to the "Purchase Links" section and select the type and quantity of links you want to add to your account.</p>
+          </div>
+          <div class="bg-secondary/60 p-6 rounded-lg">
+            <h3 class="text-xl font-bold mb-2">Can I upgrade from Free to Premium?</h3>
+            <p>Yes! You can upgrade to Premium at any time from your account settings. Your existing links will be preserved, and you'll immediately get access to additional link slots and premium features.</p>
+          </div>
+          <div class="bg-secondary/60 p-6 rounded-lg">
+            <h3 class="text-xl font-bold mb-2">Do additional links expire?</h3>
+            <p>No, once purchased, additional link slots remain in your account indefinitely until used. Only the temporary links themselves expire based on the timeframe you set.</p>
+          </div>
+          <div class="bg-secondary/60 p-6 rounded-lg">
+            <h3 class="text-xl font-bold mb-2">Are there any discounts for bulk purchases?</h3>
+            <p>Yes, we offer a 10% discount when purchasing 100 or more links at once. Special pricing is also available for enterprise customers — contact us for details.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-16 bg-secondary/40">
+      <div class="container">
+        <div class="max-w-3xl mx-auto text-center">
+          <h2 class="text-3xl font-bold mb-6">Ready to get started?</h2>
+          <p class="text-lg mb-8 text-muted-foreground">Join thousands of users who are already simplifying their link sharing with Sbily.</p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            {% if request.user.is_authenticated %}
+              <a href="#" class="button-primary">Go to Dashboard</a>
+              {% comment %} <a href="{% url 'dashboard' %}" class="button-primary">Go to Dashboard</a> {% endcomment %}
+              {% if not request.user.is_premium %}
+                <a href="#" class="button-outline">Upgrade to Premium</a>
+                {% comment %} <a href="{% url 'subscribe' %}" class="button-outline">Upgrade to Premium</a> {% endcomment %}
+              {% endif %}
+            {% else %}
+              <a href="{% url 'sign_up' %}" class="button-primary">Create Free Account</a>
+              <a href="{% url 'sign_in' %}" class="button-outline">Sign In</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- <section class="py-16">
+      <div class="container">
+        <div class="max-w-3xl mx-auto bg-background p-8 rounded-lg border border-border">
+          <div class="flex flex-col md:flex-row gap-6 items-center">
+            <div class="size-16 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+              <i data-lucide="building" class="text-primary size-8"></i>
+            </div>
+            <div>
+              <h3 class="text-2xl font-bold mb-2">Enterprise Solutions</h3>
+              <p class="text-muted-foreground mb-4">Need a custom solution for your organization? We offer enterprise plans with custom features, dedicated support, and volume discounts.</p>
+              <a href="#" class="button-outline">Contact Us</a>
+              {% comment %} <a href="{% url 'contact' %}" class="button-outline">Contact Us</a> {% endcomment %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section> -->
+  </main>
+{% endblock content %}

@@ -92,6 +92,12 @@
                   </div>
                   <span class="w-full">My Account</span>
                 </a>
+                <a href="{% url 'my_account' %}?tab=plan" class="dropdown-menu-item gap-3 px-2 justify-between text-start">
+                  <div class="size-5">
+                    <i data-lucide="link" class="size-5"></i>
+                  </div>
+                  <span class="w-full">Manage plan</span>
+                </a>
                 <a href="{% url 'links' %}" class="dropdown-menu-item gap-3 px-2 justify-between text-start">
                   <div class="size-5">
                     <i data-lucide="link" class="size-5"></i>
@@ -107,12 +113,12 @@
                 </a>
               </div>
             {% else %}
-              <a href="{% url 'sign_up' %}" class="link">Sign Up</a>
-              <a href="{% url 'sign_in' %}" class="link">Sign In</a>
+              <a href="{% url 'plans' %}" class="link p-2 hover:text-primary">Pricing</a>
+              <a href="{% url 'sign_in' %}" class="link p-2 hover:text-primary">Sign In</a>
             {% endif %}
             <button
               type="button"
-              class="link relative p-2 border border-foreground/20 hover:border-foreground/40"
+              class="link relative items-center justify-center p-2 border border-foreground/20 hover:border-foreground/40"
               title="Theme toggle"
               data-jswc-theme-toggle
             >
