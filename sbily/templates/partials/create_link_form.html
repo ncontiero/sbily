@@ -8,16 +8,16 @@
   {% if user.is_authenticated %}
     <div class="mt-1 mb-6 flex flex-col gap-1">
       <span class="badge-default">
-        {% if user.link_num_left.links > 0 %}
-          You can create {{ user.link_num_left.links }} link{% if user.link_num_left.links > 1 %}s{% endif %}.
+        {% if user.permanent_links_left > 0 %}
+          You can create {{ user.permanent_links_left }} link{% if user.permanent_links_left > 1 %}s{% endif %}.
         {% else %}
           You no longer have quota to create links.
         {% endif %}
       </span>
       <span class="badge-yellow">
-        {% if user.link_num_left.temp_links > 0 %}
-          You can create {{ user.link_num_left.temp_links }} temporary
-          link{% if user.link_num_left.temp_links > 1 %}s{% endif %}.
+        {% if user.temporary_links_left > 0 %}
+          You can create {{ user.temporary_links_left }} temporary
+          link{% if user.temporary_links_left > 1 %}s{% endif %}.
         {% else %}
           You no longer have quota to create temporary links.
         {% endif %}
@@ -68,7 +68,7 @@
         id="remove_at"
         name="remove_at"
         class="input"
-        {% if user.link_num_left.temp_links < 1 %}disabled{% endif %}
+        {% if user.temporary_links_left < 1 %}disabled{% endif %}
       />
       <p class="text-xs font-medium w-fit text-foreground/80 mt-1 ml-0.5">
         When this link should be automatically removed.
@@ -76,15 +76,12 @@
       <p class="text-xs font-medium w-fit text-foreground/80 mt-2 ml-0.5">
         NOTE: It will be considered “expired” and after a while removed.
       </p>
-      <p class="text-xs font-medium w-fit text-foreground/80 mt-1 ml-0.5">
-        NOTE: It will be automatically changed to follow the UTC time zone.
-      </p>
     </div>
   {% endif %}
   <button
     type="submit"
     class="button-primary"
-    {% if user.link_num_left.links < 1 and user.link_num_left.temp_links < 1 %}disabled{% endif %}
+    {% if user.permanent_links_left < 1 and user.temporary_links_left < 1 %}disabled{% endif %}
   >
     Create
   </button>

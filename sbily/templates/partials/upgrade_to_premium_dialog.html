@@ -1,0 +1,87 @@
+<div id="upgrade-dialog" class="hidden dialog pr-0" data-jswc-dialog-animation="true">
+  <div class="flex flex-col">
+    <div class="flex justify-between items-center pb-4">
+      <h2 class="text-xl font-bold">Upgrade to Premium</h2>
+    </div>
+    <div class="w-full relative overflow-auto max-h-[720px] overscroll-contain pr-3.5">
+      <div class="size-full">
+        <p class="mb-4">Upgrade to Premium for just $5/month and enjoy these benefits:</p>
+        <ul class="space-y-2 mb-6">
+          <li class="flex items-center gap-2">
+            <i data-lucide="check" class="size-4 text-primary"></i>
+            <span>10 permanent links (instead of 5)</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <i data-lucide="check" class="size-4 text-primary"></i>
+            <span>5 temporary links (instead of 2)</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <i data-lucide="check" class="size-4 text-primary"></i>
+            <span>Ability to purchase additional links</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <i data-lucide="check" class="size-4 text-primary"></i>
+            <span>Priority support</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <i data-lucide="check" class="size-4 text-primary"></i>
+            <span>Advanced statistics and monitoring (coming soon)</span>
+          </li>
+        </ul>
+
+        <form method="post" action="{% url 'upgrade_plan' %}" class="w-full">
+          {% csrf_token %}
+          <div class="flex flex-col">
+            <h3 class="font-bold mb-2">Payment Method</h3>
+            <div class="border border-border rounded-md p-4 mb-4">
+              <div class="flex items-center mb-2">
+                <input type="radio" id="credit_card" name="payment_method" value="credit_card" checked class="mr-2" />
+                <label for="credit_card">Credit Card</label>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                <div class="flex flex-col gap-1">
+                  <label for="card_number" class="text-sm">Card Number</label>
+                  <input type="text" id="card_number" name="card_number" class="input" placeholder="XXXX XXXX XXXX XXXX" />
+                </div>
+                <div class="flex flex-col gap-1">
+                  <label for="card_name" class="text-sm">Name on Card</label>
+                  <input type="text" id="card_name" name="card_name" class="input" />
+                </div>
+                <div class="flex flex-col gap-1">
+                  <label for="expiry" class="text-sm">Expiry Date</label>
+                  <input type="text" id="expiry" name="expiry" class="input" placeholder="MM/YY" />
+                </div>
+                <div class="flex flex-col gap-1">
+                  <label for="cvv" class="text-sm">CVV</label>
+                  <input type="text" id="cvv" name="cvv" class="input" placeholder="XXX" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="separator my-6"></div>
+
+          <div class="flex flex-col gap-2">
+            <div class="flex justify-between">
+              <span>Premium Plan (monthly)</span>
+              <span>$5.00</span>
+            </div>
+            <div class="separator my-2"></div>
+            <div class="flex justify-between font-bold">
+              <span>Total (billed monthly)</span>
+              <span>$5.00</span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 py-2 mt-6 sticky bottom-0 bg-background">
+            <button type="submit" class="button-primary">Upgrade Now</button>
+            <button type="button" class="button-outline" data-jswc-dialog-close>Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <button type="button" class="button-outline absolute p-2 border-0 rounded-xl right-4 top-4" aria-label="Close" data-jswc-dialog-close>
+      <i data-lucide="x" class="size-5"></i>
+    </button>
+  </div>
+</div>

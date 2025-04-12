@@ -49,6 +49,47 @@ def my_account(request: HttpRequest):
 
 
 @login_required
+def upgrade_plan(request: HttpRequest):
+    if request.method != "POST":
+        return redirect_with_tab("plan")
+
+    try:
+        user = request.user
+        if user.is_premium:
+            bad_request_error("You are already a premium user")
+
+        user.upgrade_to_premium()
+        messages.success(request, "Successfully upgraded to premium!")
+        return redirect_with_tab("plan")
+    except BadRequestError as e:
+        messages.error(request, e.message)
+
+
+@login_required
+def downgrade_plan(request: HttpRequest):
+    if request.method != "POST":
+        return redirect_with_tab("plan")
+
+    try:
+        user = request.user
+        if not user.is_premium:
+            bad_request_error("You are not a premium user")
+
+        message = user.downgrade_to_free()
+        if message:
+            messages.warning(request, message)
+
+        messages.success(request, "Successfully downgraded to free!")
+        return redirect_with_tab("plan")
+    except BadRequestError as e:
+        messages.error(request, e.message)
+        return redirect_with_tab("plan")
+    except Exception as e:
+        messages.error(request, f"Error downgrading to free: {e}")
+        return redirect_with_tab("plan")
+
+
+@login_required
 def change_email_instructions(request: HttpRequest):
     if request.method != "POST":
         return redirect_with_tab("email")

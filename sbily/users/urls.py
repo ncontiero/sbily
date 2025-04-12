@@ -10,6 +10,8 @@ account_email_urlpatterns = [
 
 urlpatterns = [
     path("", views.my_account, name="my_account"),
+    path("upgrade_plan", views.upgrade_plan, name="upgrade_plan"),
+    path("downgrade_plan", views.downgrade_plan, name="downgrade_plan"),
     path("email/", include(account_email_urlpatterns)),
     path("security/", views.account_security, name="account_security"),
     path("change_password/", views.change_password, name="change_password"),

@@ -76,21 +76,34 @@ class User(AbstractUser):
         return self.role == self.ROLE_PREMIUM
 
     @property
-    def link_num(self) -> dict[str, int]:
-        """Returns the number of links and temporary links created by user"""
-        shortened_links = self.shortened_links.all()
-        links = shortened_links.filter(remove_at__isnull=True).count()
-        temp_links = shortened_links.filter(remove_at__isnull=False).count()
-        return {"links": links, "temp_links": temp_links}
+    def permanent_links_used(self):
+        """Returns the number of permanent links used"""
+        return self.shortened_links.filter(remove_at__isnull=True).count()
 
     @property
-    def link_num_left(self) -> dict[str, int]:
-        """Returns the number of links and temporary links left for user"""
-        link_num = self.link_num
-        return {
-            "links": max(0, self.max_num_links - link_num["links"]),
-            "temp_links": max(0, self.max_num_links_temporary - link_num["temp_links"]),
-        }
+    def temporary_links_used(self):
+        """Returns the number of temporary links used"""
+        return self.shortened_links.filter(remove_at__isnull=False).count()
+
+    @property
+    def permanent_links_left(self):
+        """Returns the number of permanent links left for user"""
+        return self.max_num_links - self.permanent_links_used
+
+    @property
+    def temporary_links_left(self):
+        """Returns the number of temporary links left for user"""
+        return self.max_num_links_temporary - self.temporary_links_used
+
+    @property
+    def permanent_links_used_percentage(self) -> float:
+        """Returns the percentage of permanent links used by user"""
+        return self.permanent_links_used / self.max_num_links * 100
+
+    @property
+    def temporary_links_used_percentage(self) -> float:
+        """Returns the percentage of temporary links used by user"""
+        return self.temporary_links_used / self.max_num_links_temporary * 100
 
     def save(self, *args, **kwargs):
         role_limits = {
@@ -116,11 +129,48 @@ class User(AbstractUser):
 
     def can_create_link(self) -> bool:
         """Check if user can create links"""
-        return self.link_num_left["links"] > 0
+        return self.permanent_links_left > 0
 
     def can_create_temporary_link(self) -> bool:
         """Check if user can create temporary links"""
-        return self.link_num_left["temp_links"] > 0
+        return self.temporary_links_left > 0
+
+    def upgrade_to_premium(self):
+        """Upgrade user to premium"""
+        self.role = self.ROLE_PREMIUM
+        self.save()
+
+    @transaction.atomic
+    def downgrade_to_free(self) -> None | str:
+        """Downgrade user from premium to free"""
+        self.role = self.ROLE_USER
+
+        excess_permalinks = self.permanent_links_used - self.max_num_links
+        excess_temporary_links = (
+            self.temporary_links_used - self.max_num_links_temporary
+        )
+        total_deleted = 0
+
+        if excess_permalinks > 0:
+            links_to_delete = self.shortened_links.filter(
+                remove_at__isnull=True,
+            ).order_by("-updated_at")[:excess_permalinks]
+            deleted = self.shortened_links.filter(pk__in=links_to_delete).delete()
+            total_deleted += deleted[0]
+
+        if excess_temporary_links > 0:
+            links_to_delete = self.shortened_links.filter(
+                remove_at__isnull=False,
+            ).order_by("-updated_at")[:excess_temporary_links]
+            deleted = self.shortened_links.filter(pk__in=links_to_delete).delete()
+            total_deleted += deleted[0]
+
+        self.save()
+        if total_deleted > 0:
+            return (
+                f"Deleted {total_deleted} excess links due to downgrading to free plan.",
+            )
+        return None
 
     def get_full_name(self) -> str:
         """Return user's full name or username if not set"""
