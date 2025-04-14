@@ -443,8 +443,7 @@ def purchase_links(request: HttpRequest):
                 request,
                 f"Successfully purchased {quantity} {link_type} links!",
             )
-            return redirect_with_tab("plan")
-        if result["status"] == "action_required":
+        elif result["status"] == "action_required":
             return render(
                 request,
                 "payment/confirm_payment.html",
@@ -455,18 +454,17 @@ def purchase_links(request: HttpRequest):
                     ),
                 },
             )
-        messages.error(
-            request,
-            f"Payment failed: {result.get('error', 'Unknown error')}",
-        )
-        return redirect_with_tab("plan")
-
+        else:
+            messages.error(
+                request,
+                f"Payment failed: {result.get('error', 'Unknown error')}",
+            )
     except BadRequestError as e:
         messages.error(request, e.message)
-        return redirect_with_tab("plan")
     except Exception as e:
         messages.error(request, f"Error purchasing links: {e!s}")
-        return redirect_with_tab("plan")
+
+    return redirect_with_tab("plan")
 
 
 @login_required
@@ -565,7 +563,7 @@ def purchase_complete(request: HttpRequest):
 def stripe_webhook(request):
     """Handle Stripe webhook events"""
     payload = request.body
-    sig_header = request.META.get("HTTP_STRIPE_SIGNATURE")
+    sig_header = request.headers.get("stripe-signature")
 
     try:
         event = stripe.Webhook.construct_event(

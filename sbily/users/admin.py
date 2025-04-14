@@ -172,10 +172,11 @@ class LinkPackageAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         return ("user", "purchase_date", "payment") if obj else ()
 
+    @admin.display(
+        description=_("Total Price"),
+    )
     def total_price(self, obj):
         return obj.quantity * obj.unit_price
-
-    total_price.short_description = _("Total Price")
 
 
 UserAdmin.inlines = [SubscriptionInline, PaymentInline, LinkPackageInline]

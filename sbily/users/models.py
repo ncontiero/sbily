@@ -194,11 +194,12 @@ class User(AbstractUser):
         self.max_num_links = self.MAX_NUM_LINKS_PER_USER
         self.max_num_links_temporary = self.MAX_NUM_LINKS_TEMP_PER_USER
         self.save()
-        if total_deleted > 0:
-            return (
-                f"Deleted {total_deleted} excess links due to downgrading to free plan.",
-            )
-        return None
+
+        return (
+            f"Deleted {total_deleted} excess links due to downgrading to free plan."
+            if total_deleted > 0
+            else None
+        )
 
     def get_subscription_history(self):
         """Get subscription payment history"""
@@ -476,7 +477,6 @@ class User(AbstractUser):
                     "package_type": link_type,
                     "quantity": quantity,
                 },
-                # confirm=not bool(payment_method_id),
             )
             if not payment_method_id:
                 intent = stripe.PaymentIntent.confirm(
@@ -491,22 +491,6 @@ class User(AbstractUser):
 
             if intent.status == "succeeded":
                 payment.complete(transaction_id=intent.id)
-                # Create the link package
-                # package = LinkPackage.objects.create(
-                #     user=self,
-                #     link_type=link_type,
-                #     quantity=quantity,
-                #     unit_price=unit_price,
-                #     payment=payment,
-                # )
-
-                # Update user's link limits
-                # if link_type == LinkPackage.TYPE_PERMANENT:
-                #     self.max_num_links += quantity
-                # else:
-                #     self.max_num_links_temporary += quantity
-                # self.save(update_fields=["max_num_links", "max_num_links_temporary"])
-
                 return {
                     "status": "success",
                     "payment": payment,
@@ -875,38 +859,6 @@ class Payment(models.Model):
         if error_message:
             self.description += f" - Error: {error_message}"
         self.save()
-
-    def update_status_from_stripe(self):
-        """Update payment status from Stripe"""
-        if not self.transaction_id:
-            return {"status": "error", "error": "No transaction ID"}
-
-        try:
-            if self.payment_type == self.TYPE_SUBSCRIPTION:
-                try:
-                    invoice = stripe.Invoice.retrieve(self.transaction_id)
-                    if invoice.status == "paid":
-                        self.complete(transaction_id=invoice.payment_intent)
-                    elif invoice.status == "uncollectible":
-                        self.fail("Payment uncollectible")
-                except stripe.error.StripeError:
-                    # Not an invoice, try payment intent
-                    intent = stripe.PaymentIntent.retrieve(self.transaction_id)
-                    if intent.status == "succeeded":
-                        self.complete(transaction_id=intent.id)
-                    elif intent.status == "canceled":
-                        self.fail("Payment canceled")
-            else:
-                # Regular payment intent
-                intent = stripe.PaymentIntent.retrieve(self.transaction_id)
-                if intent.status == "succeeded":
-                    self.complete(transaction_id=intent.id)
-                elif intent.status == "canceled":
-                    self.fail("Payment canceled")
-        except stripe.error.StripeError as e:
-            return {"status": "error", "error": str(e)}
-        else:
-            return {"status": "success"}
 
 
 class LinkPackage(models.Model):
