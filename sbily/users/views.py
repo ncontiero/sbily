@@ -1,5 +1,6 @@
 # ruff: noqa: BLE001
 
+import contextlib
 import logging
 
 import stripe
@@ -56,6 +57,13 @@ def my_account(request: HttpRequest):
     if form.is_valid():
         if form.has_changed():
             form.save()
+            if customer := user.get_stripe_customer():
+                with contextlib.suppress(stripe.error.StripeError):
+                    customer.modify(
+                        customer.id,
+                        name=user.get_full_name(),
+                        metadata={"username": user.username},
+                    )
             messages.success(request, "Successfully updated profile!")
         else:
             messages.warning(request, "There were no changes!")
@@ -96,7 +104,7 @@ def change_email(request: HttpRequest, token: str):
         if request.method != "POST":
             return redirect_with_tab("email", token=token)
 
-        user = request.user
+        user: User = request.user
         if not user.email_verified:
             bad_request_error("Please verify your email first")
 
@@ -114,6 +122,10 @@ def change_email(request: HttpRequest, token: str):
         user.email_verified = False
         user.save()
         token_obj.delete()
+
+        if customer := user.get_stripe_customer():
+            with contextlib.suppress(stripe.error.StripeError):
+                customer.modify(customer.id, email=new_email)
 
         send_email_changed_email.delay_on_commit(user.id, old_email)
 
@@ -227,9 +239,15 @@ def delete_account(request: HttpRequest):
         if user.username != username or not user.check_password(password):
             bad_request_error("Incorrect username or password")
 
+        customer = user.get_stripe_customer()
+
         user_email = user.email
         send_deleted_account_email.delay_on_commit(user_email, username)
         user.delete()
+
+        if customer:
+            customer.delete()
+
         messages.success(request, "Account deleted successfully")
         return redirect("sign_in")
     except BadRequestError as e:
