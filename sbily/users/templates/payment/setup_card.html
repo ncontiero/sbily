@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Set Up Payment Method{% endblock title %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+  <div class="max-w-lg mx-auto">
+    <h1 class="text-2xl font-bold mb-4">Set Up Payment Method</h1>
+
+    <div class="bg-background rounded-lg border border-border p-6">
+      <form id="payment-form">
+        <div class="mb-4">
+          <label for="card-element" class="block text-sm font-medium mb-2">
+            Credit or debit card
+          </label>
+          <div id="card-element" class="p-3 border border-border/70 rounded-md duration-200 hover:border-border">
+            <!-- Stripe Elements will create form elements here -->
+          </div>
+          <div id="card-errors" class="text-destructive text-sm mt-2" role="alert"></div>
+        </div>
+
+        <div class="flex justify-between mt-6">
+          <button type="submit" class="button-primary justify-center items-center" id="submit-button">
+            <i data-lucide="loader" class="animate-spin hidden" id="spinner"></i>
+            <span id="button-text">Submit Payment Method</span>
+          </button>
+          <a href="{% url 'my_account' %}?tab=plan" class="button-outline">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+{% block js %}
+<script>
+  const clientSecret = "{{ client_secret }}";
+  const redirectUrl = "{{ redirect_url }}";
+</script>
+{% endblock js %}

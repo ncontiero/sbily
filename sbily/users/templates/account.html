@@ -284,40 +284,43 @@
           {% endif %}
         </div>
 
-        {% if user.is_premium %}
         <div class="bg-background rounded-lg border border-border p-6">
-          <h3 class="text-lg font-bold mb-4">Purchase History</h3>
+          <h3 class="text-lg font-bold mb-4">Payments History</h3>
 
-          {% if user.purchases %}
-            <div class="overflow-x-auto">
-              <table class="w-full text-sm">
-                <thead class="bg-secondary/60">
-                  <tr>
-                    <th class="text-left p-2 rounded-tl-md">Date</th>
-                    <th class="text-left p-2">Description</th>
-                    <th class="text-left p-2">Amount</th>
-                    <th class="text-left p-2 rounded-tr-md">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for purchase in user.purchases %}
-                  <tr class="border-b border-border">
-                    <td class="p-2">{{ purchase.date|date:"M d, Y" }}</td>
-                    <td class="p-2">{{ purchase.description }}</td>
-                    <td class="p-2">${{ purchase.amount }}</td>
-                    <td class="p-2">
-                      <span class="badge-{{ purchase.status_badge }}">{{ purchase.status }}</span>
-                    </td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
+          {% if user.payments %}
+            <div class="border rounded-md mt-2 pb-2">
+              <div class="size-full overflow-auto max-h-[500px] overscroll-contain">
+                <table class="w-full caption-bottom text-sm">
+                  <caption class="mt-4 text-sm text-muted-foreground">
+                    A list of your payments.
+                  </caption>
+                  <thead class="border-b duration-200 hover:bg-muted/50">
+                    <tr>
+                      <th class="h-12 px-4 text-start align-middle font-medium text-muted-foreground">Date</th>
+                      <th class="h-12 px-4 text-start align-middle font-medium text-muted-foreground">Description</th>
+                      <th class="h-12 px-4 text-start align-middle font-medium text-muted-foreground">Amount</th>
+                      <th class="h-12 px-4 text-center align-middle font-medium text-muted-foreground">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for payment in user.payments.all %}
+                    <tr class="border-b duration-200 hover:bg-muted/50">
+                      <td class="p-4 align-middle">{{ payment.payment_date|date:"M d, Y" }}</td>
+                      <td class="p-4 align-middle">{{ payment.description }}</td>
+                      <td class="p-4 align-middle">${{ payment.amount }}</td>
+                      <td class="p-4 align-middle text-center">
+                        <span class="badge-{{ payment.status_badge }}">{{ payment.status }}</span>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
             </div>
           {% else %}
             <p class="text-muted-foreground text-sm">No purchase history yet.</p>
           {% endif %}
         </div>
-        {% endif %}
 
         <!-- Dialogs -->
         <!-- Upgrade Dialog -->
@@ -380,8 +383,7 @@
             <div class="mt-4">
               <p class="mb-4">Each permanent link costs $1.00. Select the quantity you wish to purchase:</p>
 
-              <form method="post" action="" class="w-full">
-              {% comment %} <form method="post" action="{% url 'purchase_links' %}" class="w-full"> {% endcomment %}
+              <form method="post" action="{% url 'purchase_links' %}" class="w-full">
                 {% csrf_token %}
                 <input type="hidden" name="link_type" value="permanent" />
 
@@ -413,7 +415,9 @@
                 </div>
 
                 <div class="flex items-center gap-2 mt-6">
-                  <button type="submit" class="button-primary">Purchase Now</button>
+                  <button type="submit" class="button-primary" id="purchase-permanent-button">
+                    Purchase Now
+                  </button>
                   <button type="button" class="button-outline" data-jswc-dialog-close>Cancel</button>
                 </div>
               </form>
@@ -433,8 +437,7 @@
             <div class="mt-4">
               <p class="mb-4">Each temporary link costs $2.00. Select the quantity you wish to purchase:</p>
 
-              <form method="post" action="" class="w-full">
-              {% comment %} <form method="post" action="{% url 'purchase_links' %}" class="w-full"> {% endcomment %}
+              <form method="post" action="{% url 'purchase_links' %}" class="w-full">
                 {% csrf_token %}
                 <input type="hidden" name="link_type" value="temporary" />
 
@@ -466,7 +469,9 @@
                 </div>
 
                 <div class="flex items-center gap-2 mt-6">
-                  <button type="submit" class="button-primary">Purchase Now</button>
+                  <button type="submit" class="button-primary" id="purchase-temporary-button">
+                    Purchase Now
+                  </button>
                   <button type="button" class="button-outline" data-jswc-dialog-close>Cancel</button>
                 </div>
               </form>

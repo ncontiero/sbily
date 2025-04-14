@@ -1,6 +1,7 @@
 import type { dialog } from "./components/dialog";
 import type { Switch } from "./components/switch";
 import type { closeToast, toast } from "./components/toast";
+import type { initStripe } from "./stripe";
 import type { copy } from "./utils/copy";
 
 declare global {
@@ -13,6 +14,7 @@ export interface WindowWithCustomProps {
   closeToast: typeof closeToast;
   dialog: typeof dialog;
   Switch: typeof Switch;
+  stripe: ReturnType<typeof initStripe>;
 }
 
 export type EventHandler<T> = (event: T) => void;

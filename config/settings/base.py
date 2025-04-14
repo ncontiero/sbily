@@ -226,6 +226,12 @@ MESSAGE_TAGS = {
     constants.INFO: "toast-info",
 }
 
+# STRIPE
+# ------------------------------------------------------------------------------
+STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY")
+STRIPE_PREMIUM_PRICE_ID = config("STRIPE_PREMIUM_PRICE_ID")
+STRIPE_WEBHOOK_SECRET = config("STRIPE_WEBHOOK_SECRET")
+
 # Celery
 # ------------------------------------------------------------------------------
 if USE_TZ:

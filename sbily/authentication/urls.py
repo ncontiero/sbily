@@ -14,7 +14,6 @@ auth_sign_in_urlpatterns = [
 ]
 
 urlpatterns = [
-    path("sign_up/<str:plan>/", views.sign_up, name="sign_up_with_plan"),
     path("sign_up/", views.sign_up, name="sign_up"),
     path("sign_in/", include(auth_sign_in_urlpatterns)),
     path("sign_out/", views.sign_out, name="sign_out"),

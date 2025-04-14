@@ -23,11 +23,12 @@ from .forms import SignUpForm
 from .tasks import send_sign_in_with_email
 
 
-def sign_up(request: HttpRequest, plan: None | str = None):
+def sign_up(request: HttpRequest):
     if request.user.is_authenticated:
         return redirect("home")
     if request.method != "POST":
-        form = SignUpForm()
+        plan = request.GET.get("plan", None)
+        form = SignUpForm(initial={"plan": plan})
         return render(request, "sign_up.html", {"form": form})
 
     form = SignUpForm(request.POST)
@@ -40,6 +41,10 @@ def sign_up(request: HttpRequest, plan: None | str = None):
             )
             login(request, user)
             send_welcome_email.delay_on_commit(user.id)
+
+            if form.cleaned_data.get("plan") == "premium":
+                return redirect("upgrade_plan")
+
             return redirect("my_account")
         except Exception as e:
             messages.error(request, f"Error signing up: {e}")

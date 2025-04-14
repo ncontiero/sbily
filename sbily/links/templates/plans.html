@@ -105,7 +105,9 @@
                 {% include "partials/upgrade_to_premium_dialog.html" %}
               {% endif %}
             {% else %}
-              <a href="{% url 'sign_up_with_plan' plan='premium' %}" class="button-primary w-full text-center">Subscribe Premium</a>
+              <a href="{% url 'sign_up' %}?plan=premium" class="button-primary w-full text-center">
+                Subscribe Premium
+              </a>
             {% endif %}
           </div>
         </div>
@@ -154,7 +156,6 @@
 
             {% if request.user.is_authenticated %}
               <a href="{% url "my_account" %}?tab=plan" class="button-primary w-full text-center">Purchase Permanent Links</a>
-              {% comment %} <a href="{% url 'purchase_links' type='permanent' %}" class="button-primary w-full text-center">Purchase Permanent Links</a> {% endcomment %}
             {% else %}
               <a href="{% url 'sign_in' %}?next={% url "my_account" %}?tab=plan" class="button-primary w-full text-center">Sign In to Purchase</a>
             {% endif %}
@@ -186,7 +187,7 @@
               </div>
               <div class="flex justify-between items-center border-b pb-2">
                 <span>50 links</span>
-                <span class="font-bold">$90</span>
+                <span class="text-primary font-bold">$90 <span class="text-xs text-muted-foreground">Save 10%</span></span>
               </div>
               <div class="flex justify-between items-center">
                 <span>100 links</span>
@@ -196,7 +197,6 @@
 
             {% if request.user.is_authenticated %}
               <a href="{% url "my_account" %}?tab=plan" class="button-primary w-full text-center">Purchase Temporary Links</a>
-              {% comment %} <a href="{% url 'purchase_links' type='temporary' %}" class="button-primary w-full text-center">Purchase Temporary Links</a> {% endcomment %}
             {% else %}
               <a href="{% url 'sign_in' %}?next={% url "my_account" %}?tab=plan" class="button-primary w-full text-center">Sign In to Purchase</a>
             {% endif %}
@@ -209,54 +209,56 @@
       <div class="container">
         <h2 class="text-3xl font-bold text-center mb-12">Plans Comparison</h2>
 
-        <div class="overflow-x-auto">
-          <div class="w-full max-w-2xl mx-auto border rounded-lg overflow-hidden">
-            <table class="w-full">
-              <thead>
-                <tr class="text-left bg-secondary">
-                  <th class="p-4">Feature</th>
-                  <th class="p-4 text-center">Free</th>
-                  <th class="p-4 text-center">Premium</th>
-                </tr>
-              </thead>
-              <tbody class="bg-background">
-                <tr class="border-b border-dashed">
-                  <td class="p-4 font-medium">Permanent Links</td>
-                  <td class="p-4 text-center">5</td>
-                  <td class="p-4 text-center">10 + Additional</td>
-                </tr>
-                <tr class="border-b border-dashed">
-                  <td class="p-4 font-medium">Temporary Links</td>
-                  <td class="p-4 text-center">2</td>
-                  <td class="p-4 text-center">5 + Additional</td>
-                </tr>
-                <tr class="border-b border-dashed">
-                  <td class="p-4 font-medium">Basic Statistics</td>
-                  <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
-                  <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
-                </tr>
-                <tr class="border-b border-dashed">
-                  <td class="p-4 font-medium">Advanced Statistics</td>
-                  <td class="p-4 text-center"><i data-lucide="x" class="size-4 text-muted-foreground mx-auto"></i></td>
-                  <td class="p-4 text-center"><span class="badge-yellow text-xs">Coming Soon</span></td>
-                </tr>
-                <tr class="border-b border-dashed">
-                  <td class="p-4 font-medium">Link Monitoring</td>
-                  <td class="p-4 text-center"><i data-lucide="x" class="size-4 text-muted-foreground mx-auto"></i></td>
-                  <td class="p-4 text-center"><span class="badge-yellow text-xs">Coming Soon</span></td>
-                </tr>
-                <tr class="border-b border-dashed">
-                  <td class="p-4 font-medium">Additional Links Purchase</td>
-                  <td class="p-4 text-center"><i data-lucide="x" class="size-4 text-muted-foreground mx-auto"></i></td>
-                  <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
-                </tr>
-                <tr>
-                  <td class="p-4 font-medium">Priority Support</td>
-                  <td class="p-4 text-center"><i data-lucide="x" class="size-4 text-muted-foreground mx-auto"></i></td>
-                  <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
-                </tr>
-              </tbody>
-            </table>
+        <div class="mx-auto max-w-2xl">
+          <div class="border rounded-md mt-2">
+            <div class="size-full overflow-auto overscroll-contain">
+              <table class="size-full">
+                <thead class="bg-secondary/60 border-b">
+                  <tr class="text-left">
+                    <th class="p-4">Feature</th>
+                    <th class="p-4 text-center">Free</th>
+                    <th class="p-4 text-center">Premium</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-b border-dashed duration-200 hover:bg-muted/50">
+                    <td class="p-4 font-medium">Permanent Links</td>
+                    <td class="p-4 text-center">5</td>
+                    <td class="p-4 text-center">10 + Additional</td>
+                  </tr>
+                  <tr class="border-b border-dashed duration-200 hover:bg-muted/50">
+                    <td class="p-4 font-medium">Temporary Links</td>
+                    <td class="p-4 text-center">2</td>
+                    <td class="p-4 text-center">5 + Additional</td>
+                  </tr>
+                  <tr class="border-b border-dashed duration-200 hover:bg-muted/50">
+                    <td class="p-4 font-medium">Basic Statistics</td>
+                    <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
+                    <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
+                  </tr>
+                  <tr class="border-b border-dashed duration-200 hover:bg-muted/50">
+                    <td class="p-4 font-medium">Advanced Statistics</td>
+                    <td class="p-4 text-center"><i data-lucide="x" class="size-4 text-muted-foreground mx-auto"></i></td>
+                    <td class="p-4 text-center"><span class="badge-yellow text-xs">Coming Soon</span></td>
+                  </tr>
+                  <tr class="border-b border-dashed duration-200 hover:bg-muted/50">
+                    <td class="p-4 font-medium">Link Monitoring</td>
+                    <td class="p-4 text-center"><i data-lucide="x" class="size-4 text-muted-foreground mx-auto"></i></td>
+                    <td class="p-4 text-center"><span class="badge-yellow text-xs">Coming Soon</span></td>
+                  </tr>
+                  <tr class="border-b border-dashed duration-200 hover:bg-muted/50">
+                    <td class="p-4 font-medium">Additional Links Purchase</td>
+                    <td class="p-4 text-center"><i data-lucide="x" class="size-4 text-muted-foreground mx-auto"></i></td>
+                    <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
+                  </tr>
+                  <tr class="duration-200 hover:bg-muted/50">
+                    <td class="p-4 font-medium">Priority Support</td>
+                    <td class="p-4 text-center"><i data-lucide="x" class="size-4 text-muted-foreground mx-auto"></i></td>
+                    <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -293,13 +295,11 @@
           <p class="text-lg mb-8 text-muted-foreground">Join thousands of users who are already simplifying their link sharing with Sbily.</p>
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
             {% if request.user.is_authenticated %}
-              <a href="#" class="button-primary">Go to Dashboard</a>
-              {% comment %} <a href="{% url 'dashboard' %}" class="button-primary">Go to Dashboard</a> {% endcomment %}
+              <a href="{% url "my_account" %}" class="button-primary">Go to manage plan</a>
               {% if not request.user.is_premium %}
                 <button type="button" class="button-outline" data-jswc-dialog data-jswc-target="upgrade-dialog">
                   Upgrade to Premium
                 </button>
-                {% comment %} <a href="{% url 'subscribe' %}" class="button-outline">Upgrade to Premium</a> {% endcomment %}
               {% endif %}
             {% else %}
               <a href="{% url 'sign_up' %}" class="button-primary">Create Free Account</a>

@@ -83,6 +83,8 @@ services:
       dockerfile: ./compose/local/node/Dockerfile
     image: sbily_local_node
     container_name: sbily_local_node
+    env_file:
+      - ./.envs/.local/.django
     depends_on:
       - django
     volumes:

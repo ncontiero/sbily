@@ -13,6 +13,13 @@ from sbily.utils.data import validate_password
 
 
 class SignUpForm(BaseModelForm):
+    plan = forms.CharField(
+        widget=forms.HiddenInput(),
+        max_length=50,
+        initial="free",
+        required=False,
+    )
+
     class Meta:
         model = User
         fields = ["first_name", "last_name", "username", "email", "password"]
