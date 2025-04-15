@@ -170,6 +170,42 @@ def cancel_plan(request: HttpRequest):
 
 
 @login_required
+def resume_plan(request: HttpRequest):
+    if request.method != "POST":
+        return redirect_with_tab("plan")
+
+    try:
+        user = request.user
+        if user.is_premium and user.subscription.is_auto_renew:
+            bad_request_error("Your subscription is already active")
+        if not user.subscription.is_active:
+            bad_request_error("Your subscription is not active")
+
+        subscription = Subscription.objects.filter(
+            user=user,
+            status=Subscription.STATUS_ACTIVE,
+        ).first()
+
+        if subscription and subscription.stripe_subscription_id:
+            result = subscription.resume_stripe_subscription()
+            if result["status"] != "success":
+                messages.warning(
+                    request,
+                    f"Warning: Stripe resume issue - {result.get('error')}",
+                )
+            else:
+                messages.success(request, "Successfully resumed subscription!")
+
+        return redirect_with_tab("plan")
+    except BadRequestError as e:
+        messages.error(request, e.message)
+        return redirect_with_tab("plan")
+    except Exception as e:
+        messages.error(request, f"Error resuming subscription: {e}")
+        return redirect_with_tab("plan")
+
+
+@login_required
 def purchase_links(request: HttpRequest):
     if request.method != "POST":
         return redirect_with_tab("plan")

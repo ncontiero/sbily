@@ -219,6 +219,24 @@ class Subscription(models.Model):
         else:
             return {"status": "success", "subscription": stripe_sub}
 
+    def resume_stripe_subscription(self):
+        """Resume a Stripe subscription"""
+        if not self.stripe_subscription_id:
+            return {"status": "error", "error": "No Stripe subscription ID"}
+
+        try:
+            stripe_sub = stripe.Subscription.modify(
+                self.stripe_subscription_id,
+                cancel_at_period_end=False,
+            )
+
+            self.is_auto_renew = True
+            self.save(update_fields=["is_auto_renew"])
+        except stripe.error.StripeError as e:
+            return {"status": "error", "error": str(e)}
+        else:
+            return {"status": "success", "subscription": stripe_sub}
+
     @transaction.atomic
     def update_from_stripe(self, stripe_sub=None):
         """Update subscription details from Stripe"""

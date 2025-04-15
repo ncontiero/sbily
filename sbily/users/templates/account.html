@@ -143,9 +143,15 @@
             </div>
             <div>
               {% if user.is_premium %}
-                <button type="button" class="button-outline" data-jswc-dialog data-jswc-target="cancel-subscription-dialog">
-                  Cancel Subscription
-                </button>
+                {% if user.subscription.is_auto_renew %}
+                  <button type="button" class="button-outline" data-jswc-dialog data-jswc-target="cancel-subscription-dialog">
+                    Cancel Subscription
+                  </button>
+                {% else %}
+                  <button type="button" class="button-primary" data-jswc-dialog data-jswc-target="resume-subscription-dialog">
+                    Resume Subscription
+                  </button>
+                {% endif %}
               {% else %}
                 <button type="button" class="button-primary" data-jswc-dialog data-jswc-target="upgrade-dialog">
                   Upgrade to Premium
@@ -365,6 +371,50 @@
                 <div class="flex items-center gap-2">
                   <button type="submit" class="button-destructive">Cancel Subscription</button>
                   <button type="button" class="button-outline" data-jswc-dialog-close>Keep My Subscription</button>
+                </div>
+              </form>
+            </div>
+            <button type="button" class="button-outline absolute p-2 border-0 rounded-xl right-4 top-4" aria-label="Close" data-jswc-dialog-close>
+              <i data-lucide="x" class="size-5"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Resume Subscription Dialog -->
+        <div id="resume-subscription-dialog" class="hidden dialog" data-jswc-dialog-animation="true">
+          <div class="flex flex-col">
+            <div class="flex justify-between items-center">
+              <h2 class="text-xl font-bold">Resume Premium Subscription</h2>
+            </div>
+            <div class="mt-4">
+              <div class="bg-secondary/40 p-4 rounded-lg mb-6 border">
+                <p class="text-foreground/80">
+                  <i data-lucide="info" class="size-4 inline-block mr-1 text-primary"></i>
+                  Your Premium subscription currently ends on {{ user.premium_expiry|date:"F j, Y" }}. By resuming, your subscription will automatically renew after this date.
+                </p>
+              </div>
+
+              <p class="mb-4">By resuming your subscription:</p>
+              <ul class="space-y-2 mb-6">
+                <li class="flex items-center gap-2">
+                  <i data-lucide="check" class="size-4 text-primary"></i>
+                  <span>You'll continue to enjoy all Premium features without interruption;</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <i data-lucide="check" class="size-4 text-primary"></i>
+                  <span>Your subscription will automatically renew at the regular price;</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <i data-lucide="check" class="size-4 text-primary"></i>
+                  <span>You can cancel again at any time.</span>
+                </li>
+              </ul>
+
+              <form method="post" action="{% url 'resume_plan' %}" class="w-full">
+                {% csrf_token %}
+                <div class="flex items-center gap-2">
+                  <button type="submit" class="button-primary">Resume Subscription</button>
+                  <button type="button" class="button-outline" data-jswc-dialog-close>Not Now</button>
                 </div>
               </form>
             </div>

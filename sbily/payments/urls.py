@@ -6,6 +6,7 @@ from . import views
 plan_management_urlpatterns = [
     path("upgrade/", views.upgrade_plan, name="upgrade_plan"),
     path("cancel/", views.cancel_plan, name="cancel_plan"),
+    path("resume/", views.resume_plan, name="resume_plan"),
     path("purchase_links/", views.purchase_links, name="purchase_links"),
 ]
 
