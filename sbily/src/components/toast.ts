@@ -70,7 +70,9 @@ export function toast(msg: string, className: string, time = 3000, delay = 0) {
           <span aria-hidden="true">&times;</span>
         </button>
         <div class="flex items-center">
-          ${toastIcon.outerHTML}
+          <div>
+            ${toastIcon.outerHTML}
+          </div>
           <p
             class="toast-msg"
             role="alert"
