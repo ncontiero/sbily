@@ -23,68 +23,93 @@ from .forms import SignUpForm
 from .tasks import send_sign_in_with_email
 
 
+def get_post_auth_redirect(request, user, form):
+    """
+    Determine the redirect path after authentication.
+    """
+    if form.cleaned_data.get("plan") == "premium":
+        return redirect("upgrade_plan")
+
+    if original_link := form.cleaned_data.get("original_link"):
+        link = ShortenedLink.objects.create(
+            original_link=original_link,
+            user=user,
+        )
+        messages.success(request, "Link created successfully.")
+        return redirect("link", shortened_link=link.shortened_link)
+
+    next_path = form.cleaned_data.get("next_path", "my_account")
+    return redirect(next_path)
+
+
 def sign_up(request: HttpRequest):
     if request.user.is_authenticated:
-        return redirect("home")
-    if request.method != "POST":
-        plan = request.GET.get("plan", None)
-        form = SignUpForm(initial={"plan": plan})
-        return render(request, "sign_up.html", {"form": form})
+        return redirect("my_account")
 
-    form = SignUpForm(request.POST)
-    if form.is_valid():
-        try:
-            user = form.save()
-            messages.success(
-                request,
-                "User created successfully! Please verify your email",
-            )
-            login(request, user)
-            send_welcome_email.delay_on_commit(user.id)
+    if request.method == "POST":
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            try:
+                user = form.save()
+                login(request, user)
+                send_welcome_email.delay_on_commit(user.id)
+                messages.success(
+                    request,
+                    "User created successfully! Please verify your email.",
+                )
 
-            if form.cleaned_data.get("plan") == "premium":
-                return redirect("upgrade_plan")
+                return get_post_auth_redirect(request, user, form)
+            except Exception as e:
+                messages.error(request, f"Error signing up: {e}")
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        plan = request.GET.get("plan")
+        next_path = request.GET.get("next")
+        original_link = request.GET.get("original_link")
+        sign_in_url = reverse_with_params(
+            "sign_in",
+            {"next": next_path, "original_link": original_link},
+        )
+        form = SignUpForm(
+            initial={
+                "plan": plan,
+                "next_path": next_path,
+                "original_link": original_link,
+            },
+        )
 
-            return redirect("my_account")
-        except Exception as e:
-            messages.error(request, f"Error signing up: {e}")
-            return redirect("sign_up")
-
-    return render(request, "sign_up.html", {"form": form})
+    return render(request, "sign_up.html", {"form": form, "sign_in_url": sign_in_url})
 
 
 def sign_in(request: HttpRequest):
     if request.user.is_authenticated:
         return redirect("my_account")
 
-    if request.method != "POST":
-        next_param = request.GET.get("next", "my_account")
-        original_link = request.GET.get("original_link", None)
-        form = SignInForm(
-            initial={"next_path": next_param, "original_link": original_link},
+    if request.method == "POST":
+        form = SignInForm(request.POST)
+        if form.is_valid():
+            try:
+                user = form.cleaned_data["user"]
+                login(request, user)
+
+                return get_post_auth_redirect(request, user, form)
+            except Exception as e:
+                messages.error(request, f"Error signing in: {e}")
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        next_path = request.GET.get("next", "my_account")
+        original_link = request.GET.get("original_link")
+        sign_up_url = reverse_with_params(
+            "sign_up",
+            {"next": next_path, "original_link": original_link},
         )
-        return render(request, "sign_in.html", {"form": form})
+        form = SignInForm(
+            initial={"next_path": next_path, "original_link": original_link},
+        )
 
-    form = SignInForm(request.POST)
-    if form.is_valid():
-        try:
-            cleaned_data = form.cleaned_data
-            user = cleaned_data["user"]
-            login(request, user)
-
-            next_param = cleaned_data["next_path"]
-            original_link = cleaned_data["original_link"]
-            if not original_link:
-                return redirect(next_param)
-
-            link = ShortenedLink.objects.create(original_link=original_link, user=user)
-            messages.success(request, "Link created successfully")
-            return redirect("link", shortened_link=link.shortened_link)
-        except Exception as e:
-            messages.error(request, f"Error signing in: {e}")
-            return redirect("sign_in")
-
-    return render(request, "sign_in.html", {"form": form})
+    return render(request, "sign_in.html", {"form": form, "sign_up_url": sign_up_url})
 
 
 def sign_in_with_email(request: HttpRequest):

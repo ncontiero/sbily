@@ -23,13 +23,15 @@ def reverse_with_params(
     url_path = reverse(url_name)
 
     if not params:
-        return reverse(url_path)
+        return url_path
 
     filtered_params = {k: v for k, v in params.items() if not is_none(v)}
     if not filtered_params:
-        return reverse(url_path)
+        return url_path
 
     query_string = urlencode(filtered_params)
+    if url_path.endswith("/"):
+        url_path = url_path[:-1]
 
     return f"{url_path}?{query_string}"
 

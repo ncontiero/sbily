@@ -12,7 +12,43 @@ from sbily.utils.data import is_none
 from sbily.utils.data import validate_password
 
 
-class SignUpForm(BaseModelForm):
+class NextAndOriginalLinkForm(BaseForm):
+    next_path = forms.CharField(
+        widget=forms.HiddenInput(),
+        required=False,
+        initial="my_account",
+    )
+    original_link = forms.CharField(
+        widget=forms.HiddenInput(),
+        required=False,
+    )
+
+    def clean_original_link(self):
+        original_link = self.cleaned_data.get("original_link")
+        if not is_none(original_link):
+            url_validate = URLValidator()
+            try:
+                url_validate(original_link)
+            except ValidationError:
+                original_link = None
+        return original_link
+
+    def clean_next_path(self):
+        next_path = self.cleaned_data.get("next_path")
+        if is_none(next_path):
+            return reverse("my_account")
+        if next_path.startswith("/"):
+            return next_path
+
+        try:
+            reverse(next_path)
+        except NoReverseMatch:
+            next_path = reverse("my_account")
+
+        return next_path
+
+
+class SignUpForm(BaseModelForm, NextAndOriginalLinkForm):
     plan = forms.CharField(
         widget=forms.HiddenInput(),
         max_length=50,
@@ -43,7 +79,7 @@ class SignUpForm(BaseModelForm):
         return user
 
 
-class SignInForm(BaseForm):
+class SignInForm(NextAndOriginalLinkForm):
     username = forms.CharField(max_length=150, required=True)
     password = forms.CharField(
         widget=forms.PasswordInput(),
