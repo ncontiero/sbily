@@ -135,7 +135,7 @@
               </div>
               <p class="text-foreground/80 text-sm mt-2">
                 {% if user.is_premium %}
-                  Your Premium subscription renews on {{ user.premium_expiry|date:"F j, Y" }}
+                  Your Premium subscription {% if not user.subscription.is_auto_renew %}ends{% else %}renews{% endif %} on {{ user.premium_expiry|date:"F j, Y" }}
                 {% else %}
                   You are currently using the Free plan with limited features.
                 {% endif %}
@@ -143,8 +143,8 @@
             </div>
             <div>
               {% if user.is_premium %}
-                <button type="button" class="button-outline" data-jswc-dialog data-jswc-target="downgrade-dialog">
-                  Downgrade to Free
+                <button type="button" class="button-outline" data-jswc-dialog data-jswc-target="cancel-subscription-dialog">
+                  Cancel Subscription
                 </button>
               {% else %}
                 <button type="button" class="button-primary" data-jswc-dialog data-jswc-target="upgrade-dialog">
@@ -326,21 +326,21 @@
         <!-- Upgrade Dialog -->
         {% include "partials/upgrade_to_premium_dialog.html" %}
 
-        <!-- Downgrade Dialog -->
-        <div id="downgrade-dialog" class="hidden dialog" data-jswc-dialog-animation="true">
+        <!-- Cancel Plan Dialog -->
+        <div id="cancel-subscription-dialog" class="hidden dialog" data-jswc-dialog-animation="true">
           <div class="flex flex-col">
             <div class="flex justify-between items-center">
-              <h2 class="text-xl font-bold">Downgrade to Free Plan</h2>
+              <h2 class="text-xl font-bold">Cancel Premium Subscription</h2>
             </div>
             <div class="mt-4">
-              <div class="bg-warning/20 p-4 rounded-lg mb-6 border border-warning/60">
-                <p class="text-warning-foreground/80">
-                  <i data-lucide="alert-triangle" class="size-4 inline-block mr-1 text-warning"></i>
-                  Downgrading to the Free plan will reduce your link limits and remove premium features.
+              <div class="bg-secondary/40 p-4 rounded-lg mb-6 border">
+                <p class="text-foreground/80">
+                  <i data-lucide="info" class="size-4 inline-block mr-1 text-primary"></i>
+                  You'll continue to have access to all Premium features until the end of your current billing period on {{ user.premium_expiry|date:"F j, Y" }}.
                 </p>
               </div>
 
-              <p class="mb-4">When you downgrade:</p>
+              <p class="mb-4">After your subscription ends:</p>
               <ul class="space-y-2 mb-6">
                 <li class="flex items-center gap-2">
                   <i data-lucide="minus" class="size-4 text-destructive"></i>
@@ -360,11 +360,11 @@
                 </li>
               </ul>
 
-              <form method="post" action="{% url 'downgrade_plan' %}" class="w-full">
+              <form method="post" action="{% url 'cancel_plan' %}" class="w-full">
                 {% csrf_token %}
                 <div class="flex items-center gap-2">
-                  <button type="submit" class="button-destructive">Downgrade Plan</button>
-                  <button type="button" class="button-outline" data-jswc-dialog-close>Cancel</button>
+                  <button type="submit" class="button-destructive">Cancel Subscription</button>
+                  <button type="button" class="button-outline" data-jswc-dialog-close>Keep My Subscription</button>
                 </div>
               </form>
             </div>

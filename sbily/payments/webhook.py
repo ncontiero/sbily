@@ -4,10 +4,11 @@ from decimal import Decimal
 
 from django.utils.timezone import now
 
+from sbily.users.models import User
+
 from .models import LinkPackage
 from .models import Payment
 from .models import Subscription
-from .models import User
 
 
 # Webhook handler for Stripe events
@@ -110,19 +111,27 @@ def handle_invoice_payment_succeeded(invoice):
                     "description": payment_description,
                     "payment_type": Payment.TYPE_SUBSCRIPTION,
                     "status": Payment.STATUS_COMPLETED,
+                    "transaction_id": invoice.get("id"),
                 },
             )
 
             if not created:
                 payment.description = payment_description
                 payment.complete()
+                subscription.renew()
 
             # Update subscription status
             subscription.status = Subscription.STATUS_ACTIVE
-            subscription.end_date = datetime.fromtimestamp(
-                invoice.get("period_end"),
-                tz=now().tzinfo,
+            period_end = (
+                invoice.get("lines", {})
+                .get("data", [])[0]
+                .get(
+                    "period",
+                    {},
+                )
+                .get("end")
             )
+            subscription.end_date = datetime.fromtimestamp(period_end, tz=now().tzinfo)
             subscription.save()
 
 
@@ -231,8 +240,5 @@ def handle_subscription_deleted(subscription_obj):
         subscription = Subscription.objects.get(
             stripe_subscription_id=subscription_obj.get("id"),
         )
-        subscription.status = Subscription.STATUS_CANCELED
-        subscription.is_auto_renew = False
-        subscription.save()
-
+        subscription.cancel()
         subscription.user.downgrade_to_free()

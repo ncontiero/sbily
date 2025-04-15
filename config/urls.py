@@ -11,6 +11,7 @@ urlpatterns = [
     path("auth/", include("sbily.authentication.urls")),
     path("account/", include("sbily.users.urls")),
     path("notifications/", include("sbily.notifications.urls")),
+    path("payments/", include("sbily.payments.urls")),
     # Media files
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
 ]
