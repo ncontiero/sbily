@@ -76,16 +76,13 @@
             name="remove_at"
             class="input"
             {% if link_remove_at %}value="{{ link_remove_at }}"{% endif %}
-            {% if user.link_num_left.temp_links < 1 and not link_remove_at %}disabled{% endif %}
+            {% if user.temporary_links_left < 1 and not link_remove_at %}disabled{% endif %}
           />
           <p class="text-xs font-medium w-fit text-foreground/80 mt-1 ml-0.5">
             When this link should be automatically removed.
           </p>
           <p class="text-xs font-medium w-fit text-foreground/80 mt-1.5 ml-0.5">
             NOTE: It will be considered “expired” and after a while removed.
-          </p>
-          <p class="text-xs font-medium w-fit text-foreground/80 mt-1 ml-0.5">
-            NOTE: It will be automatically changed to follow the UTC time zone.
           </p>
         </div>
         <div class="flex gap-1">

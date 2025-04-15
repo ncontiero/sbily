@@ -1,10 +1,13 @@
+import contextlib
 import json
 from urllib.parse import urljoin
 
+import stripe
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db import transaction
 from django.urls import reverse
 from django.utils.timezone import datetime
 from django.utils.timezone import now
@@ -62,6 +65,16 @@ class User(AbstractUser):
         default=MAX_NUM_LINKS_TEMP_PER_USER,
         help_text=_("Maximum number of temporary links a user can create"),
     )
+    stripe_customer_id = models.CharField(
+        _("Stripe customer ID"),
+        max_length=100,
+        blank=True,
+    )
+    card_last_four_digits = models.CharField(
+        _("card last four digits"),
+        max_length=4,
+        blank=True,
+    )
 
     @property
     def is_admin(self) -> bool:
@@ -72,55 +85,125 @@ class User(AbstractUser):
         return self.role == self.ROLE_USER
 
     @property
+    def premium_expiry(self) -> datetime | None:
+        """Returns the premium expires at date"""
+        return self.subscription.end_date or None
+
+    @property
     def is_premium(self) -> bool:
-        return self.role == self.ROLE_PREMIUM
+        return self.role == self.ROLE_PREMIUM and self.subscription.is_active
 
     @property
-    def link_num(self) -> dict[str, int]:
-        """Returns the number of links and temporary links created by user"""
-        shortened_links = self.shortened_links.all()
-        links = shortened_links.filter(remove_at__isnull=True).count()
-        temp_links = shortened_links.filter(remove_at__isnull=False).count()
-        return {"links": links, "temp_links": temp_links}
+    def permanent_links_used(self):
+        """Returns the number of permanent links used"""
+        return self.shortened_links.filter(remove_at__isnull=True).count()
 
     @property
-    def link_num_left(self) -> dict[str, int]:
-        """Returns the number of links and temporary links left for user"""
-        link_num = self.link_num
-        return {
-            "links": max(0, self.max_num_links - link_num["links"]),
-            "temp_links": max(0, self.max_num_links_temporary - link_num["temp_links"]),
-        }
+    def temporary_links_used(self):
+        """Returns the number of temporary links used"""
+        return self.shortened_links.filter(remove_at__isnull=False).count()
+
+    @property
+    def permanent_links_left(self):
+        """Returns the number of permanent links left for user"""
+        return self.max_num_links - self.permanent_links_used
+
+    @property
+    def temporary_links_left(self):
+        """Returns the number of temporary links left for user"""
+        return self.max_num_links_temporary - self.temporary_links_used
+
+    @property
+    def permanent_links_used_percentage(self) -> float:
+        """Returns the percentage of permanent links used by user"""
+        if self.max_num_links == 0:
+            return 0
+        return min(100, int((self.permanent_links_used / self.max_num_links) * 100))
+
+    @property
+    def temporary_links_used_percentage(self) -> float:
+        """Returns the percentage of temporary links used by user"""
+        if self.max_num_links_temporary == 0:
+            return 0
+        return min(
+            100,
+            int((self.temporary_links_used / self.max_num_links_temporary) * 100),
+        )
 
     def save(self, *args, **kwargs):
-        role_limits = {
-            self.ROLE_ADMIN: (100, 100),
-            self.ROLE_PREMIUM: (
-                self.MAX_NUM_LINKS_PER_PREMIUM_USER,
-                self.MAX_NUM_LINKS_TEMP_PER_PREMIUM_USER,
-            ),
-            self.ROLE_USER: (
-                self.MAX_NUM_LINKS_PER_USER,
-                self.MAX_NUM_LINKS_TEMP_PER_USER,
-            ),
-        }
+        if not self.pk:
+            role_limits = {
+                self.ROLE_ADMIN: (100, 100),
+                self.ROLE_PREMIUM: (
+                    self.MAX_NUM_LINKS_PER_PREMIUM_USER,
+                    self.MAX_NUM_LINKS_TEMP_PER_PREMIUM_USER,
+                ),
+                self.ROLE_USER: (
+                    self.MAX_NUM_LINKS_PER_USER,
+                    self.MAX_NUM_LINKS_TEMP_PER_USER,
+                ),
+            }
 
-        if self.is_superuser:
-            self.role = self.ROLE_ADMIN
-            self.email_verified = True
+            if self.is_superuser:
+                self.role = self.ROLE_ADMIN
+                self.email_verified = True
 
-        if self.role in role_limits:
-            self.max_num_links, self.max_num_links_temporary = role_limits[self.role]
+            if self.role in role_limits:
+                self.max_num_links, self.max_num_links_temporary = role_limits[
+                    self.role
+                ]
 
         super().save(*args, **kwargs)
 
     def can_create_link(self) -> bool:
         """Check if user can create links"""
-        return self.link_num_left["links"] > 0
+        return self.permanent_links_left > 0
 
     def can_create_temporary_link(self) -> bool:
         """Check if user can create temporary links"""
-        return self.link_num_left["temp_links"] > 0
+        return self.temporary_links_left > 0
+
+    def upgrade_to_premium(self):
+        """Upgrade user to premium"""
+        self.role = self.ROLE_PREMIUM
+        self.max_num_links = self.MAX_NUM_LINKS_PER_PREMIUM_USER
+        self.max_num_links_temporary = self.MAX_NUM_LINKS_TEMP_PER_PREMIUM_USER
+        self.save()
+
+    @transaction.atomic
+    def downgrade_to_free(self) -> None | str:
+        """Downgrade user from premium to free"""
+        self.role = self.ROLE_USER
+
+        excess_permalinks = self.permanent_links_used - self.max_num_links
+        excess_temporary_links = (
+            self.temporary_links_used - self.max_num_links_temporary
+        )
+        total_deleted = 0
+
+        if excess_permalinks > 0:
+            links_to_delete = self.shortened_links.filter(
+                remove_at__isnull=True,
+            ).order_by("-updated_at")[:excess_permalinks]
+            deleted = self.shortened_links.filter(pk__in=links_to_delete).delete()
+            total_deleted += deleted[0]
+
+        if excess_temporary_links > 0:
+            links_to_delete = self.shortened_links.filter(
+                remove_at__isnull=False,
+            ).order_by("-updated_at")[:excess_temporary_links]
+            deleted = self.shortened_links.filter(pk__in=links_to_delete).delete()
+            total_deleted += deleted[0]
+
+        self.max_num_links = self.MAX_NUM_LINKS_PER_USER
+        self.max_num_links_temporary = self.MAX_NUM_LINKS_TEMP_PER_USER
+        self.save()
+
+        return (
+            f"Deleted {total_deleted} excess links due to downgrading to free plan."
+            if total_deleted > 0
+            else None
+        )
 
     def get_full_name(self) -> str:
         """Return user's full name or username if not set"""
@@ -221,6 +304,69 @@ class User(AbstractUser):
     def get_unread_notifications_count(self) -> int:
         """Get count of unread notifications for user."""
         return self.notifications.filter(is_read=False).count()
+
+    def has_valid_payment_method(self) -> bool:
+        """Check if user has a valid payment method in Stripe"""
+        if not self.stripe_customer_id:
+            return False
+
+        try:
+            payment_methods = stripe.PaymentMethod.list(
+                customer=self.stripe_customer_id,
+                type="card",
+            )
+            return len(payment_methods.data) > 0
+        except stripe.error.StripeError:
+            return False
+
+    def get_stripe_customer(self):
+        """Get or create Stripe customer for user"""
+        if self.stripe_customer_id:
+            with contextlib.suppress(stripe.error.StripeError):
+                return stripe.Customer.retrieve(self.stripe_customer_id)
+
+        # Create new customer
+        customer = stripe.Customer.create(
+            email=self.email,
+            name=self.get_full_name(),
+            metadata={
+                "user_id": self.id,
+                "username": self.username,
+            },
+        )
+
+        self.stripe_customer_id = customer.id
+        self.save(update_fields=["stripe_customer_id"])
+
+        return customer
+
+    def update_card_details(self, payment_method_id):
+        """Update user card details based on payment method"""
+        with contextlib.suppress(stripe.error.StripeError):
+            pm = stripe.PaymentMethod.retrieve(payment_method_id)
+
+            customer = self.get_stripe_customer()
+            default_payment_method = customer.invoice_settings.get(
+                "default_payment_method",
+            )
+            if pm.id != default_payment_method:
+                if default_payment_method:
+                    stripe.PaymentMethod.detach(default_payment_method)
+                stripe.PaymentMethod.attach(
+                    payment_method_id,
+                    customer=customer.id,
+                )
+                stripe.Customer.modify(
+                    customer.id,
+                    invoice_settings={
+                        "default_payment_method": payment_method_id,
+                    },
+                )
+
+            self.card_last_four_digits = pm.card.last4
+            self.save(update_fields=["card_last_four_digits"])
+
+            return pm.id
 
 
 class Token(models.Model):

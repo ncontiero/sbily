@@ -18,6 +18,7 @@ link_urlpatterns = [
 urlpatterns = [
     # Core pages
     path("", views.home, name="home"),
+    path("plans/", views.plans, name="plans"),
     path("create_link/", views.create_link, name="create_link"),
     # Link redirection
     path(

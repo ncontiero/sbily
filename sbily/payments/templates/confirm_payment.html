@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Confirm Payment{% endblock title %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+  <div class="max-w-lg mx-auto">
+    <h1 class="text-2xl font-bold mb-4">Confirm Payment</h1>
+
+    <div class="bg-background rounded-lg border border-border p-6">
+      <p class="mb-6">Please confirm your payment to complete the transaction.</p>
+
+      <div id="payment-message" class="hidden bg-warning/20 p-4 rounded-lg mb-6 border border-warning/60">
+        <p class="text-warning-foreground/80">
+          <i data-lucide="alert-triangle" class="size-4 inline-block mr-1 text-warning"></i>
+          <span id="message-text"></span>
+        </p>
+      </div>
+
+      <div class="flex justify-between mt-6">
+        <button type="button" class="button-primary justify-center items-center" id="confirm-button">
+          <i data-lucide="loader" class="animate-spin hidden" id="spinner"></i>
+          <span id="button-text">Confirm Payment</span>
+        </button>
+        <a href="{% url 'my_account' %}?tab=plan" class="button-outline">Cancel</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+{% block js %}
+<script>
+  const clientSecret = "{{ client_secret }}";
+  const redirectUrl = "{{ redirect_url }}";
+</script>
+{% endblock js %}

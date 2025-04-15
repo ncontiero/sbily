@@ -1,0 +1,60 @@
+<div id="upgrade-dialog" class="hidden dialog pr-0" data-jswc-dialog-animation="true">
+  <div class="flex flex-col">
+    <div class="flex justify-between items-center pb-4">
+      <h2 class="text-xl font-bold">Upgrade to Premium</h2>
+    </div>
+    <div class="w-full relative overflow-auto max-h-[720px] overscroll-contain pr-3.5">
+      <div class="size-full">
+        <p class="mb-4">Upgrade to Premium for just $5/month and enjoy these benefits:</p>
+        <ul class="space-y-2 mb-6">
+          <li class="flex items-center gap-2">
+            <i data-lucide="check" class="size-4 text-primary"></i>
+            <span>10 permanent links (instead of 5)</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <i data-lucide="check" class="size-4 text-primary"></i>
+            <span>5 temporary links (instead of 2)</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <i data-lucide="check" class="size-4 text-primary"></i>
+            <span>Ability to purchase additional links</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <i data-lucide="check" class="size-4 text-primary"></i>
+            <span>Priority support</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <i data-lucide="check" class="size-4 text-primary"></i>
+            <span>Advanced statistics and monitoring (coming soon)</span>
+          </li>
+        </ul>
+
+        <div class="w-full">
+          <div class="separator my-6"></div>
+
+          <div class="flex flex-col gap-2">
+            <div class="flex justify-between">
+              <span>Premium Plan (monthly)</span>
+              <span>$5.00</span>
+            </div>
+            <div class="separator my-2"></div>
+            <div class="flex justify-between font-bold">
+              <span>Total (billed monthly)</span>
+              <span>$5.00</span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 py-2 mt-6 sticky bottom-0 bg-background">
+            <a href="{% url "upgrade_plan" %}" class="button-primary">
+              Upgrade Now
+            </a>
+            <button type="button" class="button-outline" data-jswc-dialog-close>Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button type="button" class="button-outline absolute p-2 border-0 rounded-xl right-4 top-4" aria-label="Close" data-jswc-dialog-close>
+      <i data-lucide="x" class="size-5"></i>
+    </button>
+  </div>
+</div>

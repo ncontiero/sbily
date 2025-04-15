@@ -155,5 +155,3 @@ dist/
 sbily/static/rspack_bundles/
 webpack-stats.json
 .mypy_cache/
-
-!.envs/.local

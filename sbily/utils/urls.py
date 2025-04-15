@@ -53,3 +53,17 @@ def redirect_with_params(
     """
     url = reverse_with_params(url_name, params)
     return redirect(url)
+
+
+def redirect_with_tab(tab: str, **kwargs):
+    """Redirects to the 'my_account' URL with a specified tab.
+
+    Args:
+        tab: The name of the tab to redirect to.
+        **kwargs: Additional query parameters.
+
+    Returns:
+        An HTTP redirect response.
+    """
+    params = {"tab": tab, **kwargs}
+    return redirect_with_params("my_account", params)

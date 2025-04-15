@@ -70,6 +70,7 @@ LOCAL_APPS = [
     "sbily.users",
     "sbily.authentication",
     "sbily.notifications",
+    "sbily.payments",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -225,6 +226,12 @@ MESSAGE_TAGS = {
     constants.SUCCESS: "toast-success",
     constants.INFO: "toast-info",
 }
+
+# STRIPE
+# ------------------------------------------------------------------------------
+STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY")
+STRIPE_PREMIUM_PRICE_ID = config("STRIPE_PREMIUM_PRICE_ID")
+STRIPE_WEBHOOK_SECRET = config("STRIPE_WEBHOOK_SECRET")
 
 # Celery
 # ------------------------------------------------------------------------------

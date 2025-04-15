@@ -35,6 +35,7 @@ export const commonConfig = defineConfig({
       path: path.resolve(BASE_PATH),
       filename: "webpack-stats.json",
     }),
+    new rspack.EnvironmentPlugin(["NODE_ENV", "STRIPE_PUBLIC_KEY"]),
   ],
   module: {
     rules: [

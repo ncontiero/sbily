@@ -1,4 +1,10 @@
 # ruff: noqa: BLE001
+
+import contextlib
+import logging
+
+import stripe
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest
@@ -6,25 +12,24 @@ from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
 
-from sbily.users.models import Token
-from sbily.users.models import User
-from sbily.users.tasks import send_deleted_account_email
-from sbily.users.tasks import send_email_change_instructions
-from sbily.users.tasks import send_email_changed_email
-from sbily.users.tasks import send_email_verification
-from sbily.users.tasks import send_password_changed_email
 from sbily.utils.data import validate
 from sbily.utils.data import validate_password
 from sbily.utils.errors import BadRequestError
 from sbily.utils.errors import bad_request_error
-from sbily.utils.urls import redirect_with_params
+from sbily.utils.urls import redirect_with_tab
 
 from .forms import ProfileForm
+from .models import Token
+from .models import User
+from .tasks import send_deleted_account_email
+from .tasks import send_email_change_instructions
+from .tasks import send_email_changed_email
+from .tasks import send_email_verification
+from .tasks import send_password_changed_email
 
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
-def redirect_with_tab(tab: str, **kwargs):
-    params = {"tab": tab, **kwargs}
-    return redirect_with_params("my_account", params)
+logger = logging.getLogger("users.views")
 
 
 @login_required
@@ -40,6 +45,13 @@ def my_account(request: HttpRequest):
     if form.is_valid():
         if form.has_changed():
             form.save()
+            if customer := user.get_stripe_customer():
+                with contextlib.suppress(stripe.error.StripeError):
+                    customer.modify(
+                        customer.id,
+                        name=user.get_full_name(),
+                        metadata={"username": user.username},
+                    )
             messages.success(request, "Successfully updated profile!")
         else:
             messages.warning(request, "There were no changes!")
@@ -80,7 +92,7 @@ def change_email(request: HttpRequest, token: str):
         if request.method != "POST":
             return redirect_with_tab("email", token=token)
 
-        user = request.user
+        user: User = request.user
         if not user.email_verified:
             bad_request_error("Please verify your email first")
 
@@ -98,6 +110,10 @@ def change_email(request: HttpRequest, token: str):
         user.email_verified = False
         user.save()
         token_obj.delete()
+
+        if customer := user.get_stripe_customer():
+            with contextlib.suppress(stripe.error.StripeError):
+                customer.modify(customer.id, email=new_email)
 
         send_email_changed_email.delay_on_commit(user.id, old_email)
 
@@ -211,9 +227,22 @@ def delete_account(request: HttpRequest):
         if user.username != username or not user.check_password(password):
             bad_request_error("Incorrect username or password")
 
+        customer = user.get_stripe_customer()
+
         user_email = user.email
         send_deleted_account_email.delay_on_commit(user_email, username)
         user.delete()
+
+        if customer:
+            try:
+                customer.delete()
+            except stripe.error.StripeError as e:
+                logger.warning(
+                    "StripeError encountered while deleting customer's account for user %s: %s",  # noqa: E501
+                    user.email,
+                    e,
+                )
+
         messages.success(request, "Account deleted successfully")
         return redirect("sign_in")
     except BadRequestError as e:
