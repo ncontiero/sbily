@@ -1,8 +1,10 @@
 import contextlib
+import logging
 from datetime import datetime
 from decimal import Decimal
 
 from django.utils.timezone import now
+from stripe import Event
 
 from sbily.users.models import User
 
@@ -10,11 +12,13 @@ from .models import LinkPackage
 from .models import Payment
 from .models import Subscription
 
+logger = logging.getLogger("payments.webhook")
+
 
 # Webhook handler for Stripe events
-def handle_stripe_webhook(event):
+def handle_stripe_webhook(event: Event):
     """Handle Stripe webhook events"""
-    event_type = event["type"]
+    event_type = event.type
 
     if event_type == "payment_intent.succeeded":
         payment_intent = event["data"]["object"]
@@ -47,6 +51,10 @@ def handle_stripe_webhook(event):
     elif event_type == "customer.subscription.deleted":
         subscription = event["data"]["object"]
         handle_subscription_deleted(subscription)
+
+    elif event_type == "customer.updated":
+        customer = event["data"]["object"]
+        handle_customer_updated(customer)
 
     return {"status": "success", "event_type": event_type}
 
@@ -242,3 +250,19 @@ def handle_subscription_deleted(subscription_obj):
         )
         subscription.cancel()
         subscription.user.downgrade_to_free()
+
+
+def handle_customer_updated(customer_obj):
+    """Handle customer updated event"""
+    if customer_id := customer_obj.get("id"):
+        try:
+            user = User.objects.get(stripe_customer_id=customer_id)
+            user.update_card_details(
+                customer_obj.invoice_settings.default_payment_method or None,
+            )
+        except User.DoesNotExist:
+            logger.warning(
+                "Customer updated event received for non-existent user: %s",
+                customer_id,
+                exc_info=True,
+            )
