@@ -19,6 +19,7 @@ export function initThemeToggle() {
   const moonIcon = createElement(Moon);
   const sunIcon = createElement(Sun);
   const iconsClass = [
+    "size-5",
     "animate-in",
     "spin-in",
     "transition-transform",
