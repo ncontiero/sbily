@@ -129,6 +129,107 @@
           </div>
         </div>
       </div>
+      <div data-jwsc-tab-panel="email" class="hidden flex-col size-full data-[state=active]:flex">
+        <div class="flex flex-col gap-1">
+          <h2 class="text-xl font-bold">Email Settings</h2>
+          <p class="text-foreground/80">Manage your email settings.</p>
+        </div>
+        <div class="separator w-full mt-5"></div>
+        <div class="card mt-7">
+          <div class="card-content">
+            <h3 class="card-title">
+              {% if token %}
+                Change your email
+              {% else %}
+                Email
+              {% endif %}
+            </h3>
+            <p class="card-description">
+              {% if token %}
+                Enter your new email below to change your email.
+              {% else %}
+                This email will be used for account-related notifications and can also be used for password resets.
+              {% endif %}
+            </p>
+            {% if token %}
+              <form method="post" class="flex flex-col" action="{% url 'change_email' token %}">
+                {% csrf_token %}
+                <div class="flex flex-col gap-3">
+                  <label for="new_email" class="label text-foreground/80">New email:</label>
+                  <input type="email" name="new_email" id="new_email" class="input" placeholder="{{ user.email }}" required />
+                </div>
+                <div class="flex items-center gap-2 mt-4">
+                  <button type="submit" class="button-primary button-sm">Change</button>
+                  <a href="{% url 'change_email_instructions' %}" class="button-outline button-sm">Cancel</a>
+                </div>
+              </form>
+            {% else %}
+              <div class="flex items-center rounded-md border p-4">
+                <div class="flex items-center gap-2">
+                  <span class="text-sm">contact@ncontiero.com</span>
+                  <div
+                    class="{% if not user.email_verified %}badge-destructive{% else %}badge-secondary{% endif %}"
+                  >
+                    Verified
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+          <div class="card-footer">
+            {% if not user.email_verified %}
+              <p class="card-footer-description">
+                Please check your email for full access! If you haven't received the verification email, click the button below.
+              </p>
+              <a href="{% url "resend_verify_email" %}" class="button-outline w-fit mt-4 px-2 py-1">
+                Resend verification email
+              </a>
+            {% else %}
+              <p class="card-footer-description">
+                You will receive a verification email to your email address.
+              </p>
+              <button
+                type="button"
+                class="button-primary button-sm"
+                title="Change your email"
+                {% if token %}disabled{% endif %}
+                data-jswc-dialog
+                data-jswc-target="change-email"
+              >
+                Change email
+              </button>
+              <div id="change-email" class="hidden dialog" data-jswc-dialog-animation="true">
+                <div class="flex flex-col">
+                  <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-bold">Change email</h2>
+                  </div>
+                  <div class="mt-5 w-full flex flex-col">
+                    <p>
+                      To change your email, click the “Change” button and you will receive an email
+                      with further instructions on how to change your email.
+                    </p>
+                    <form method="post" class="flex items-center gap-2 mt-4" action="{% url 'change_email_instructions' %}">
+                      {% csrf_token %}
+                      <button type="submit" class="button-primary w-fit">Change</button>
+                      <button type="button" class="button-outline w-fit" data-jswc-dialog-close>
+                        No, take me back
+                      </button>
+                    </form>
+                  </div>
+                  <button
+                    type="button"
+                    class="button-outline absolute p-2 border-0 rounded-xl right-4 top-4"
+                    aria-label="Close"
+                    data-jswc-dialog-close
+                  >
+                    <i data-lucide="x" class="size-5"></i>
+                  </button>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
       <div data-jwsc-tab-panel="plan" class="hidden flex-col size-full data-[state=active]:flex">
         <div class="flex flex-col gap-1">
           <h2 class="text-xl font-bold">My Plan</h2>
@@ -573,107 +674,6 @@
             </div>
           </div>
         {% endif %}
-      </div>
-      <div data-jwsc-tab-panel="email" class="hidden flex-col size-full data-[state=active]:flex">
-        <div class="flex flex-col gap-1">
-          <h2 class="text-xl font-bold">Email Settings</h2>
-          <p class="text-foreground/80">Manage your email settings.</p>
-        </div>
-        <div class="separator w-full mt-5"></div>
-        <div class="card mt-7">
-          <div class="card-content">
-            <h3 class="card-title">
-              {% if token %}
-                Change your email
-              {% else %}
-                Email
-              {% endif %}
-            </h3>
-            <p class="card-description">
-              {% if token %}
-                Enter your new email below to change your email.
-              {% else %}
-                This email will be used for account-related notifications and can also be used for password resets.
-              {% endif %}
-            </p>
-            {% if token %}
-              <form method="post" class="flex flex-col" action="{% url 'change_email' token %}">
-                {% csrf_token %}
-                <div class="flex flex-col gap-3">
-                  <label for="new_email" class="label text-foreground/80">New email:</label>
-                  <input type="email" name="new_email" id="new_email" class="input" placeholder="{{ user.email }}" required />
-                </div>
-                <div class="flex items-center gap-2 mt-4">
-                  <button type="submit" class="button-primary button-sm">Change</button>
-                  <a href="{% url 'change_email_instructions' %}" class="button-outline button-sm">Cancel</a>
-                </div>
-              </form>
-            {% else %}
-              <div class="flex items-center rounded-md border p-4">
-                <div class="flex items-center gap-2">
-                  <span class="text-sm">contact@ncontiero.com</span>
-                  <div
-                    class="{% if not user.email_verified %}badge-destructive{% else %}badge-secondary{% endif %}"
-                  >
-                    Verified
-                  </div>
-                </div>
-              </div>
-            {% endif %}
-          </div>
-          <div class="card-footer">
-            {% if not user.email_verified %}
-              <p class="card-footer-description">
-                Please check your email for full access! If you haven't received the verification email, click the button below.
-              </p>
-              <a href="{% url "resend_verify_email" %}" class="button-outline w-fit mt-4 px-2 py-1">
-                Resend verification email
-              </a>
-            {% else %}
-              <p class="card-footer-description">
-                You will receive a verification email to your email address.
-              </p>
-              <button
-                type="button"
-                class="button-primary button-sm"
-                title="Change your email"
-                {% if token %}disabled{% endif %}
-                data-jswc-dialog
-                data-jswc-target="change-email"
-              >
-                Change email
-              </button>
-              <div id="change-email" class="hidden dialog" data-jswc-dialog-animation="true">
-                <div class="flex flex-col">
-                  <div class="flex justify-between items-center">
-                    <h2 class="text-xl font-bold">Change email</h2>
-                  </div>
-                  <div class="mt-5 w-full flex flex-col">
-                    <p>
-                      To change your email, click the “Change” button and you will receive an email
-                      with further instructions on how to change your email.
-                    </p>
-                    <form method="post" class="flex items-center gap-2 mt-4" action="{% url 'change_email_instructions' %}">
-                      {% csrf_token %}
-                      <button type="submit" class="button-primary w-fit">Change</button>
-                      <button type="button" class="button-outline w-fit" data-jswc-dialog-close>
-                        No, take me back
-                      </button>
-                    </form>
-                  </div>
-                  <button
-                    type="button"
-                    class="button-outline absolute p-2 border-0 rounded-xl right-4 top-4"
-                    aria-label="Close"
-                    data-jswc-dialog-close
-                  >
-                    <i data-lucide="x" class="size-5"></i>
-                  </button>
-                </div>
-              </div>
-            {% endif %}
-          </div>
-        </div>
       </div>
       <div data-jwsc-tab-panel="security" class="hidden flex-col size-full data-[state=active]:flex">
         <div class="flex flex-col gap-1">
