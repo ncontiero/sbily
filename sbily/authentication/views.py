@@ -27,10 +27,14 @@ def get_post_auth_redirect(request, user, form):
     """
     Determine the redirect path after authentication.
     """
-    if form.cleaned_data.get("plan") == "premium":
+    plan = form.cleaned_data.get("plan", "free")
+    original_link = form.cleaned_data.get("original_link", "")
+    next_path = form.cleaned_data.get("next_path", "my_account")
+
+    if plan == "premium":
         return redirect("upgrade_plan")
 
-    if original_link := form.cleaned_data.get("original_link"):
+    if original_link:
         link = ShortenedLink.objects.create(
             original_link=original_link,
             user=user,
@@ -38,7 +42,6 @@ def get_post_auth_redirect(request, user, form):
         messages.success(request, "Link created successfully.")
         return redirect("link", shortened_link=link.shortened_link)
 
-    next_path = form.cleaned_data.get("next_path", "my_account")
     return redirect(next_path)
 
 
@@ -64,20 +67,21 @@ def sign_up(request: HttpRequest):
         else:
             messages.error(request, "Please correct the errors below.")
     else:
-        plan = request.GET.get("plan")
-        next_path = request.GET.get("next")
-        original_link = request.GET.get("original_link")
-        sign_in_url = reverse_with_params(
-            "sign_in",
-            {"next": next_path, "original_link": original_link},
-        )
         form = SignUpForm(
             initial={
-                "plan": plan,
-                "next_path": next_path,
-                "original_link": original_link,
+                "plan": request.GET.get("plan"),
+                "next_path": request.GET.get("next"),
+                "original_link": request.GET.get("original_link"),
             },
         )
+
+    sign_in_url = reverse_with_params(
+        "sign_in",
+        {
+            "next": request.GET.get("next"),
+            "original_link": request.GET.get("original_link"),
+        },
+    )
 
     return render(request, "sign_up.html", {"form": form, "sign_in_url": sign_in_url})
 
@@ -99,15 +103,20 @@ def sign_in(request: HttpRequest):
         else:
             messages.error(request, "Please correct the errors below.")
     else:
-        next_path = request.GET.get("next", "my_account")
-        original_link = request.GET.get("original_link")
-        sign_up_url = reverse_with_params(
-            "sign_up",
-            {"next": next_path, "original_link": original_link},
-        )
         form = SignInForm(
-            initial={"next_path": next_path, "original_link": original_link},
+            initial={
+                "next_path": request.GET.get("next", "my_account"),
+                "original_link": request.GET.get("original_link"),
+            },
         )
+
+    sign_up_url = reverse_with_params(
+        "sign_up",
+        {
+            "next": request.GET.get("next", "my_account"),
+            "original_link": request.GET.get("original_link"),
+        },
+    )
 
     return render(request, "sign_in.html", {"form": form, "sign_up_url": sign_up_url})
 
