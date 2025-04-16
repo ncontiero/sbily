@@ -100,6 +100,25 @@
     @apply text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70;
   }
 
+  .card {
+    @apply rounded-md border;
+  }
+  .card-content {
+    @apply flex flex-col p-4 sm:p-6;
+  }
+  .card-title {
+    @apply text-lg font-bold;
+  }
+  .card-description {
+    @apply mt-2 mb-3 text-sm font-light;
+  }
+  .card-footer {
+    @apply flex flex-col items-center justify-center gap-4 border-t bg-secondary/40 p-6 text-center sm:flex-row sm:justify-between sm:py-3 sm:text-start;
+  }
+  .card-footer-description {
+    @apply text-sm font-light text-muted-foreground;
+  }
+
   .badge {
     @apply inline-flex justify-center w-fit items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold duration-200 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ring-offset-black;
   }
@@ -145,6 +164,9 @@
   .button {
     @apply inline-flex py-2 px-4 items-center rounded-md justify-center whitespace-nowrap font-medium ring-offset-background ring-ring duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
   }
+  .button-sm {
+    @apply text-sm h-9 px-3 !py-0;
+  }
 
   .button-primary {
     @apply button text-primary-foreground bg-primary hover:bg-primary/80 active:bg-primary/60 dark:bg-primary/60 dark:hover:bg-primary/80 dark:active:bg-primary/40;
@@ -167,7 +189,7 @@
   }
 
   .button-destructive {
-    @apply button ring-destructive text-destructive-foreground bg-destructive hover:bg-destructive/80 active:bg-destructive/60;
+    @apply button bg-destructive/80 text-destructive-foreground ring-destructive hover:bg-destructive active:bg-destructive/60;
   }
 
   .link {
