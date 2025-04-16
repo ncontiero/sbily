@@ -68,7 +68,7 @@
   }
 
   body[data-scroll-locked] {
-    @apply relative overflow-hidden overscroll-contain mr-[10px] !important;
+    @apply relative overflow-hidden overscroll-contain md:mr-[10px] !important;
   }
 
   ::-webkit-scrollbar {
