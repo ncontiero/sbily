@@ -43,7 +43,7 @@
     --muted-foreground: 217.9 10.6% 64.9%;
     --accent: 240 6% 10%;
     --accent-foreground: 210 20% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 20% 98%;
     --warning: 38 92% 45%;
     --warning-foreground: 38 100% 95%;
@@ -97,7 +97,7 @@
   }
 
   .label {
-    @apply font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70;
+    @apply text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70;
   }
 
   .badge {

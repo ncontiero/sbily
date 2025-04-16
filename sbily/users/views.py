@@ -57,6 +57,7 @@ def my_account(request: HttpRequest):
             messages.warning(request, "There were no changes!")
         return redirect("my_account")
 
+    messages.error(request, "Please correct the errors below!")
     return render(request, "account.html", {"form": form})
 
 

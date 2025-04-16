@@ -8,7 +8,9 @@
       {% csrf_token %}
       <div class="text-center mb-8 mt-2">
         <h2 class="text-3xl font-bold">Create your account</h2>
-        <p class="text-base font-medium mt-1">Welcome! Please fill in the details to get started.</p>
+        <p class="text-base font-medium mt-1 text-foreground/60">
+          Welcome! Please fill in the details to get started.
+        </p>
       </div>
       {{ form }}
       <button type="submit" class="mt-2 w-full button-primary">Sign Up</button>
