@@ -32,7 +32,7 @@ pip install -r requirements/local.txt
 Node dependencies:
 
 ```bash
-npm install
+pnpm install
 ```
 
 #### 2. Configure environment variables
@@ -66,7 +66,7 @@ python manage.py runserver
 Rspack:
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 The Python command will start the Django application at <http://localhost:8000> and Node will start Rspack and a proxy server for automatic reloading at <http://localhost:3000>.
