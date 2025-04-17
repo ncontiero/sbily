@@ -650,14 +650,20 @@
           <div class="card-content">
             <h3 class="card-title">Payment Method</h3>
             <p class="card-description">
-              Subscription fees and link purchases will be billed to this card.
+              {% if user.card_last_four_digits %}
+                Subscription fees and link purchases will be billed to this card.
+              {% else %}
+              No payment methods added
+              {% endif %}
             </p>
-            <div class="border rounded-md p-4">
-              <div class="flex items-center gap-2 text-foreground/80 text-sm">
-                <i data-lucide="credit-card" class="size-5"></i>
-                <span>Card ending in •••• {{ user.card_last_four_digits }}</span>
+            {% if user.card_last_four_digits %}
+              <div class="border rounded-md p-4">
+                <div class="flex items-center gap-2 text-foreground/80 text-sm">
+                  <i data-lucide="credit-card" class="size-5"></i>
+                  <span>Card ending in •••• {{ user.card_last_four_digits }}</span>
+                </div>
               </div>
-            </div>
+            {% endif %}
           </div>
           <div class="card-footer">
             <p class="card-footer-description">
