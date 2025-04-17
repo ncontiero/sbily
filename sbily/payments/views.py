@@ -16,6 +16,7 @@ from django.views.decorators.csrf import csrf_exempt
 from sbily.utils.data import validate
 from sbily.utils.errors import BadRequestError
 from sbily.utils.errors import bad_request_error
+from sbily.utils.urls import redirect_with_params
 from sbily.utils.urls import redirect_with_tab
 
 from .models import LinkPackage
@@ -38,6 +39,12 @@ def upgrade_plan(request: HttpRequest):
             bad_request_error("You are already a premium user")
 
         customer = user.get_stripe_customer()
+        if default_payment_method := customer.invoice_settings.default_payment_method:
+            return redirect_with_params(
+                "finalize_upgrade",
+                {"payment_method": default_payment_method},
+            )
+
         setup_intent = stripe.SetupIntent.create(
             customer=customer.id,
             payment_method_types=["card"],
