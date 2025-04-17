@@ -285,7 +285,7 @@ def add_payment_method(request: HttpRequest):
         )
     except Exception as e:
         messages.error(request, f"Error setting up payment method: {e!s}")
-        return redirect_with_tab("plan")
+        return redirect_with_tab("billing")
 
 
 @login_required
@@ -299,7 +299,7 @@ def payment_method_added(request: HttpRequest):
         except Exception as e:
             messages.error(request, f"Error adding payment method: {e!s}")
 
-    return redirect_with_tab("plan")
+    return redirect_with_tab("billing")
 
 
 @login_required
