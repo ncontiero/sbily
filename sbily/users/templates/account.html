@@ -164,7 +164,7 @@
                 </div>
                 <div class="flex items-center gap-2 mt-4">
                   <button type="submit" class="button-primary button-sm">Change</button>
-                  <a href="{% url 'change_email_instructions' %}" class="button-outline button-sm">Cancel</a>
+                  <a href="{% url 'my_account' %}?tab=email" class="button-outline button-sm">Cancel</a>
                 </div>
               </form>
             {% else %}
@@ -174,7 +174,7 @@
                   <div
                     class="{% if not user.email_verified %}badge-destructive{% else %}badge-secondary{% endif %}"
                   >
-                    Verified
+                    {% if not user.email_verified %}Not {% endif %}Verified
                   </div>
                 </div>
               </div>
@@ -212,13 +212,12 @@
                       To change your email, click the “Change” button and you will receive an email
                       with further instructions on how to change your email.
                     </p>
-                    <form method="post" class="flex items-center gap-2 mt-4" action="{% url 'change_email_instructions' %}">
-                      {% csrf_token %}
-                      <button type="submit" class="button-primary w-fit">Change</button>
+                    <div class="flex items-center gap-2 mt-4">
+                      <a href="{% url 'change_email_instructions' %}" class="button-primary w-fit">Change</a>
                       <button type="button" class="button-outline w-fit" data-jswc-dialog-close>
                         No, take me back
                       </button>
-                    </form>
+                    </div>
                   </div>
                   <button
                     type="button"

@@ -1,11 +1,9 @@
 from celery import shared_task
 from celery.utils.log import get_task_logger
-from django.utils import timezone
 
 from sbily.utils.tasks import default_task_params
 from sbily.utils.tasks import task_response
 
-from .models import Token
 from .models import User
 from .utils.emails import send_email
 
@@ -155,28 +153,4 @@ def send_deleted_account_email(self, user_email: int, username: str):
         "COMPLETED",
         f"Account deleted email sent to {user_email}.",
         user_email=user_email,
-    )
-
-
-@shared_task(**default_task_params("cleanup_expired_tokens", acks_late=True))
-def cleanup_expired_tokens(self):
-    """Delete expired tokens from database."""
-    tokens = Token.objects.select_for_update().filter(expires_at__lt=timezone.now())
-    num_deleted = tokens.delete()[0]
-    return task_response(
-        "COMPLETED",
-        f"Deleted {num_deleted} expired tokens.",
-        num_deleted=num_deleted,
-    )
-
-
-@shared_task(**default_task_params("delete_token_by_id", acks_late=True))
-def delete_token_by_id(self, token_id: int) -> dict:
-    """Delete a token by its ID."""
-    token = Token.objects.get(id=token_id)
-    token.delete()
-
-    return task_response(
-        "COMPLETED",
-        f"Successfully deleted token with ID {token_id}",
     )

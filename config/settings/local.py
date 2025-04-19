@@ -15,7 +15,7 @@ SECRET_KEY = config("DJANGO_SECRET_KEY", default="k*zpSb*jMcXatzx!hfmepS^k@^^@9$
 ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"]  # noqa: S104
 
 # URLS
-BASE_URL = config("BASE_URL", default="http://localhost:8000/")
+BASE_URL = config("BASE_URL", default="http://localhost:3000/")
 LINK_PREFIX = config("LINK_PREFIX", default="l/")
 LINK_BASE_URL = BASE_URL + LINK_PREFIX
 

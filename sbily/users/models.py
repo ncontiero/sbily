@@ -1,5 +1,4 @@
 import contextlib
-import json
 from urllib.parse import urljoin
 
 import stripe
@@ -13,8 +12,6 @@ from django.utils.timezone import datetime
 from django.utils.timezone import now
 from django.utils.timezone import timedelta
 from django.utils.translation import gettext_lazy as _
-from django_celery_beat.models import ClockedSchedule
-from django_celery_beat.models import PeriodicTask
 
 from .utils.data import generate_token
 
@@ -213,16 +210,45 @@ class User(AbstractUser):
         """Return user's short name or username if not set"""
         return super().get_short_name() or self.username
 
+    def create_token(
+        self,
+        token_type: str,
+        expires_in: timedelta | None = None,
+        **kwargs,
+    ) -> "Token":
+        """Creates a new token of the given type.
+
+        Args:
+            token_type: Type of token to create
+            expires_in: Optional timedelta for token expiration (from now)
+            **kwargs: Additional fields to set on the token
+
+        Returns:
+            Token: The newly created token
+
+        Raises:
+            ValueError: If token_type is not valid
+        """
+
+        return Token.create_for_user(
+            user=self,
+            token_type=token_type,
+            expires_in=expires_in,
+            **kwargs,
+        )
+
     def get_token(
         self,
         token_type: str,
-        expires_at: None | datetime = None,
+        expires_in: datetime | None = None,
+        **kwargs,
     ) -> str:
-        """Gets a token of the given type.
+        """Gets a token of the given type, creating if needed.
 
         Args:
             token_type: Type of token to get/create
-            expires_at: Optional expiry time for the token
+            expires_in: Optional timedelta for token expiration (from now)
+            **kwargs: Additional fields to set on the token if created
 
         Returns:
             str: The token string
@@ -234,50 +260,122 @@ class User(AbstractUser):
             msg = f"Invalid token type: {token_type}"
             raise ValueError(msg)
 
-        token = self.tokens.filter(type=token_type).first() or self.tokens.create(
-            type=token_type,
-            expires_at=expires_at,
-        )
+        with contextlib.suppress(Token.DoesNotExist):
+            token = self.tokens.get(type=token_type, is_used=False)
+            if not token.is_expired():
+                return token.token
 
-        if token.is_expired():
-            token.renew()
-
-        return token.token
+        return self.create_token(token_type, expires_in, **kwargs).token
 
     def get_token_link(
         self,
         token_type: str,
         url_name: str,
-        expires_at: None | datetime = None,
+        expires_in: timedelta | None = None,
+        **kwargs,
     ) -> str:
         """Gets a link for a token of the given type.
 
         Args:
             token_type: Type of token to get/create
             url_name: Name of URL pattern to generate link
-            expires_at: Optional expiry time for the token
+            expires_in: Optional timedelta for token expiration (from now)
+            **kwargs: Additional fields to set on the token if created
 
         Returns:
             str: Full URL containing the token
         """
-        token = self.get_token(token_type, expires_at)
-        path = reverse(url_name, kwargs={"token": token})
+        token_string = self.get_token(token_type, expires_in, **kwargs)
+        path = reverse(url_name, kwargs={"token": token_string})
         return urljoin(BASE_URL, path)
 
-    def get_verify_email_link(self) -> str:
+    def get_verify_email_link(self, **kwargs) -> str:
         """Generate email verification link for user"""
         if self.email_verified:
             raise ValidationError(_("User email is already verified"), code="verified")
 
-        return self.get_token_link(Token.TYPE_EMAIL_VERIFICATION, "verify_email")
+        return self.get_token_link(
+            Token.TYPE_EMAIL_VERIFICATION,
+            "verify_email",
+            **kwargs,
+        )
 
-    def get_reset_password_link(self) -> str:
+    def get_reset_password_link(self, **kwargs) -> str:
         """Generate password reset link for user"""
-        return self.get_token_link(Token.TYPE_PASSWORD_RESET, "reset_password")
+        return self.get_token_link(
+            Token.TYPE_PASSWORD_RESET,
+            "reset_password",
+            **kwargs,
+        )
 
-    def get_change_email_link(self) -> str:
+    def get_change_email_link(self, **kwargs) -> str:
         """Generate change email link for user"""
-        return self.get_token_link(Token.TYPE_CHANGE_EMAIL, "change_email")
+        if not self.email_verified:
+            raise ValidationError(_("Current email is not verified"), code="unverified")
+
+        return self.get_token_link(
+            Token.TYPE_CHANGE_EMAIL,
+            "change_email",
+            **kwargs,
+        )
+
+    def get_sign_with_email_link(self, **kwargs) -> str:
+        """Generate sign with email link for user"""
+        if not self.email_verified:
+            raise ValidationError(_("Email is not verified"), code="unverified")
+        if not self.login_with_email:
+            raise ValidationError(
+                _("User does not have permission to login with email"),
+                code="permission_denied",
+            )
+
+        expires_in = timedelta(minutes=15)
+        return self.get_token_link(
+            Token.TYPE_SIGN_IN_WITH_EMAIL,
+            "sign_in_with_email_verify",
+            expires_in=expires_in,
+            **kwargs,
+        )
+
+    @classmethod
+    def validate_token(
+        cls,
+        token_string: str,
+        token_type: str,
+    ) -> tuple[bool, "User", str]:
+        """
+        Validates a token and returns the associated user if valid.
+
+        Args:
+            token_string: A string do token a ser validada
+            token_type: O tipo esperado do token
+
+        Returns:
+            tuple: (is_valid, user or None, error message or '')
+        """
+        try:
+            token = Token.get_valid_token(token_string, token_type)
+
+            if not token:
+                return False, None, _("Token is invalid or expired")
+            if token.type != token_type:
+                return False, None, _("Invalid token type")
+
+            if (
+                token_type == Token.TYPE_EMAIL_VERIFICATION
+                and token.user.email_verified
+            ):
+                return False, token.user, _("Email is already verified")
+
+            if (
+                token_type in (Token.TYPE_CHANGE_EMAIL, Token.TYPE_SIGN_IN_WITH_EMAIL)
+                and not token.user.email_verified
+            ):
+                return False, token.user, _("Email is not verified")
+        except Exception as e:  # noqa: BLE001
+            return False, None, str(e)
+        else:
+            return True, token.user, ""
 
     def email_user(
         self,
@@ -404,8 +502,11 @@ class Token(models.Model):
     )
     expires_at = models.DateTimeField(
         db_index=True,
-        editable=False,
         help_text=_("Token expiration date and time"),
+    )
+    is_used = models.BooleanField(
+        default=False,
+        help_text=_("Whether this token has been used"),
     )
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -414,69 +515,132 @@ class Token(models.Model):
         verbose_name = _("Token")
         verbose_name_plural = _("Tokens")
         ordering = ["-created_at"]
-        indexes = [models.Index(fields=["user", "type", "created_at"])]
+        indexes = [
+            models.Index(fields=["user", "type", "created_at"]),
+            models.Index(fields=["token"]),
+            models.Index(fields=["expires_at", "is_used"]),
+        ]
         constraints = [
             models.UniqueConstraint(
                 fields=["user", "type"],
-                name="unique_user_token_type",
+                condition=models.Q(is_used=False),
+                name="unique_active_user_token_type",
             ),
         ]
 
     def __str__(self):
-        return f"{self.user.username} - {self.type} - {self.token}"
+        return f"{self.user.username} - {self.get_type_display()} - {self.token[:8]}..."
 
     def save(self, *args, **kwargs):
         if not self.expires_at:
             self.expires_at = now() + self.DEFAULT_EXPIRY
         if not self.token:
-            self.token = generate_token()
-        super().full_clean()
+            self.token = self.generate_token()
         super().save(*args, **kwargs)
 
-        schedule, _ = ClockedSchedule.objects.get_or_create(
-            clocked_time=self.expires_at,
-        )
-        PeriodicTask.objects.update_or_create(
-            name=f"Delete token {self.id}",
-            defaults={
-                "task": "delete_token_by_id",
-                "args": json.dumps([self.pk]),
-                "clocked": schedule,
-                "one_off": True,
-                "expires": self.expires_at + timedelta(minutes=1),
-                "start_time": self.expires_at,
-                "enabled": True,
-            },
-        )
+    @classmethod
+    def generate_token(cls, length: int = 32):
+        """Generate a unique token string"""
+        token = generate_token(length)
+        while cls.objects.filter(token=token).exists():
+            token = generate_token(length)
+        return token
 
-    def renew(self):
-        """Renew token by updating token and timestamps"""
-        self.token = generate_token()
-        self.expires_at = now() + self.DEFAULT_EXPIRY
-        self.save()
-        return self.token
+    def mark_as_used(self):
+        """Mark token as used"""
+        self.is_used = True
+        self.save(update_fields=["is_used", "updated_at"], force_update=True)
 
     def is_expired(self):
         """Check if token is expired"""
-        return self.expires_at and now() > self.expires_at
+        return bool(self.expires_at and now() > self.expires_at)
+
+    def is_valid(self):
+        """Check if token is valid (not expired and not used)"""
+        return not self.is_expired() and not self.is_used
 
     def clean(self):
         """Validate token instance"""
         if self.is_expired():
             raise ValidationError(_("This token has expired."), code="expired")
+
+        if self.is_used:
+            raise ValidationError(_("This token has already been used."), code="used")
+
         if self.type == self.TYPE_EMAIL_VERIFICATION and self.user.email_verified:
             raise ValidationError(
                 _("This email has already been verified."),
                 code="verified",
             )
+
         if self.type == self.TYPE_CHANGE_EMAIL and not self.user.email_verified:
             raise ValidationError(
-                _("This email has not been verified."),
+                _("Current email has not been verified."),
                 code="unverified",
             )
+
         if self.type == self.TYPE_SIGN_IN_WITH_EMAIL and not self.user.email_verified:
             raise ValidationError(
                 _("This email has not been verified."),
                 code="unverified",
             )
+
         super().clean()
+
+    @classmethod
+    def create_for_user(
+        cls,
+        user: User,
+        token_type: str,
+        expires_in: None | timedelta = None,
+        **extra_fields,
+    ):
+        """
+        Creates a new token for the specified user and type.
+        Overwrites any existing token of the same type for the user
+
+        Args:
+            user: User to create token for
+            token_type: Type of token to create
+            expires_in: Optional expiry time for the token
+            **extra_fields: Additional fields to set on the token
+        Returns:
+            Token: The created token instance
+        Raises:
+            ValueError: If token_type is not valid
+        """
+
+        if token_type not in dict(cls.TOKEN_TYPE):
+            msg = f"Invalid token type: {token_type}"
+            raise ValueError(msg)
+
+        cls.objects.filter(user=user, type=token_type, is_used=False).update(
+            is_used=True,
+        )
+
+        expires_at = now() + (expires_in or cls.DEFAULT_EXPIRY)
+        return cls.objects.create(
+            user=user,
+            type=token_type,
+            expires_at=expires_at,
+            **extra_fields,
+        )
+
+    @classmethod
+    def get_valid_token(
+        cls,
+        token_string: str,
+        token_type: str | None = None,
+    ) -> "None | Token":
+        """Returns a valid token by the value string or None"""
+        query = cls.objects.filter(token=token_string, is_used=False)
+
+        if token_type is not None:
+            query = query.filter(type=token_type)
+
+        with contextlib.suppress(cls.DoesNotExist):
+            token = query.get()
+            if token.is_valid():
+                return token
+
+        return None
