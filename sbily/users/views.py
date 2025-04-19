@@ -63,11 +63,8 @@ def my_account(request: HttpRequest):
 
 @login_required
 def change_email_instructions(request: HttpRequest):
-    if request.method != "POST":
-        return redirect_with_tab("email")
-
+    user = request.user
     try:
-        user = request.user
         if not user.email_verified:
             bad_request_error("Please verify your email first")
         send_email_change_instructions.delay_on_commit(user.id)
@@ -84,11 +81,11 @@ def change_email_instructions(request: HttpRequest):
 @login_required
 def change_email(request: HttpRequest, token: str):
     try:
-        token_obj = Token.objects.get(
-            token=token,
-            type=Token.TYPE_CHANGE_EMAIL,
-            user=request.user,
-        )
+        token_obj = Token.get_valid_token(token, Token.TYPE_CHANGE_EMAIL)
+
+        if not token_obj or token_obj.user != request.user:
+            messages.error(request, "Invalid or expired token!")
+            return redirect_with_tab("email")
 
         if request.method != "POST":
             return redirect_with_tab("email", token=token)
@@ -110,7 +107,7 @@ def change_email(request: HttpRequest, token: str):
         user.email = new_email
         user.email_verified = False
         user.save()
-        token_obj.delete()
+        token_obj.mark_as_used()
 
         if customer := user.get_stripe_customer():
             with contextlib.suppress(stripe.error.StripeError):
@@ -122,9 +119,6 @@ def change_email(request: HttpRequest, token: str):
             request,
             "Email changed successfully! Please check your email for the verification link.",  # noqa: E501
         )
-        return redirect_with_tab("email")
-    except Token.DoesNotExist:
-        messages.error(request, "Invalid token")
         return redirect_with_tab("email")
     except BadRequestError as e:
         messages.error(request, e.message)
@@ -148,7 +142,7 @@ def account_security(request: HttpRequest):
             return redirect_with_tab("security")
 
         user.login_with_email = login_with_email
-        user.save()
+        user.save(update_fields=["login_with_email"])
         messages.success(request, "Successfully updated security settings")
         return redirect_with_tab("security")
     except Exception as e:
@@ -181,7 +175,7 @@ def change_password(request: HttpRequest):
             bad_request_error(password_id_valid[1])
 
         user.set_password(new_password)
-        user.save()
+        user.save(update_fields=["password"])
         send_password_changed_email.delay_on_commit(request.user.id)
         messages.success(request, "Successful updated password! Please re-login")
         return redirect_with_tab("security")

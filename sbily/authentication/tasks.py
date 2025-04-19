@@ -1,6 +1,5 @@
 from celery import shared_task
 
-from sbily.users.models import Token
 from sbily.users.models import User
 from sbily.utils.tasks import default_task_params
 from sbily.utils.tasks import task_response
@@ -13,10 +12,7 @@ def send_sign_in_with_email(self, user_id: int):
 
     subject = "Sign in to your account"
     template = "emails/users/sign-in-with-email.html"
-    sign_in_with_email_link = user.get_token_link(
-        Token.TYPE_SIGN_IN_WITH_EMAIL,
-        "sign_in_with_email_verify",
-    )
+    sign_in_with_email_link = user.get_sign_with_email_link()
 
     user.email_user(
         subject,

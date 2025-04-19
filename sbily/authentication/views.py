@@ -148,24 +148,25 @@ def sign_in_with_email(request: HttpRequest):
 
 
 def sign_in_with_email_verify(request: HttpRequest, token: str):
+    token_obj = Token.get_valid_token(token, Token.TYPE_SIGN_IN_WITH_EMAIL)
+
     if request.user.is_authenticated:
+        if token_obj and token_obj.user == request.user:
+            token_obj.mark_as_used()
         return redirect("my_account")
 
     try:
-        token = Token.objects.get(token=token, type=Token.TYPE_SIGN_IN_WITH_EMAIL)
-
-        if token.is_expired():
-            bad_request_error("Token has expired! Please request a new one")
-        if not token.user.login_with_email:
+        if not token_obj:
+            bad_request_error(
+                "Token has expired or is invalid! Please request a new one",
+            )
+        if not token_obj.user.login_with_email:
             bad_request_error("Please enable login with email")
 
-        token.delete()
-        login(request, token.user)
+        token_obj.mark_as_used()
+        login(request, token_obj.user)
         messages.success(request, "Signed in successfully")
         return redirect("my_account")
-    except Token.DoesNotExist:
-        messages.error(request, "Invalid token")
-        return redirect("sign_in_with_email")
     except BadRequestError as e:
         messages.error(request, e.message)
         return redirect("sign_in_with_email")
@@ -189,22 +190,19 @@ def verify_email(request: HttpRequest, token: str):
     )
 
     try:
-        obj_token = Token.objects.get(token=token, type="email_verification")
+        obj_token = Token.get_valid_token(token, Token.TYPE_EMAIL_VERIFICATION)
 
-        if is_authenticated and user != obj_token.user:
-            bad_request_error("Invalid token")
-        if obj_token.is_expired():
-            bad_request_error("Token has expired! Please request a new one")
+        if obj_token is None or (is_authenticated and user != obj_token.user):
+            bad_request_error(
+                "Token has expired or is invalid! Please request a new one",
+            )
         if obj_token.user.email_verified:
             bad_request_error("Email has already been verified")
 
-        obj_token.user.email_verified = True
-        obj_token.user.save()
-        obj_token.delete()
+        user.email_verified = True
+        user.save(update_fields=["email_verified"])
+        obj_token.mark_as_used()
         messages.success(request, "Email verified successfully")
-        return redirect(redirect_url_name)
-    except Token.DoesNotExist:
-        messages.error(request, "Invalid token")
         return redirect(redirect_url_name)
     except BadRequestError as e:
         messages.error(request, e.message)
@@ -235,14 +233,13 @@ def forgot_password(request: HttpRequest):
 
 
 def reset_password(request: HttpRequest, token: str):
-    try:
-        obj_token = Token.objects.get(token=token, type=Token.TYPE_PASSWORD_RESET)
-    except Token.DoesNotExist:
-        messages.error(request, "Invalid token")
-        return redirect("forgot_password")
+    obj_token = Token.get_valid_token(token, Token.TYPE_PASSWORD_RESET)
 
-    if obj_token.is_expired():
-        messages.error(request, "Token has expired! Please request a new one")
+    if obj_token is None:
+        messages.error(
+            request,
+            "Token has expired or is invalid! Please request a new one",
+        )
         return redirect("forgot_password")
 
     if request.method != "POST":
@@ -254,7 +251,7 @@ def reset_password(request: HttpRequest, token: str):
     if form.is_valid():
         try:
             user = form.save()
-            obj_token.delete()
+            obj_token.mark_as_used()
             send_password_changed_email.delay_on_commit(user.id)
             messages.success(request, "Password reset successfully")
             return redirect("sign_in")
