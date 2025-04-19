@@ -11,6 +11,8 @@ from django.http import HttpRequest
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
+from django.utils.timezone import now
+from django.utils.timezone import timedelta
 
 from sbily.utils.data import validate
 from sbily.utils.data import validate_password
@@ -68,7 +70,9 @@ def change_email_instructions(request: HttpRequest):
         if not user.email_verified:
             bad_request_error("Please verify your email first")
 
-        token = Token.get_or_create_for_user(user, Token.TYPE_CHANGE_EMAIL)
+        token, created = Token.get_or_create_for_user(user, Token.TYPE_CHANGE_EMAIL)
+        if not created and token.updated_at > now() - timedelta(minutes=15):
+            bad_request_error("You can only request email change once every 15 minutes")
         send_email_change_instructions.delay_on_commit(token.id)
 
         messages.success(request, "Please check your email for instructions")
@@ -116,7 +120,7 @@ def change_email(request: HttpRequest, token: str):
             with contextlib.suppress(stripe.error.StripeError):
                 customer.modify(customer.id, email=new_email)
 
-        token = Token.get_or_create_for_user(user, Token.TYPE_EMAIL_VERIFICATION)
+        token, _ = Token.get_or_create_for_user(user, Token.TYPE_EMAIL_VERIFICATION)
         send_email_changed_email.delay_on_commit(token.id, old_email)
 
         messages.success(
@@ -198,7 +202,14 @@ def resend_verify_email(request: HttpRequest):
         if user.email_verified:
             bad_request_error("Email has already been verified")
 
-        token = Token.get_or_create_for_user(user, Token.TYPE_EMAIL_VERIFICATION)
+        token, created = Token.get_or_create_for_user(
+            user,
+            Token.TYPE_EMAIL_VERIFICATION,
+        )
+        if not created and token.updated_at > now() - timedelta(minutes=15):
+            bad_request_error(
+                "You can only request email verification once every 15 minutes",
+            )
         send_email_verification.delay_on_commit(token.id)
 
         messages.success(request, "Verification email sent successfully")

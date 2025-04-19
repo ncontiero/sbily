@@ -26,7 +26,7 @@ def send_welcome_email(self, user_id: int):
 
     user.email_user(subject, template)
     try:
-        token = Token.get_or_create_for_user(user, Token.TYPE_EMAIL_VERIFICATION)
+        token, _ = Token.get_or_create_for_user(user, Token.TYPE_EMAIL_VERIFICATION)
         send_email_verification.apply_async([token.id], countdown=5)
     except Exception:
         logger.exception("Failed to send verification email to %s", user.username)

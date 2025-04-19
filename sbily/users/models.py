@@ -517,11 +517,18 @@ class Token(models.Model):
         user: User,
         token_type: str,
         expires_in: None | timedelta = None,
-    ) -> "Token":
-        """Get or create a token for the user"""
+    ) -> tuple["Token", bool]:
+        """Get or create a token for the user.
+        If a valid token already exists, it will be returned.
+        If no valid token exists, a new one will be created.
+
+        Returns:
+            tuple: (Token, bool) - The token instance and a boolean indicating
+            if it was created.
+        """
         with contextlib.suppress(Token.DoesNotExist):
             token = user.tokens.get(type=token_type, is_used=False)
             if not token.is_expired():
-                return token
+                return token, False
 
-        return cls.create_for_user(user, token_type, expires_in)
+        return cls.create_for_user(user, token_type, expires_in), True

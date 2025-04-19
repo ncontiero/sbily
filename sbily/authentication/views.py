@@ -5,6 +5,8 @@ from django.contrib.auth import logout
 from django.http import HttpRequest
 from django.shortcuts import redirect
 from django.shortcuts import render
+from django.utils.timezone import now
+from django.utils.timezone import timedelta
 
 from sbily.links.models import ShortenedLink
 from sbily.users.models import Token
@@ -134,7 +136,15 @@ def sign_in_with_email(request: HttpRequest):
         try:
             user = form.cleaned_data.get("user")
 
-            token = Token.get_or_create_for_user(user, Token.TYPE_SIGN_IN_WITH_EMAIL)
+            token, created = Token.get_or_create_for_user(
+                user,
+                Token.TYPE_SIGN_IN_WITH_EMAIL,
+            )
+            if not created and token.updated_at > now() - timedelta(minutes=15):
+                bad_request_error(
+                    "You can only request sign in link once every 15 minutes",
+                )
+
             send_sign_in_with_email.delay_on_commit(token.id)
             messages.success(
                 request,
@@ -223,10 +233,22 @@ def forgot_password(request: HttpRequest):
     if form.is_valid():
         try:
             user = form.cleaned_data.get("user")
-            token = Token.get_or_create_for_user(user, Token.TYPE_PASSWORD_RESET)
+
+            token, created = Token.get_or_create_for_user(
+                user,
+                Token.TYPE_PASSWORD_RESET,
+            )
+            if not created and token.updated_at > now() - timedelta(minutes=15):
+                bad_request_error(
+                    "You can only request password reset once every 15 minutes",
+                )
+
             send_password_reset_email.delay_on_commit(token.id)
             messages.success(request, "Password reset email sent successfully")
             return redirect("sign_in")
+        except BadRequestError as e:
+            messages.error(request, e.message)
+            return redirect("forgot_password")
         except Exception as e:
             messages.error(request, f"Error sending password reset email: {e!s}")
             return redirect("forgot_password")
