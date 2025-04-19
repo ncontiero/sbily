@@ -134,7 +134,8 @@ def sign_in_with_email(request: HttpRequest):
         try:
             user = form.cleaned_data.get("user")
 
-            send_sign_in_with_email.delay_on_commit(user.id)
+            token = Token.get_or_create_for_user(user, Token.TYPE_SIGN_IN_WITH_EMAIL)
+            send_sign_in_with_email.delay_on_commit(token.id)
             messages.success(
                 request,
                 "Please check your email for a sign in link.",
@@ -222,7 +223,8 @@ def forgot_password(request: HttpRequest):
     if form.is_valid():
         try:
             user = form.cleaned_data.get("user")
-            send_password_reset_email.delay_on_commit(user.id)
+            token = Token.get_or_create_for_user(user, Token.TYPE_PASSWORD_RESET)
+            send_password_reset_email.delay_on_commit(token.id)
             messages.success(request, "Password reset email sent successfully")
             return redirect("sign_in")
         except Exception as e:

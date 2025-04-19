@@ -67,7 +67,10 @@ def change_email_instructions(request: HttpRequest):
     try:
         if not user.email_verified:
             bad_request_error("Please verify your email first")
-        send_email_change_instructions.delay_on_commit(user.id)
+
+        token = Token.get_or_create_for_user(user, Token.TYPE_CHANGE_EMAIL)
+        send_email_change_instructions.delay_on_commit(token.id)
+
         messages.success(request, "Please check your email for instructions")
         return redirect_with_tab("email")
     except BadRequestError as e:
@@ -113,7 +116,8 @@ def change_email(request: HttpRequest, token: str):
             with contextlib.suppress(stripe.error.StripeError):
                 customer.modify(customer.id, email=new_email)
 
-        send_email_changed_email.delay_on_commit(user.id, old_email)
+        token = Token.get_or_create_for_user(user, Token.TYPE_EMAIL_VERIFICATION)
+        send_email_changed_email.delay_on_commit(token.id, old_email)
 
         messages.success(
             request,
@@ -193,7 +197,10 @@ def resend_verify_email(request: HttpRequest):
         user = request.user
         if user.email_verified:
             bad_request_error("Email has already been verified")
-        send_email_verification.delay_on_commit(user.id)
+
+        token = Token.get_or_create_for_user(user, Token.TYPE_EMAIL_VERIFICATION)
+        send_email_verification.delay_on_commit(token.id)
+
         messages.success(request, "Verification email sent successfully")
         return redirect_with_tab("email")
     except BadRequestError as e:

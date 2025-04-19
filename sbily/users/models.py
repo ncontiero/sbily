@@ -213,45 +213,6 @@ class User(AbstractUser):
         """Return user's short name or username if not set"""
         return super().get_short_name() or self.username
 
-    def get_verify_email_link(self) -> str:
-        """Generate email verification link for user"""
-        if self.email_verified:
-            raise ValidationError(_("User email is already verified"), code="verified")
-
-        token = Token.get_or_create_for_user(self, Token.TYPE_EMAIL_VERIFICATION)
-        return token.get_link("verify_email")
-
-    def get_reset_password_link(self) -> str:
-        """Generate password reset link for user"""
-        token = Token.get_or_create_for_user(self, Token.TYPE_PASSWORD_RESET)
-        return token.get_link("reset_password")
-
-    def get_change_email_link(self) -> str:
-        """Generate change email link for user"""
-        if not self.email_verified:
-            raise ValidationError(_("Current email is not verified"), code="unverified")
-
-        token = Token.get_or_create_for_user(self, Token.TYPE_CHANGE_EMAIL)
-        return token.get_link("change_email")
-
-    def get_sign_with_email_link(self) -> str:
-        """Generate sign with email link for user"""
-        if not self.email_verified:
-            raise ValidationError(_("Email is not verified"), code="unverified")
-        if not self.login_with_email:
-            raise ValidationError(
-                _("User does not have permission to login with email"),
-                code="permission_denied",
-            )
-
-        expires_in = timedelta(minutes=15)
-        token = Token.get_or_create_for_user(
-            self,
-            Token.TYPE_SIGN_IN_WITH_EMAIL,
-            expires_in,
-        )
-        return token.get_link("sign_in_with_email_verify")
-
     def email_user(
         self,
         subject: str,
@@ -343,7 +304,7 @@ class User(AbstractUser):
 
 
 class Token(models.Model):
-    DEFAULT_EXPIRY = timedelta(hours=2)
+    DEFAULT_EXPIRY = timedelta(minutes=30)
     TYPE_EMAIL_VERIFICATION = "email_verification"
     TYPE_CHANGE_EMAIL = "change_email"
     TYPE_SIGN_IN_WITH_EMAIL = "sign_in_with_email"
@@ -473,8 +434,28 @@ class Token(models.Model):
 
         super().clean()
 
-    def get_link(self, url_name: str):
-        """Generate a link for the token"""
+    def get_link(self) -> str:
+        """Generate a link for the token based on its type."""
+        if not self.is_valid():
+            raise ValidationError(_("Token is not valid"), code="invalid")
+
+        url_name: str | None = None
+
+        match self.type:
+            case self.TYPE_EMAIL_VERIFICATION:
+                url_name = "verify_email"
+            case self.TYPE_CHANGE_EMAIL:
+                url_name = "change_email"
+            case self.TYPE_SIGN_IN_WITH_EMAIL:
+                url_name = "sign_in_with_email_verify"
+            case self.TYPE_PASSWORD_RESET:
+                url_name = "reset_password"
+            case _:
+                raise ValidationError(
+                    _("Unsupported token type"),
+                    code="invalid_token_type",
+                )
+
         path = reverse(url_name, kwargs={"token": self.token})
         return urljoin(BASE_URL, path)
 
