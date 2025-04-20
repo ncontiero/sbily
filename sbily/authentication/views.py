@@ -2,6 +2,7 @@
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth import logout
+from django.db import transaction
 from django.http import HttpRequest
 from django.shortcuts import redirect
 from django.shortcuts import render
@@ -210,9 +211,10 @@ def verify_email(request: HttpRequest, token: str):
         if obj_token.user.email_verified:
             bad_request_error("Email has already been verified")
 
-        user.email_verified = True
-        user.save(update_fields=["email_verified"])
-        obj_token.mark_as_used()
+        with transaction.atomic():
+            user.email_verified = True
+            user.save(update_fields=["email_verified"])
+            obj_token.mark_as_used()
         messages.success(request, "Email verified successfully")
         return redirect(redirect_url_name)
     except BadRequestError as e:
@@ -274,8 +276,9 @@ def reset_password(request: HttpRequest, token: str):
 
     if form.is_valid():
         try:
-            user = form.save()
-            obj_token.mark_as_used()
+            with transaction.atomic():
+                user = form.save()
+                obj_token.mark_as_used()
             send_password_changed_email.delay_on_commit(user.id)
             messages.success(request, "Password reset successfully")
             return redirect("sign_in")

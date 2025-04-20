@@ -7,6 +7,7 @@ import stripe
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.http import HttpRequest
 from django.http import JsonResponse
 from django.shortcuts import redirect
@@ -110,11 +111,12 @@ def change_email(request: HttpRequest, token: str):
         if User.objects.filter(email=new_email).exists():
             bad_request_error("The new email is already in use")
 
-        old_email = user.email
-        user.email = new_email
-        user.email_verified = False
-        user.save()
-        token_obj.mark_as_used()
+        with transaction.atomic():
+            old_email = user.email
+            user.email = new_email
+            user.email_verified = False
+            user.save(update_fields=["email", "email_verified"])
+            token_obj.mark_as_used()
 
         if customer := user.get_stripe_customer():
             with contextlib.suppress(stripe.error.StripeError):

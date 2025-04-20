@@ -237,7 +237,6 @@ class Subscription(models.Model):
         else:
             return {"status": "success", "subscription": stripe_sub}
 
-    @transaction.atomic
     def update_from_stripe(self, stripe_sub=None):
         """Update subscription details from Stripe"""
         if not self.stripe_subscription_id:
@@ -473,7 +472,6 @@ class LinkPackage(models.Model):
         return unit_price
 
     @classmethod
-    @transaction.atomic
     def _create_payment_and_intent(
         cls,
         user: User,
