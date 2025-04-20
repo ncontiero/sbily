@@ -32,18 +32,26 @@ class UserAdmin(auth_admin.UserAdmin):
             },
         ),
         (
+            _("Role & Limits"),
+            {
+                "fields": (
+                    "role",
+                    "max_num_links",
+                    "max_num_links_temporary",
+                ),
+            },
+        ),
+        (
             _("Permissions"),
             {
                 "fields": (
-                    "max_num_links",
-                    "max_num_links_temporary",
                     "is_active",
                     "is_staff",
                     "is_superuser",
-                    "role",
                     "groups",
                     "user_permissions",
                 ),
+                "classes": ("collapse",),
             },
         ),
         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
@@ -67,12 +75,22 @@ class UserAdmin(auth_admin.UserAdmin):
         "temporary_links_used",
         "is_active",
     )
-    list_filter = ("role", "email_verified", "is_active", "is_staff")
-    search_fields = ("username", "email", "first_name", "last_name")
+    list_filter = (
+        "role",
+        "email_verified",
+        "is_active",
+        "is_staff",
+        "date_joined",
+    )
+    search_fields = (
+        "username",
+        "email",
+        "first_name",
+        "last_name",
+        "stripe_customer_id",
+    )
     ordering = ("-date_joined",)
-
-
-UserAdmin.inlines = [SubscriptionInline, PaymentInline, LinkPackageInline]
+    inlines = [SubscriptionInline, PaymentInline, LinkPackageInline]
 
 
 @admin.register(Token)

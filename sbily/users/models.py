@@ -106,12 +106,12 @@ class User(AbstractUser):
     @property
     def permanent_links_left(self):
         """Returns the number of permanent links left for user"""
-        return self.max_num_links - self.permanent_links_used
+        return max(0, self.max_num_links - self.permanent_links_used)
 
     @property
     def temporary_links_left(self):
         """Returns the number of temporary links left for user"""
-        return self.max_num_links_temporary - self.temporary_links_used
+        return max(0, self.max_num_links_temporary - self.temporary_links_used)
 
     @property
     def permanent_links_used_percentage(self) -> float:
@@ -168,7 +168,7 @@ class User(AbstractUser):
         self.role = self.ROLE_PREMIUM
         self.max_num_links = self.MAX_NUM_LINKS_PER_PREMIUM_USER
         self.max_num_links_temporary = self.MAX_NUM_LINKS_TEMP_PER_PREMIUM_USER
-        self.save()
+        self.save(update_fields=["role", "max_num_links", "max_num_links_temporary"])
 
     @transaction.atomic
     def downgrade_to_free(self) -> None | str:
@@ -182,22 +182,34 @@ class User(AbstractUser):
         total_deleted = 0
 
         if excess_permalinks > 0:
-            links_to_delete = self.shortened_links.filter(
-                remove_at__isnull=True,
-            ).order_by("-updated_at")[:excess_permalinks]
-            deleted = self.shortened_links.filter(pk__in=links_to_delete).delete()
-            total_deleted += deleted[0]
+            if permalinks_to_delete := (
+                self.shortened_links.filter(
+                    remove_at__isnull=True,
+                )
+                .order_by("-updated_at")[:excess_permalinks]
+                .values_list("id", flat=True)
+            ):
+                deleted = self.shortened_links.filter(
+                    id__in=list(permalinks_to_delete),
+                ).delete()
+                total_deleted += deleted[0]
 
         if excess_temporary_links > 0:
-            links_to_delete = self.shortened_links.filter(
-                remove_at__isnull=False,
-            ).order_by("-updated_at")[:excess_temporary_links]
-            deleted = self.shortened_links.filter(pk__in=links_to_delete).delete()
-            total_deleted += deleted[0]
+            if temp_links_to_delete := (
+                self.shortened_links.filter(
+                    remove_at__isnull=False,
+                )
+                .order_by("-updated_at")[:excess_temporary_links]
+                .values_list("id", flat=True)
+            ):
+                deleted = self.shortened_links.filter(
+                    id__in=list(temp_links_to_delete),
+                ).delete()
+                total_deleted += deleted[0]
 
         self.max_num_links = self.MAX_NUM_LINKS_PER_USER
         self.max_num_links_temporary = self.MAX_NUM_LINKS_TEMP_PER_USER
-        self.save()
+        self.save(update_fields=["role", "max_num_links", "max_num_links_temporary"])
 
         return (
             f"Deleted {total_deleted} excess links due to downgrading to free plan."
@@ -250,7 +262,12 @@ class User(AbstractUser):
                 type="card",
             )
             return len(payment_methods.data) > 0
-        except stripe.error.StripeError:
+        except stripe.error.StripeError as e:
+            logger.exception(
+                "Stripe error checking payment methods: %s",
+                self.stripe_customer_id,
+                exc_info=e,
+            )
             return False
 
     def get_stripe_customer(self):
@@ -274,9 +291,9 @@ class User(AbstractUser):
 
         return customer
 
-    def update_card_details(self, payment_method_id):
+    def update_card_details(self, payment_method_id: str) -> None | str:
         """Update user card details based on payment method"""
-        with contextlib.suppress(stripe.error.StripeError):
+        try:
             pm = stripe.PaymentMethod.retrieve(payment_method_id)
 
             customer = self.get_stripe_customer()
@@ -299,7 +316,14 @@ class User(AbstractUser):
 
             self.card_last_four_digits = pm.card.last4
             self.save(update_fields=["card_last_four_digits"])
-
+        except stripe.error.StripeError as e:
+            logger.exception(
+                "Stripe error updating card details: %s",
+                self.stripe_customer_id,
+                exc_info=e,
+            )
+            return None
+        else:
             return pm.id
 
 
@@ -375,7 +399,7 @@ class Token(models.Model):
         super().save(*args, **kwargs)
 
     @classmethod
-    def generate_token(cls, length: int = 32):
+    def generate_token(cls, length: int = 32) -> str:
         """Generate a unique token string"""
         max_retries = 10
         retries = 0
@@ -439,22 +463,19 @@ class Token(models.Model):
         if not self.is_valid():
             raise ValidationError(_("Token is not valid"), code="invalid")
 
-        url_name: str | None = None
+        url_mapping = {
+            self.TYPE_EMAIL_VERIFICATION: "verify_email",
+            self.TYPE_CHANGE_EMAIL: "change_email",
+            self.TYPE_SIGN_IN_WITH_EMAIL: "sign_in_with_email_verify",
+            self.TYPE_PASSWORD_RESET: "reset_password",
+        }
 
-        match self.type:
-            case self.TYPE_EMAIL_VERIFICATION:
-                url_name = "verify_email"
-            case self.TYPE_CHANGE_EMAIL:
-                url_name = "change_email"
-            case self.TYPE_SIGN_IN_WITH_EMAIL:
-                url_name = "sign_in_with_email_verify"
-            case self.TYPE_PASSWORD_RESET:
-                url_name = "reset_password"
-            case _:
-                raise ValidationError(
-                    _("Unsupported token type"),
-                    code="invalid_token_type",
-                )
+        url_name = url_mapping.get(self.type)
+        if not url_name:
+            raise ValidationError(
+                _("Unsupported token type"),
+                code="invalid_token_type",
+            )
 
         path = reverse(url_name, kwargs={"token": self.token})
         return urljoin(BASE_URL, path)
@@ -465,7 +486,7 @@ class Token(models.Model):
         user: User,
         token_type: str,
         expires_in: None | timedelta = None,
-    ):
+    ) -> "Token":
         """
         Creates a new token for the specified user and type.
         If a token of the same type already exists for the user,
