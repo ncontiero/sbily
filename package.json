@@ -22,7 +22,7 @@
     "@types/node": "^22.14.1",
     "autoprefixer": "^10.4.21",
     "cross-env": "^7.0.3",
-    "eslint": "^9.25.0",
+    "eslint": "^9.25.1",
     "lucide": "0.503.0",
     "postcss": "^8.5.3",
     "postcss-loader": "^8.1.1",
