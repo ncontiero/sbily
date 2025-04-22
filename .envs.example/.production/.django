@@ -26,10 +26,13 @@ STRIPE_WEBHOOK_SECRET=""
 # DJANGO_SERVER_EMAIL=""
 BREVO_API_KEY=""
 
-# GCP
+# R2 S3
 # ------------------------------------------------------------------------------
-DJANGO_GCP_CREDENTIALS=""
-DJANGO_GCP_STORAGE_BUCKET_NAME=""
+DJANGO_AWS_ACCESS_KEY_ID=""
+DJANGO_AWS_SECRET_ACCESS_KEY=""
+DJANGO_AWS_STORAGE_BUCKET_NAME=""
+DJANGO_AWS_S3_CUSTOM_DOMAIN=""
+DJANGO_AWS_S3_ENDPOINT_URL=""
 
 # Redis
 # ------------------------------------------------------------------------------

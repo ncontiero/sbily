@@ -10,7 +10,9 @@ services:
       context: .
       dockerfile: ./compose/production/django/Dockerfile
       args:
-        - DJANGO_GCP_STORAGE_BUCKET_NAME=${DJANGO_GCP_STORAGE_BUCKET_NAME}
+        DJANGO_AWS_STORAGE_BUCKET_NAME: ${DJANGO_AWS_STORAGE_BUCKET_NAME}
+        DJANGO_AWS_S3_CUSTOM_DOMAIN: ${DJANGO_AWS_S3_CUSTOM_DOMAIN}
+        STRIPE_PUBLIC_KEY: ${STRIPE_PUBLIC_KEY}
     image: sbily_production_django
     depends_on:
       - postgres
