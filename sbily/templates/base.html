@@ -11,13 +11,7 @@
     <meta name="keywords" content="study, programming" />
     <link href="{% static 'images/favicons/logo.jpg' %}" rel="icon" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-
+    {% render_bundle "vendors" "css" %}
     {% render_bundle "main" "css" %}
 
     <!-- Vendor dependencies bundled as one file -->
