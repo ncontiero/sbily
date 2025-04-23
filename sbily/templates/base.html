@@ -5,16 +5,21 @@
 <html lang="en" class="dark opacity-0 duration-200">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Shorten your links with Sbily." />
-    <title>{% block title %}{% endblock title %} • Sbily</title>
-    <meta name="keywords" content="study, programming" />
-    <link href="{% static 'images/favicons/logo.jpg' %}" rel="icon" />
 
     {% render_bundle "vendors" "css" %}
-    {% render_bundle "main" "css" %}
 
-    <!-- Vendor dependencies bundled as one file -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    {% block overwrite_title %}
+      <title>{% block title %}{% endblock title %} • Sbily</title>
+    {% endblock overwrite_title %}
+    <meta name="description" content="A simple, fast, and secure Open-Source link shortener." />
+    <meta name="keywords" content="link shortener, open-source, fast, secure, URL shortening, Sbily" />
+    <meta name="robots" content="index, follow" />
+
+    <link href="{% static 'images/favicons/logo.jpg' %}" rel="icon" />
+
+    {% render_bundle "main" "css" %}
     {% render_bundle "vendors" "js" attrs="defer" %}
     {% render_bundle "main" "js" attrs="defer" %}
 

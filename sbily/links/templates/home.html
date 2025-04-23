@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Home{% endblock title %}
+{% block overwrite_title %}
+  <title>Sbily</title>
+{% endblock overwrite_title %}
 
 {% block content %}
   <main class="bg-[radial-gradient(hsl(var(--primary)/0.2)_1px,transparent_1px)] [background-size:16px_16px] dark:bg-[radial-gradient(hsl(var(--secondary)/0.4)_1px,transparent_1px)]">
