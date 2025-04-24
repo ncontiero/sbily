@@ -237,7 +237,7 @@ class Subscription(models.Model):
         else:
             return {"status": "success", "subscription": stripe_sub}
 
-    def update_from_stripe(self, stripe_sub=None):
+    def update_from_stripe(self, stripe_sub: stripe.Subscription | None = None):
         """Update subscription details from Stripe"""
         if not self.stripe_subscription_id:
             return {"status": "error", "error": "No Stripe subscription ID"}
@@ -258,15 +258,11 @@ class Subscription(models.Model):
             }
 
             self.status = status_map.get(stripe_sub.status, self.status)
+            self.is_auto_renew = stripe_sub.cancel_at_period_end is False
 
-            if stripe_sub.cancel_at_period_end:
-                self.is_auto_renew = False
-            else:
-                self.is_auto_renew = True
-
-            if stripe_sub.current_period_end:
+            if current_period_end := stripe_sub.items.data[0].current_period_end:
                 self.end_date = datetime.fromtimestamp(
-                    stripe_sub.current_period_end,
+                    current_period_end,
                     tz=now().tzinfo,
                 )
 
@@ -488,7 +484,7 @@ class LinkPackage(models.Model):
             amount=Decimal(unit_price) * quantity,
             description=f"Purchase of {quantity} {link_type} links",
             payment_type=Payment.TYPE_PACKAGE,
-            status=Payment.STATUS_COMPLETED,
+            status=Payment.STATUS_PENDING,
         )
 
         intent = stripe.PaymentIntent.create(

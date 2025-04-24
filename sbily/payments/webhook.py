@@ -4,11 +4,14 @@ from datetime import datetime
 from decimal import Decimal
 
 from django.utils.timezone import now
+from stripe import Customer
 from stripe import Event
+from stripe import Invoice
+from stripe import PaymentIntent
+from stripe import Subscription as StripeSubscription
 
 from sbily.users.models import User
 
-from .models import LinkPackage
 from .models import Payment
 from .models import Subscription
 
@@ -59,59 +62,40 @@ def handle_stripe_webhook(event: Event):
     return {"status": "success", "event_type": event_type}
 
 
-def handle_payment_intent_succeeded(payment_intent):
+def handle_payment_intent_succeeded(payment_intent: PaymentIntent):
     """Handle successful payment intent"""
     with contextlib.suppress(Payment.DoesNotExist):
-        payment = Payment.objects.get(transaction_id=payment_intent["id"])
-        payment.complete(transaction_id=payment_intent["id"])
-
-        if payment.payment_type == Payment.TYPE_PACKAGE:
-            metadata = payment_intent.get("metadata", {})
-            package_type = metadata.get("package_type")
-            quantity = int(metadata.get("quantity", 0))
-
-            if package_type and quantity > 0:
-                user = payment.user
-
-                LinkPackage.objects.create(
-                    user=user,
-                    link_type=package_type,
-                    quantity=quantity,
-                    unit_price=payment.amount / quantity,
-                    payment=payment,
-                )
-
-                if package_type == LinkPackage.TYPE_PERMANENT:
-                    user.max_num_links += quantity
-                else:
-                    user.max_num_links_temporary += quantity
-                user.save(update_fields=["max_num_links", "max_num_links_temporary"])
+        payment = Payment.objects.get(transaction_id=payment_intent.id)
+        payment.complete(transaction_id=payment_intent.id)
 
 
-def handle_payment_intent_failed(payment_intent):
+def handle_payment_intent_failed(payment_intent: PaymentIntent):
     """Handle failed payment intent"""
     with contextlib.suppress(Payment.DoesNotExist):
-        payment = Payment.objects.get(transaction_id=payment_intent["id"])
-        payment.fail(
-            f"Payment failed: {payment_intent.get('last_payment_error', {}).get('message', 'Unknown error')}",  # noqa: E501
+        payment = Payment.objects.get(transaction_id=payment_intent.id)
+        last_payment_error = payment_intent.get("last_payment_error", {}).get(
+            "message",
+            "Unknown error",
         )
+        payment.fail(f"Payment failed: {last_payment_error}")
 
 
-def handle_invoice_payment_succeeded(invoice):
+def handle_invoice_payment_succeeded(invoice: Invoice):
     """Handle successful invoice payment"""
-    if stripe_subscription_id := invoice.get("subscription"):
+    subscription_details = invoice.parent.subscription_details
+    if stripe_subscription_id := subscription_details.subscription:
         with contextlib.suppress(Subscription.DoesNotExist):
             subscription = Subscription.objects.get(
                 stripe_subscription_id=stripe_subscription_id,
             )
 
             payment_description = (
-                f"Monthly Premium Subscription - Invoice {invoice.get('number')}"
+                f"Monthly Premium Subscription - Invoice {invoice.number}"
             )
 
             # Create payment record if doesn't exist
             payment, created = Payment.objects.get_or_create(
-                transaction_id=invoice.get("id"),
+                transaction_id=invoice.id,
                 defaults={
                     "user": subscription.user,
                     "amount": Decimal(invoice.get("amount_paid", 0))
@@ -119,7 +103,7 @@ def handle_invoice_payment_succeeded(invoice):
                     "description": payment_description,
                     "payment_type": Payment.TYPE_SUBSCRIPTION,
                     "status": Payment.STATUS_COMPLETED,
-                    "transaction_id": invoice.get("id"),
+                    "transaction_id": invoice.id,
                 },
             )
 
@@ -130,22 +114,15 @@ def handle_invoice_payment_succeeded(invoice):
 
             # Update subscription status
             subscription.status = Subscription.STATUS_ACTIVE
-            period_end = (
-                invoice.get("lines", {})
-                .get("data", [])[0]
-                .get(
-                    "period",
-                    {},
-                )
-                .get("end")
-            )
+            period_end = invoice.lines.data[0].period.end
             subscription.end_date = datetime.fromtimestamp(period_end, tz=now().tzinfo)
             subscription.save()
 
 
-def handle_invoice_payment_failed(invoice):
+def handle_invoice_payment_failed(invoice: Invoice):
     """Handle failed invoice payment"""
-    if stripe_subscription_id := invoice.get("subscription"):
+    subscription_details = invoice.parent.subscription_details
+    if stripe_subscription_id := subscription_details.subscription:
         with contextlib.suppress(Subscription.DoesNotExist):
             subscription = Subscription.objects.get(
                 stripe_subscription_id=stripe_subscription_id,
@@ -153,7 +130,7 @@ def handle_invoice_payment_failed(invoice):
 
             # Create payment record if doesn't exist
             payment, _ = Payment.objects.get_or_create(
-                transaction_id=invoice.get("id"),
+                transaction_id=invoice.id,
                 defaults={
                     "user": subscription.user,
                     "amount": Decimal(invoice.get("amount_due", 0))
@@ -168,9 +145,10 @@ def handle_invoice_payment_failed(invoice):
             subscription.cancel_stripe_subscription_immediately()
 
 
-def handle_invoice_payment_action_required(invoice):
+def handle_invoice_payment_action_required(invoice: Invoice):
     """Handle invoice payment action required"""
-    if stripe_subscription_id := invoice.get("subscription"):
+    subscription_details = invoice.parent.subscription_details
+    if stripe_subscription_id := subscription_details.subscription:
         with contextlib.suppress(Subscription.DoesNotExist):
             subscription = Subscription.objects.get(
                 stripe_subscription_id=stripe_subscription_id,
@@ -178,12 +156,12 @@ def handle_invoice_payment_action_required(invoice):
 
             # Create payment record if doesn't exist
             payment, _ = Payment.objects.get_or_create(
-                transaction_id=invoice.get("id"),
+                transaction_id=invoice.id,
                 defaults={
                     "user": subscription.user,
-                    "amount": Decimal(invoice.get("amount_due", 0))
+                    "amount": Decimal(invoice.amount_due or 0)
                     / 100,  # Convert from cents
-                    "description": f"Monthly Premium Subscription - Invoice {invoice.get('number')}",  # noqa: E501
+                    "description": f"Monthly Premium Subscription - Invoice {invoice.number}",  # noqa: E501
                     "payment_type": Payment.TYPE_SUBSCRIPTION,
                     "status": Payment.STATUS_PENDING,
                 },
@@ -195,34 +173,32 @@ def handle_invoice_payment_action_required(invoice):
             subscription.save()
 
 
-def handle_subscription_created(subscription_obj):
+def handle_subscription_created(subscription_obj: StripeSubscription):
     """Handle subscription created event"""
-    if customer_id := subscription_obj.get("customer"):
+    if customer_id := subscription_obj.customer:
         with contextlib.suppress(User.DoesNotExist):
+            data = subscription_obj.get("items", {}).data[0]
             user = User.objects.get(stripe_customer_id=customer_id)
 
-            current_period_end = datetime.fromtimestamp(
-                subscription_obj.get("current_period_end"),
-                tz=now().tzinfo,
-            )
-            is_auto_renew = not subscription_obj.get("cancel_at_period_end", False)
+            period_end = data.current_period_end
+            current_period_end = datetime.fromtimestamp(period_end, tz=now().tzinfo)
+            is_auto_renew = not subscription_obj.cancel_at_period_end
 
             # Create subscription if it doesn't exist
             subscription, created = Subscription.objects.get_or_create(
                 user=user,
                 defaults={
-                    "stripe_subscription_id": subscription_obj.get("id"),
+                    "stripe_subscription_id": subscription_obj.id,
                     "status": Subscription.STATUS_ACTIVE,
                     "start_date": now(),
                     "end_date": current_period_end,
                     "is_auto_renew": is_auto_renew,
-                    "price": Decimal(subscription_obj.get("plan", {}).get("amount", 0))
-                    / 100,  # Convert from cents
+                    "price": Decimal(data.plan.amount or 0) / 100,  # Convert from cents
                 },
             )
 
             if not created:
-                subscription.stripe_subscription_id = subscription_obj.get("id")
+                subscription.stripe_subscription_id = subscription_obj.id
                 subscription.end_date = current_period_end
                 subscription.is_auto_renew = is_auto_renew
                 subscription.save()
@@ -230,11 +206,11 @@ def handle_subscription_created(subscription_obj):
             user.upgrade_to_premium()
 
 
-def handle_subscription_updated(subscription_obj):
+def handle_subscription_updated(subscription_obj: Subscription):
     """Handle subscription updated event"""
     try:
         subscription = Subscription.objects.get(
-            stripe_subscription_id=subscription_obj.get("id"),
+            stripe_subscription_id=subscription_obj.id,
         )
         subscription.update_from_stripe(stripe_sub=subscription_obj)
     except Subscription.DoesNotExist:
@@ -242,23 +218,23 @@ def handle_subscription_updated(subscription_obj):
         handle_subscription_created(subscription_obj)
 
 
-def handle_subscription_deleted(subscription_obj):
+def handle_subscription_deleted(subscription_obj: Subscription):
     """Handle subscription deleted event"""
     with contextlib.suppress(Subscription.DoesNotExist):
         subscription = Subscription.objects.get(
-            stripe_subscription_id=subscription_obj.get("id"),
+            stripe_subscription_id=subscription_obj.id,
         )
         subscription.cancel()
         subscription.user.downgrade_to_free()
 
 
-def handle_customer_updated(customer_obj):
+def handle_customer_updated(customer: Customer):
     """Handle customer updated event"""
-    if customer_id := customer_obj.get("id"):
+    if customer_id := customer.id:
         try:
             user = User.objects.get(stripe_customer_id=customer_id)
             user.update_card_details(
-                customer_obj.invoice_settings.default_payment_method or None,
+                customer.invoice_settings.default_payment_method or None,
             )
         except User.DoesNotExist:
             logger.warning(

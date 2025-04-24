@@ -225,7 +225,8 @@ def purchase_links(request: HttpRequest):
             )
 
         customer = user.get_stripe_customer()
-        if not customer.invoice_settings.default_payment_method:
+        default_payment_method = customer.invoice_settings.default_payment_method
+        if not default_payment_method:
             messages.error(request, "Please add a payment method first")
             return add_payment_method(request)
 
@@ -236,7 +237,7 @@ def purchase_links(request: HttpRequest):
             user=user,
             link_type=link_type,
             quantity=quantity,
-            payment_method_id=customer.invoice_settings.default_payment_method,
+            payment_method_id=default_payment_method,
         )
 
         if result["status"] == "success":
