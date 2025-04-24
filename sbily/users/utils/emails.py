@@ -1,7 +1,11 @@
+from django.conf import settings
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
+from django.utils.timezone import now
 
 from sbily.users.models import User
+
+BASE_URL: str = settings.BASE_URL or ""
 
 
 def send_email(subject: str, template: str, recipient_list: list[str], **kwargs):
@@ -14,7 +18,8 @@ def send_email(subject: str, template: str, recipient_list: list[str], **kwargs)
         **kwargs: Additional context data for the email template.
     """
 
-    message = render_to_string(template, kwargs)
+    context = {"BASE_URL": BASE_URL.rstrip("/"), "now": now} | kwargs
+    message = render_to_string(template, context)
 
     send_mail(
         subject=subject,

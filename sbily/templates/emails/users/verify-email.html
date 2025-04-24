@@ -2,15 +2,80 @@
 
 {% block title %}Verify your email address{% endblock title %}
 
+{% block style %}
+.verification-section {
+  background-color: hsla(220, 14.3%, 95.9%, 0.5);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin: 24px 0;
+  text-align: center;
+}
+
+.verification-message {
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.verification-link {
+  margin-top: 20px;
+  padding: 12px;
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  word-break: break-all;
+  font-size: 14px;
+  color: var(--muted-foreground);
+}
+
+.faq-item {
+  background-color: hsla(0, 0%, 100%, 0.4);
+  border: 1px solid var(--border);
+  padding: 16px;
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+}
+
+.faq-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+{% endblock style %}
+
 {% block content_info %}
-  <p>
-    Please verify your email address by clicking
-    <a href="{{ verify_email_link }}" target="_blank" rel="noopener noreferrer">
-      here
-    </a>.
-  </p>
+  <p>We need to verify your email address to activate your Sbily account and unlock all features.</p>
+
+  <div class="verification-section">
+    <p class="verification-message">Please click the button below to verify your email address:</p>
+
+    <a href="{{ verify_email_link }}" class="button-primary">
+      Verify My Email
+    </a>
+
+    <p style="margin-top: 20px; font-size: 14px;" class="text-muted">Link expires in 15 minutes</p>
+  </div>
+
+  <p style="margin-top: 20px;">Having trouble with the button? You can also copy and paste this URL into your browser:</p>
+
+  <div class="verification-link">
+    {{ verify_email_link }}
+  </div>
+
+  <div style="margin-top: 32px;">
+    <h3 style="font-size: 18px; margin-bottom: 16px;">Frequently Asked Questions</h3>
+
+    <div class="faq-item">
+      <h4 class="faq-title">Why do I need to verify my email?</h4>
+      <p>Email verification helps us ensure your account security and prevents unauthorized access.</p>
+    </div>
+
+    <div class="faq-item">
+      <h4 class="faq-title">What happens after verification?</h4>
+      <p>Once verified, you'll have full access to all Sbily features including link management and analytics.</p>
+    </div>
+  </div>
 {% endblock content_info %}
 
 {% block request_this_text %}
-  <p>If you didn't make this request, you can safely ignore this email.</p>
+  <p>If you didn't create an account with Sbily, you can safely ignore this email. It's possible someone entered your email address by mistake.</p>
 {% endblock request_this_text %}

@@ -1,22 +1,97 @@
 {% extends "emails/base.html" %}
 
-{% block title %}Email changed{% endblock title %}
+{% block title %}Email Address Changed{% endblock title %}
+
+{% block style %}
+.alert-box {
+  background-color: hsla(220, 14.3%, 95.9%, 0.5);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin: 24px 0;
+  border-left: 4px solid var(--primary);
+}
+
+.email-details {
+  margin-top: 20px;
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.email-row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+
+@media (min-width: 600px) {
+  .email-row {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .email-label {
+    min-width: 100px;
+  }
+}
+
+.email-label {
+  font-weight: 600;
+  color: var(--muted-foreground);
+}
+
+.email-value {
+  word-break: break-all;
+  padding: 6px 10px;
+  background-color: hsla(240, 5%, 94%, 0.5);
+  border-radius: var(--radius);
+  font-family: monospace;
+}
+
+.verification-section {
+  margin-top: 24px;
+  text-align: center;
+}
+{% endblock style %}
 
 {% block content_info %}
-  <p>
-    This is an automated notification to inform you that the email address belonging to {{ user.username }}
-    has been changed from {{ old_email }} to {{ user.email }}.
-  </p>
-  {% if not is_old %}
+  <div class="alert-box">
+    <h3 style="margin-top: 0; font-size: 18px; color: var(--primary);">Email Change Notification</h3>
     <p>
-      Please verify your new email address by clicking
-      <a href="{{ verify_email_link }}" target="_blank" rel="noopener noreferrer">
-        here
-      </a>.
+      This is an automated notification to inform you that the email address for account <strong>{{ user.username }}</strong>
+      has been changed.
     </p>
+    <p style="margin-bottom: 0;">The change was made on {{ now|date:"F j, Y" }} at {{ now|time:"H:i" }}.</p>
+  </div>
+
+  <div class="email-details">
+    <div class="email-row">
+      <div class="email-label">Previous:</div>
+      <div class="email-value">{{ old_email }}</div>
+    </div>
+
+    <div class="email-row">
+      <div class="email-label">New:</div>
+      <div class="email-value">{{ user.email }}</div>
+    </div>
+  </div>
+
+  {% if not is_old %}
+    <div class="verification-section">
+      <p>To complete this process, please verify your new email address:</p>
+
+      <a href="{{ verify_email_link }}" class="button-primary" target="_blank" rel="noopener noreferrer">
+        Verify New Email
+      </a>
+
+      <p style="margin-top: 16px; font-size: 14px;" class="text-muted">This verification link expires in 24 hours</p>
+    </div>
+  {% else %}
+    <p style="margin-top: 20px;">All future notifications will be sent to your new email address once it's verified.</p>
   {% endif %}
 {% endblock content_info %}
 
 {% block request_this_text %}
-  <p>If you didn't make this request, {% if is_old %}please reach out to an administrator for support.{% else %}you can safely ignore this email.{% endif %}</p>
+  <p>If you didn't make this request, {% if is_old %}please contact us immediately by replying to this email or reaching out to an administrator for support.{% else %}you can safely ignore this email.{% endif %}</p>
 {% endblock request_this_text %}

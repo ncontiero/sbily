@@ -1,7 +1,96 @@
 {% extends "emails/base.html" %}
 
+{% block title %}Welcome to Sbily!{% endblock title %}
+
+{% block style %}
+.features {
+  margin: 24px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.section-features {
+  background-color: hsla(220, 14.3%, 95.9%, 0.5);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin: 24px 0;
+}
+
+.call-to-action {
+  text-align: center;
+  margin: 24px 0;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+@media (min-width: 600px) {
+  .buttons {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+{% endblock style %}
+
 {% block content_info %}
-  <p>Welcome to Sbily! We're excited to have you on board.</p>
+  <p>Thank you for joining Sbily, your new solution for shortening and managing links!</p>
+
+  <div class="section-features">
+    <h2 class="text-center" style="margin-top: 0; margin-bottom: 20px; font-size: 20px;">Why choose Sbily?</h2>
+
+    <div class="features">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="hsl(262.1, 83.3%, 57.8%)" stroke-width="2">
+            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+          </svg>
+        </div>
+        <h3 class="feature-title">Easy to use</h3>
+        <p class="feature-text">Shorten your links in seconds, without complications. Intuitive and easy-to-use interface.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="hsl(262.1, 83.3%, 57.8%)" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        </div>
+        <h3 class="feature-title">Temporary Links</h3>
+        <p class="feature-text">Create links that automatically expire after a period you determine.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="hsl(262.1, 83.3%, 57.8%)" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+          </svg>
+        </div>
+        <h3 class="feature-title">Open Source</h3>
+        <p class="feature-text">Open-Source project, transparent and secure. Contribute to the development on GitHub.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="call-to-action">
+    <p style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Start shortening your links now</p>
+    <p class="text-muted" style="margin-bottom: 20px;">Simple, fast, and hassle-free. Try Sbily today.</p>
+
+    <div class="buttons">
+      <a href="{{ BASE_URL }}{% url "my_account" %}" class="button-primary">Go to Dashboard</a>
+      <a href="{{ BASE_URL }}{% url "plans" %}" class="button-outline">See Plans</a>
+    </div>
+  </div>
+
 {% endblock content_info %}
 
 {% block request_this %}{% endblock request_this %}

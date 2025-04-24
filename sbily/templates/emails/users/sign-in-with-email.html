@@ -2,15 +2,79 @@
 
 {% block title %}Sign in to Sbily{% endblock title %}
 
+{% block style %}
+.login-section {
+  background-color: hsla(220, 14.3%, 95.9%, 0.5);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin: 24px 0;
+  text-align: center;
+}
+
+.login-message {
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.login-link {
+  margin-top: 20px;
+  padding: 12px;
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  word-break: break-all;
+  font-size: 14px;
+  color: var(--muted-foreground);
+}
+
+.security-tip {
+  margin-top: 24px;
+  padding: 16px;
+  background-color: hsla(0, 0%, 100%, 0.4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: flex;
+  gap: 12px;
+}
+
+.security-icon {
+  flex-shrink: 0;
+  color: var(--primary);
+}
+
+.security-text {
+  font-size: 14px;
+  margin: 0;
+}
+{% endblock style %}
+
 {% block content_info %}
-  <p>
-    To sign in to Sbily, click
-    <a href="{{ sign_in_with_email_link }}" target="_blank" rel="noopener noreferrer">
-      here
-    </a>!
-  </p>
+  <p>You requested to sign in to your Sbily account. Use the secure button below to access your account.</p>
+
+  <div class="login-section">
+    <p class="login-message">Click the button below to sign in to your account:</p>
+
+    <a href="{{ sign_in_with_email_link }}" class="button-primary" target="_blank" rel="noopener noreferrer">
+      Sign In to My Account
+    </a>
+
+    <p style="margin-top: 20px; font-size: 14px;" class="text-muted">This login link expires in 15 minutes</p>
+  </div>
+
+  <p style="margin-top: 20px;">Having trouble with the button? You can also copy and paste this URL into your browser:</p>
+
+  <div class="login-link">
+    {{ sign_in_with_email_link }}
+  </div>
+
+  <div class="security-tip">
+    <svg class="security-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+    </svg>
+    <p class="security-text">For your security, this login link can only be used once. It's tied to your device and will expire after 15 minutes or after use.</p>
+  </div>
 {% endblock content_info %}
 
 {% block request_this_text %}
-  <p>If you didn't make this request, you can safely ignore this email.</p>
+  <p>If you didn't make this request, you can safely ignore this email. Someone might have entered your email address by mistake.</p>
 {% endblock request_this_text %}

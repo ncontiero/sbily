@@ -1,14 +1,89 @@
 {% extends "emails/base.html" %}
 
-{% block title %}Account deleted{% endblock title %}
+{% block title %}Account Deleted{% endblock title %}
+
+{% block style %}
+.deletion-alert {
+  background-color: hsla(220, 14.3%, 95.9%, 0.5);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin: 24px 0;
+  border-left: 4px solid var(--destructive);
+  text-align: center;
+}
+
+.account-details {
+  margin: 24px 0;
+  text-align: center;
+}
+
+.account-badge {
+  display: inline-block;
+  background-color: var(--muted);
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  font-family: monospace;
+  font-size: 16px;
+}
+
+.deletion-info {
+  margin-top: 24px;
+}
+
+.info-item {
+  margin-bottom: 16px;
+  padding: 16px;
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.feedback-section {
+  margin-top: 32px;
+  text-align: center;
+}
+{% endblock style %}
 
 {% block content_info %}
-  <p>
-    This is an automatic notification to inform you that your
-    account "{{ username }}" has been permanently deleted.
-  </p>
+  <div class="deletion-alert">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="hsl(0, 84.2%, 60.2%)" stroke-width="2" style="margin: 0 auto 16px;">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="15" y1="9" x2="9" y2="15"></line>
+      <line x1="9" y1="9" x2="15" y2="15"></line>
+    </svg>
+
+    <h3 style="margin-top: 0; font-size: 20px; color: var(--destructive);">Account Permanently Deleted</h3>
+    <p>
+      This is an automatic notification to inform you that your
+      Sbily account has been permanently deleted as requested.
+    </p>
+  </div>
+
+  <div class="account-details">
+    <p>User account:</p>
+    <div class="account-badge">{{ username }}</div>
+  </div>
+
+  <div class="deletion-info">
+    <div class="info-item">
+      <h4 style="margin-top: 0; font-size: 16px;">What happens to your data?</h4>
+      <p style="margin-bottom: 0;">All your personal information, links, and related data have been permanently removed from our systems in accordance with our privacy policy.</p>
+    </div>
+
+    <div class="info-item">
+      <h4 style="margin-top: 0; font-size: 16px;">What if you change your mind?</h4>
+      <p style="margin-bottom: 0;">This action is irreversible. If you wish to use Sbily again in the future, you'll need to create a new account.</p>
+    </div>
+  </div>
+
+  <div class="feedback-section">
+    <p>We're sorry to see you go. If you'd like to share why you decided to delete your account, we'd appreciate your feedback.</p>
+    <a href="{{ BASE_URL }}" class="button-outline" target="_blank" rel="noopener noreferrer">
+      Share Feedback
+    </a>
+  </div>
 {% endblock content_info %}
 
 {% block request_this_text %}
-  <p>If you did not make this change, please reach out to an administrator for support.</p>
+  <p>If you did not request this account deletion, please contact us immediately by replying to this email or reaching out to an administrator for support.</p>
 {% endblock request_this_text %}
