@@ -741,7 +741,10 @@
               </div>
             </div>
             <div class="card-footer">
-              <a href="{% url 'forgot_password' %}" class="card-footer-description rounded-md ring-ring underline-offset-4 hover:underline focus-visible:ring-2">
+              <a
+                href="{% url 'forgot_password' %}?email={{ user.email|urlencode }}"
+                class="card-footer-description rounded-md ring-ring underline-offset-4 hover:underline focus-visible:ring-2"
+              >
                 Forgot password? Click here.
               </a>
               <button

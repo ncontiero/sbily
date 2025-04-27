@@ -227,7 +227,8 @@ def verify_email(request: HttpRequest, token: str):
 
 def forgot_password(request: HttpRequest):
     if request.method != "POST":
-        form = ForgotPasswordForm()
+        email = request.GET.get("email", "")
+        form = ForgotPasswordForm(initial={"email": email})
         return render(request, "forgot_password.html", {"form": form})
 
     form = ForgotPasswordForm(request.POST)
