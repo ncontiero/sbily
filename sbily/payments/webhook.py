@@ -201,6 +201,7 @@ def handle_subscription_created(subscription_obj: StripeSubscription):
                 subscription.stripe_subscription_id = subscription_obj.id
                 subscription.end_date = current_period_end
                 subscription.is_auto_renew = is_auto_renew
+                subscription.status = Subscription.STATUS_ACTIVE
                 subscription.save()
 
             user.upgrade_to_premium()
