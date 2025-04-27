@@ -18,7 +18,8 @@ def send_email(subject: str, template: str, recipient_list: list[str], **kwargs)
         **kwargs: Additional context data for the email template.
     """
 
-    context = {"BASE_URL": BASE_URL.rstrip("/"), "now": now} | kwargs
+    date_now = now().strftime("%B %d, %Y at %H:%M")
+    context = {"BASE_URL": BASE_URL.rstrip("/"), "now": date_now} | kwargs
     message = render_to_string(template, context)
 
     send_mail(

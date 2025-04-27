@@ -155,3 +155,6 @@ dist/
 sbily/static/rspack_bundles/
 webpack-stats.json
 .mypy_cache/
+
+sbily/templates/emails
+emails/.react-email

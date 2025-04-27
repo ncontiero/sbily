@@ -18,7 +18,7 @@ def send_sign_in_with_email(self, token_id: int):
 
     user = token.user
     subject = "Sign in to your account"
-    template = "emails/users/sign-in-with-email.html"
+    template = "emails/sign-in-with-email.html"
 
     user.email_user(
         subject,

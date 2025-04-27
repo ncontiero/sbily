@@ -8,7 +8,9 @@
   "license": "MIT",
   "scripts": {
     "build": "cross-env NODE_ENV=production rspack build -c rspack/prod.config.ts",
+    "build:email": "pnpm --filter=@sbily/emails run export",
     "dev": "cross-env NODE_ENV=development rspack serve -c rspack/dev.config.ts",
+    "dev:email": "pnpm --filter=@sbily/emails run dev",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "type-check": "tsc --noEmit"

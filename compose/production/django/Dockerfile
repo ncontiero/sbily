@@ -9,13 +9,16 @@ WORKDIR /app
 
 FROM client-base AS client-deps
 
-COPY ./package.json ./pnpm-lock.yaml* ./
+COPY ./package.json ./pnpm-lock.yaml* ./pnpm-workspace.yaml* ./
+COPY ./emails/package.json ./emails/
+
 RUN pnpm install --frozen-lockfile
 # RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 # RUN --mount=type=cache,id=s/<service id>-/pnpm/store,target=/pnpm/store pnpm install --frozen-lockfile
 
 FROM client-base AS client-builder
 COPY --from=client-deps /app/node_modules /app/node_modules
+COPY --from=client-deps /app/emails/node_modules /app/emails/node_modules
 COPY . /app
 
 ARG DJANGO_AWS_STORAGE_BUCKET_NAME
@@ -27,6 +30,7 @@ ENV DJANGO_AWS_S3_CUSTOM_DOMAIN=${DJANGO_AWS_S3_CUSTOM_DOMAIN}
 ENV STRIPE_PUBLIC_KEY=${STRIPE_PUBLIC_KEY}
 
 RUN pnpm run build
+RUN pnpm run build:email
 
 # define an alias for the specific python version used in this file.
 FROM python:3.12.10-slim-bookworm AS python

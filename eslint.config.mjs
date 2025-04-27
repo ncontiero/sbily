@@ -24,4 +24,10 @@ export default ncontiero(
       "perfectionist/sort-objects": "error",
     },
   },
+  {
+    files: ["emails/**"],
+    rules: {
+      "import/no-default-export": "off",
+    },
+  },
 );

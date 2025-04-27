@@ -22,7 +22,7 @@ def send_welcome_email(self, user_id: int):
     name = user.get_short_name()
 
     subject = f"Welcome to Sbily, {name}!"
-    template = "emails/users/welcome.html"
+    template = "emails/welcome.html"
 
     user.email_user(subject, template)
     try:
@@ -51,7 +51,7 @@ def send_email_verification(self, token_id: int):
 
     user = token.user
     subject = "Verify your email address"
-    template = "emails/users/verify-email.html"
+    template = "emails/verify-email.html"
 
     user.email_user(
         subject,
@@ -78,7 +78,7 @@ def send_password_reset_email(self, token_id: int):
     user = token.user
 
     subject = "Reset your password"
-    template = "emails/users/reset-password.html"
+    template = "emails/reset-password.html"
 
     user.email_user(
         subject,
@@ -97,7 +97,7 @@ def send_password_changed_email(self, user_id: int):
     user = User.objects.get(id=user_id)
 
     subject = "Your password has been changed!"
-    template = "emails/users/password-changed.html"
+    template = "emails/password-changed.html"
 
     user.email_user(subject, template)
     return task_response(
@@ -119,7 +119,7 @@ def send_email_change_instructions(self, token_id: int):
         )
 
     subject = "Change your email address"
-    template = "emails/users/change-email.html"
+    template = "emails/change-email.html"
 
     token.user.email_user(
         subject,
@@ -146,7 +146,7 @@ def send_email_changed_email(self, token_id: int, old_email: str):
     user = token.user
 
     subject = "Your email has been changed!"
-    template = "emails/users/email-changed.html"
+    template = "emails/email-changed.html"
     context = {
         "old_email": old_email,
         "verify_email_link": token.get_link(),
@@ -170,7 +170,7 @@ def send_email_changed_email(self, token_id: int, old_email: str):
 def send_deleted_account_email(self, user_email: int, username: str):
     """Send email informing user that their account has been deleted."""
     subject = "Your account has been deleted"
-    template = "emails/users/account-deleted.html"
+    template = "emails/account-deleted.html"
 
     send_email(subject, template, [user_email], username=username, name=username)
     return task_response(
