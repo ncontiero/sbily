@@ -29,6 +29,11 @@ USE_I18N = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#use-tz
 USE_TZ = True
 
+# GeoIP2
+# ------------------------------------------------------------------------------
+# https://docs.djangoproject.com/en/5.2/ref/contrib/gis/geoip2/
+GEOIP_PATH = BASE_DIR / "configs" / "geoip"
+
 # DATABASES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases

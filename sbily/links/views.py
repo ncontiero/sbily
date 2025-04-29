@@ -1,5 +1,6 @@
 # ruff: noqa: BLE001
 
+import logging
 import re
 
 from django.conf import settings
@@ -14,10 +15,13 @@ from django.utils import timezone
 from sbily.utils.data import validate
 from sbily.utils.urls import redirect_with_params
 
+from .models import LinkClick
 from .models import ShortenedLink
 
 LINK_BASE_URL = getattr(settings, "LINK_BASE_URL", None)
 LINK_REMOVE_AT_EXCLUDE = r".\d*[-+]\d{2}:\d{2}"
+
+logger = logging.getLogger("links.views")
 
 
 def home(request: HttpRequest):
@@ -77,6 +81,12 @@ def redirect_link(request: HttpRequest, shortened_link: str):
             if request.user == link.user:
                 return redirect("link", link.shortened_link)
             return redirect("home")
+
+        try:
+            LinkClick.create_from_request(link, request)
+        except Exception as e:
+            logger.exception("Error creating link click.", exc_info=e)
+
         return redirect(link.original_link)
     except ShortenedLink.DoesNotExist:
         messages.error(request, "Link not found")

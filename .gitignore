@@ -158,3 +158,4 @@ webpack-stats.json
 
 sbily/templates/emails
 emails/.react-email
+config/geoip

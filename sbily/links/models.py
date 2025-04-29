@@ -1,25 +1,32 @@
 import json
+import logging
 import secrets
 from urllib.parse import urljoin
 
 from django.conf import settings
+from django.contrib.gis.geoip2 import GeoIP2
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.db import IntegrityError
 from django.db import models
 from django.db import transaction
+from django.http import HttpRequest
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.timesince import timesince
 from django.utils.translation import gettext_lazy as _
 from django_celery_beat.models import ClockedSchedule
 from django_celery_beat.models import PeriodicTask
+from user_agents import parse
 
 from sbily.users.models import User
 
 from .utils import user_can_create_link
 
 SITE_BASE_URL = settings.BASE_URL or ""
+
+
+logger = logging.getLogger("links.models")
 
 
 def future_date_validator(value: timezone.datetime) -> None:
@@ -193,3 +200,124 @@ class ShortenedLink(models.Model):
         if not self.remove_at or self.is_expired():
             return _("Permanent")
         return timesince(timezone.now(), self.remove_at)
+
+
+class LinkClick(models.Model):
+    link = models.ForeignKey(
+        ShortenedLink,
+        on_delete=models.CASCADE,
+        related_name="clicks",
+        help_text=_("The shortened link that was clicked"),
+    )
+    clicked_at = models.DateTimeField(
+        _("Clicked At"),
+        auto_now_add=True,
+        db_index=True,
+        help_text=_("When this link was clicked"),
+    )
+    ip_address = models.GenericIPAddressField(
+        _("IP Address"),
+        null=True,
+        blank=True,
+        help_text=_("IP address of the visitor"),
+    )
+    country = models.CharField(
+        _("Country"),
+        max_length=100,
+        blank=True,
+        help_text=_("Country of the visitor"),
+    )
+    city = models.CharField(
+        _("City"),
+        max_length=100,
+        blank=True,
+        help_text=_("City of the visitor"),
+    )
+    browser = models.CharField(
+        _("Browser"),
+        max_length=100,
+        blank=True,
+        help_text=_("Browser used by the visitor"),
+    )
+    device_type = models.CharField(
+        _("Device Type"),
+        max_length=50,
+        blank=True,
+        help_text=_("Type of device used (mobile, tablet, desktop)"),
+    )
+    operating_system = models.CharField(
+        _("Operating System"),
+        max_length=100,
+        blank=True,
+        help_text=_("Operating system of the visitor"),
+    )
+    referrer = models.URLField(
+        _("Referrer"),
+        max_length=2000,
+        blank=True,
+        help_text=_("Website that referred the visitor"),
+    )
+
+    class Meta:
+        verbose_name = _("Link Click")
+        verbose_name_plural = _("Link Clicks")
+        ordering = ["-clicked_at"]
+        indexes = [
+            models.Index(fields=["link", "clicked_at"]),
+        ]
+
+    def __str__(self) -> str:
+        return f"Click on {self.link.shortened_link} at {self.clicked_at}"
+
+    @classmethod
+    def create_from_request(cls, link: ShortenedLink, request: HttpRequest):
+        """Create a new LinkClick instance from a request object"""
+        headers = request.headers
+        x_forwarded_for = headers.get("X-Forwarded-For")
+        ip_address = (
+            x_forwarded_for.split(",")[0]
+            if x_forwarded_for
+            else request.META.get("REMOTE_ADDR", "")
+        )
+
+        # Get referrer
+        referrer = headers.get("Referer", "")
+
+        user_agent_string = headers.get("User-Agent", "")
+        # Parse user agent
+        user_agent = parse(user_agent_string)
+        browser = user_agent.get_browser()
+        operating_system = user_agent.get_os()
+
+        if user_agent.is_mobile:
+            device_type = "mobile"
+        elif user_agent.is_tablet:
+            device_type = "tablet"
+        elif user_agent.is_pc:
+            device_type = "desktop"
+        else:
+            device_type = "other"
+
+        # Get country and city info
+        country = "Unknown"
+        city = "Unknown"
+
+        if ip_address:
+            try:
+                g = GeoIP2()
+                geo_data = g.city(ip_address)
+                country = geo_data.get("country_name")
+                city = geo_data.get("city")
+            except Exception as e:
+                logger.exception("Error getting geo data.", exc_info=e)
+
+        return cls.objects.create(
+            link=link,
+            ip_address=ip_address,
+            country=country,
+            city=city,
+            browser=browser,
+            device_type=device_type,
+            operating_system=operating_system,
+            referrer=referrer,
+        )

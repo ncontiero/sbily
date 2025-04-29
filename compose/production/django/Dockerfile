@@ -45,7 +45,9 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   # dependencies for building Python packages
   build-essential \
   # psycopg dependencies
-  libpq-dev
+  libpq-dev \
+  # geoip2 dependencies
+  libmaxminddb0 libmaxminddb-dev mmdb-bin
 
 # Requirements are installed here to ensure they will be cached.
 COPY ./requirements .
@@ -76,6 +78,8 @@ RUN addgroup --system django \
 RUN apt-get update && apt-get install --no-install-recommends -y \
   # psycopg dependencies
   libpq-dev \
+  # geoip2 dependencies
+  libmaxminddb0 libmaxminddb-dev mmdb-bin \
   # entrypoint
   wait-for-it \
   # Translations dependencies
