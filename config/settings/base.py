@@ -32,7 +32,7 @@ USE_TZ = True
 # GeoIP2
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/5.2/ref/contrib/gis/geoip2/
-GEOIP_PATH = BASE_DIR / "configs" / "geoip"
+GEOIP_PATH = BASE_DIR / "config" / "geoip"
 
 # DATABASES
 # ------------------------------------------------------------------------------
