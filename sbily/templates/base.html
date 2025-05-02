@@ -85,6 +85,12 @@
                 class="hidden dropdown-menu right-0 top-12"
                 data-jswc-dropdown-animation="true"
               >
+                <a href="{% url 'dashboard' %}" class="dropdown-menu-item gap-3 px-2 justify-between text-start">
+                  <div class="size-5">
+                    <i data-lucide="layout-dashboard" class="size-5"></i>
+                  </div>
+                  <span class="w-full">Dashboard</span>
+                </a>
                 <a href="{% url 'my_account' %}" class="dropdown-menu-item gap-3 px-2 justify-between text-start">
                   <div class="size-5">
                     <i data-lucide="circle-user" class="size-5"></i>
@@ -96,12 +102,6 @@
                     <i data-lucide="credit-card" class="size-5"></i>
                   </div>
                   <span class="w-full">Manage plan</span>
-                </a>
-                <a href="{% url 'dashboard' %}" class="dropdown-menu-item gap-3 px-2 justify-between text-start">
-                  <div class="size-5">
-                    <i data-lucide="layout-dashboard" class="size-5"></i>
-                  </div>
-                  <span class="w-full">Dashboard</span>
                 </a>
                 <div class="separator my-1"></div>
                 <a href="{% url 'sign_out' %}" class="dropdown-menu-item gap-3 px-2 justify-between text-start text-red-600">
