@@ -5,7 +5,7 @@
   "scripts": {
     "build": "email build",
     "dev": "email dev -p 3001",
-    "export": "email export --pretty true --outDir ../sbily/templates/emails"
+    "export": "email export --pretty --outDir ../sbily/templates/emails"
   },
   "dependencies": {
     "@react-email/components": "^0.0.37",
