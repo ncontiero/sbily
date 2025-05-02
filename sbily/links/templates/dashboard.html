@@ -1,0 +1,258 @@
+{% extends "dashboard/base.html" %}
+
+{% block dashboard_content %}
+<div id="dashboard"></div>
+<section class="py-8">
+  <div class="container mx-auto px-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="bg-background rounded-lg border shadow-sm p-6">
+        <div class="flex items-center gap-4">
+          <div class="size-12 bg-primary/10 rounded-full flex items-center justify-center">
+            <i data-lucide="link" class="text-primary size-6"></i>
+          </div>
+          <div>
+            <p class="text-sm text-muted-foreground">Total Links</p>
+            <h3 class="text-2xl font-bold">{{ links_count }}</h3>
+          </div>
+        </div>
+        <div class="mt-4 pt-4 border-t">
+          <div class="flex justify-between items-center">
+            <div class="flex gap-2 items-center">
+              <div class="size-3 rounded-full bg-green-500"></div>
+              <span class="text-sm">Active: {{ active_links }}</span>
+            </div>
+            <div class="flex gap-2 items-center">
+              <div class="size-3 rounded-full bg-red-500"></div>
+              <span class="text-sm">Expired: {{ expired_links }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-background rounded-lg border shadow-sm p-6">
+        <div class="flex items-center gap-4">
+          <div class="size-12 bg-primary/10 rounded-full flex items-center justify-center">
+            <i data-lucide="mouse-pointer-click" class="text-primary size-6"></i>
+          </div>
+          <div>
+            <p class="text-sm text-muted-foreground">Total Clicks</p>
+            <h3 class="text-2xl font-bold">{{ total_clicks }}</h3>
+          </div>
+        </div>
+        <div class="mt-4 pt-4 border-t">
+          <p class="text-sm text-muted-foreground">Across all your links</p>
+        </div>
+      </div>
+
+      <div class="bg-background rounded-lg border shadow-sm p-6">
+        <div class="flex items-center gap-4">
+          <div class="size-12 bg-primary/10 rounded-full flex items-center justify-center">
+            <i data-lucide="infinity" class="text-primary size-6"></i>
+          </div>
+          <div>
+            <p class="text-sm text-muted-foreground">Permanent Links</p>
+            <h3 class="text-2xl font-bold">{{ user.permanent_links_used }} / {{ user.max_num_links }}</h3>
+          </div>
+        </div>
+        <div class="mt-4 pt-4 border-t">
+          <div class="w-full bg-muted rounded-full h-2">
+            <div class="bg-primary h-2 rounded-full" style="width: {% widthratio user.permanent_links_used user.max_num_links 100 %}%"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-background rounded-lg border shadow-sm p-6">
+        <div class="flex items-center gap-4">
+          <div class="size-12 bg-primary/10 rounded-full flex items-center justify-center">
+            <i data-lucide="hourglass" class="text-primary size-6"></i>
+          </div>
+          <div>
+            <p class="text-sm text-muted-foreground">Temporary Links</p>
+            <h3 class="text-2xl font-bold">{{ user.temporary_links_used }} / {{ user.max_num_links_temporary }}</h3>
+          </div>
+        </div>
+        <div class="mt-4 pt-4 border-t">
+          <div class="w-full bg-muted rounded-full h-2">
+            <div class="bg-primary h-2 rounded-full" style="width: {% widthratio user.temporary_links_used user.max_num_links_temporary 100 %}%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-6">
+  <div class="container mx-auto px-4">
+    <div class="bg-background rounded-lg border shadow-sm p-6 lg:col-span-2">
+      <h3 class="text-lg font-bold mb-4">Daily Clicks (Last 30 Days)</h3>
+      <div class="h-64">
+        <canvas id="dailyClicksChart"></canvas>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if user.is_premium %}
+  <section class="py-6">
+    <div class="container mx-auto px-4">
+      <div class="bg-background rounded-lg border shadow-sm p-6">
+        <h3 class="text-lg font-bold mb-8 md:mb-4">Top Countries</h3>
+        <div class="h-fit lg:h-96 flex justify-center">
+          <canvas id="countriesChart"></canvas>
+        </div>
+        <div class="border rounded-md mt-10 pt-6">
+          <h4 class="font-bold mb-8 md:mb-4 px-6">Top Countries Clicks</h4>
+          <div class="w-full overflow-auto max-h-[500px] overscroll-contain">
+            <table class="w-full text-sm border-t">
+              <thead>
+                <tr class="border-b duration-200 bg-muted/30 hover:bg-muted/50">
+                  <th class="h-12 w-1/2 border-r-2 px-4 text-start align-middle font-medium text-muted-foreground">Country</th>
+                  <th class="h-12 w-1/2 px-4 text-end align-middle font-medium text-muted-foreground">Clicks</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in country_distribution %}
+                  <tr class="border-b duration-200 hover:bg-muted/50">
+                    <td class="p-4 text-start align-middle font-medium border-r-2">
+                      {{ item.country }}
+                    </td>
+                    <td class="p-4 text-end align-middle font-medium">
+                      {{ item.count }}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endif %}
+
+<section class="py-6">
+  <div class="container mx-auto px-4">
+    <div class="bg-background rounded-lg border shadow-sm overflow-hidden">
+      <div class="p-6 border-b">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <h3 class="text-lg font-bold">Latest links</h3>
+          <div class="flex gap-3">
+            <a href="{% url 'links' %}" class="button-outline">
+              View All Links
+            </a>
+            <a href="{% url 'create_link' %}" class="button-primary gap-2">
+              <i data-lucide="plus" class="size-4"></i>
+              New Link
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6">
+        {% include "partials/links_table.html" with links=latest_links %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-6">
+  <div class="container mx-auto px-4">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="bg-background rounded-lg border shadow-sm p-6">
+        <h3 class="text-lg font-bold mb-4">Top Performing Links</h3>
+        <div class="space-y-4">
+          {% for link in top_links %}
+          <div class="flex items-center justify-between border-b pb-4 last:border-0">
+            <div class="flex items-center gap-3">
+              <div class="size-8 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                <i data-lucide="link" class="text-primary size-4"></i>
+              </div>
+              <div>
+                <a href="{{ link.get_absolute_url }}" target="_blank" class="font-medium hover:underline">{{ link.shortened_link }}</a>
+                <p class="text-sm text-muted-foreground truncate max-w-[250px]">{{ link.original_link }}</p>
+              </div>
+            </div>
+            <div class="badge-default">{{ link.click_count }} clicks</div>
+          </div>
+          {% empty %}
+          <div class="text-center text-muted-foreground py-4">
+            <p>No click data available yet.</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="bg-background rounded-lg border shadow-sm p-6">
+        <h3 class="text-lg font-bold mb-4">Most Active Links (Last 7 Days)</h3>
+        <div class="space-y-4">
+          {% for link in active_links_data %}
+          <div class="flex items-center justify-between border-b pb-4 last:border-0">
+            <div class="flex items-center gap-3">
+              <div class="size-8 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                <i data-lucide="activity" class="text-primary size-4"></i>
+              </div>
+              <div>
+                <a href="{{ link.get_absolute_url }}" target="_blank" class="font-medium hover:underline">{{ link.shortened_link }}</a>
+                <p class="text-sm text-muted-foreground truncate max-w-[250px]">{{ link.original_link }}</p>
+              </div>
+            </div>
+            <div class="badge-secondary">{{ link.recent_clicks }} clicks</div>
+          </div>
+          {% empty %}
+          <div class="text-center text-muted-foreground py-4">
+            <p>No recent activity data available.</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if not user.is_premium %}
+  <section class="py-6">
+    <div class="container mx-auto px-4">
+      <div class="bg-secondary/50 p-6 rounded-lg border border-primary/30 text-center mb-8">
+        <h2 class="text-xl font-bold mb-4">Unlock Advanced Analytics</h2>
+        <p class="mb-4">Upgrade to Premium to access advanced analytics and get deeper insights into your link performance.</p>
+        <div class="grid md:grid-cols-3 gap-4 max-w-3xl mx-auto mb-6">
+          <div class="bg-background p-4 rounded-lg border border-border">
+            <i data-lucide="map" class="text-primary size-6 mx-auto mb-2"></i>
+            <h3 class="font-bold mb-1">Geographic Data</h3>
+            <p class="text-sm text-muted-foreground">See where your visitors are coming from around the world.</p>
+          </div>
+          <div class="bg-background p-4 rounded-lg border border-border">
+            <i data-lucide="smartphone" class="text-primary size-6 mx-auto mb-2"></i>
+            <h3 class="font-bold mb-1">Device Analytics</h3>
+            <p class="text-sm text-muted-foreground">Understand which devices your audience is using.</p>
+          </div>
+          <div class="bg-background p-4 rounded-lg border border-border">
+            <i data-lucide="clock" class="text-primary size-6 mx-auto mb-2"></i>
+            <h3 class="font-bold mb-1">Time Analysis</h3>
+            <p class="text-sm text-muted-foreground">Discover when your links get the most engagement.</p>
+          </div>
+        </div>
+        <a href="{% url 'plans' %}" class="button-primary">Upgrade to Premium</a>
+      </div>
+    </div>
+  </section>
+{% endif %}
+{% endblock dashboard_content %}
+
+{% block js %}
+<script>
+  const dailyClicksData = {{ daily_clicks_data|safe }};
+  {% if user.is_premium %}
+  const countryLabels = [
+    {% for item in country_distribution %}
+      '{{ item.country|default:"Unknown" }}',
+    {% endfor %}
+  ];
+  const countryData = [
+    {% for item in country_distribution %}
+      {{ item.count }},
+    {% endfor %}
+  ];
+  {% endif %}
+</script>
+{% endblock js %}

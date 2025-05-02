@@ -1,5 +1,6 @@
 # ruff: noqa: BLE001
 
+import json
 import logging
 import re
 
@@ -7,6 +8,9 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
+from django.db.models import Count
+from django.db.models import Q
+from django.db.models.functions import TruncDay
 from django.http import HttpRequest
 from django.shortcuts import redirect
 from django.shortcuts import render
@@ -102,6 +106,61 @@ def links(request: HttpRequest):
     links = ShortenedLink.objects.filter(user=user)
 
     return render(request, "links.html", {"links": links})
+
+
+@login_required
+def dashboard(request: HttpRequest):
+    links = ShortenedLink.objects.filter(user=request.user)
+
+    clicks = LinkClick.objects.filter(link__user=request.user)
+    total_clicks = clicks.count()
+    active_links = links.filter(is_active=True).count()
+    expired_links = links.filter(remove_at__lt=timezone.now()).count()
+
+    thirty_days_ago = timezone.now() - timezone.timedelta(days=30)
+    clicks_last_30_days = clicks.filter(clicked_at__gte=thirty_days_ago)
+
+    daily_clicks = (
+        clicks_last_30_days.annotate(day=TruncDay("clicked_at"))
+        .values("day")
+        .annotate(count=Count("id"))
+        .order_by("day")
+    )
+    # Format dates for JSON serialization
+    daily_clicks_data = [
+        {"date": item["day"].strftime("%Y-%m-%d"), "count": item["count"]}
+        for item in daily_clicks
+    ]
+
+    top_links = links.annotate(click_count=Count("clicks")).order_by("-click_count")[:5]
+    latest_links = links.order_by("-created_at")[:10]
+
+    # Calculate most active links (most clicks in last 7 days)
+    seven_days_ago = timezone.now() - timezone.timedelta(days=7)
+    active_links_data = links.annotate(
+        recent_clicks=Count("clicks", filter=Q(clicks__clicked_at__gte=seven_days_ago)),
+    ).order_by("-recent_clicks")[:5]
+
+    context = {
+        "total_clicks": total_clicks,
+        "links_count": links.count(),
+        "active_links": active_links,
+        "expired_links": expired_links,
+        "daily_clicks_data": json.dumps(daily_clicks_data),
+        "top_links": top_links,
+        "latest_links": latest_links,
+        "active_links_data": active_links_data,
+    }
+
+    if request.user.is_premium:
+        country_distribution = (
+            clicks_last_30_days.values("country")
+            .annotate(count=Count("id"))
+            .order_by("-count")[:5]
+        )
+        context["country_distribution"] = list(country_distribution)
+
+    return render(request, "dashboard.html", context)
 
 
 @login_required

@@ -26,6 +26,7 @@ urlpatterns = [
         views.redirect_link,
         name="redirect_link",
     ),
+    path("dashboard/", views.dashboard, name="dashboard"),
     # Include sub-patterns
     path("links/", views.links, name="links"),
     path("link/<str:shortened_link>/", include(link_urlpatterns)),
