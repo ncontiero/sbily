@@ -18,7 +18,7 @@
   "dependencies": {
     "@fontsource/inter": "^5.2.5",
     "@stripe/stripe-js": "^7.2.0",
-    "lucide": "^0.503.0"
+    "lucide": "^0.506.0"
   },
   "devDependencies": {
     "@ncontiero/eslint-config": "^5.1.1",
