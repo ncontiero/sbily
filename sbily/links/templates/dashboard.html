@@ -12,7 +12,7 @@
           </div>
           <div>
             <p class="text-sm text-muted-foreground">Total Links</p>
-            <h3 class="text-2xl font-bold">{{ links_count }}</h3>
+            <h2 class="text-2xl font-bold">{{ links_count }}</h2>
           </div>
         </div>
         <div class="mt-4 pt-4 border-t">
@@ -36,7 +36,7 @@
           </div>
           <div>
             <p class="text-sm text-muted-foreground">Total Clicks</p>
-            <h3 class="text-2xl font-bold">{{ total_clicks }}</h3>
+            <h2 class="text-2xl font-bold">{{ total_clicks }}</h2>
           </div>
         </div>
         <div class="mt-4 pt-4 border-t">
@@ -51,7 +51,7 @@
           </div>
           <div>
             <p class="text-sm text-muted-foreground">Permanent Links</p>
-            <h3 class="text-2xl font-bold">{{ user.permanent_links_used }} / {{ user.max_num_links }}</h3>
+            <h2 class="text-2xl font-bold">{{ user.permanent_links_used }} / {{ user.max_num_links }}</h2>
           </div>
         </div>
         <div class="mt-4 pt-4 border-t">
@@ -68,7 +68,7 @@
           </div>
           <div>
             <p class="text-sm text-muted-foreground">Temporary Links</p>
-            <h3 class="text-2xl font-bold">{{ user.temporary_links_used }} / {{ user.max_num_links_temporary }}</h3>
+            <h2 class="text-2xl font-bold">{{ user.temporary_links_used }} / {{ user.max_num_links_temporary }}</h2>
           </div>
         </div>
         <div class="mt-4 pt-4 border-t">
@@ -84,7 +84,7 @@
 <section class="py-6">
   <div class="container mx-auto px-4">
     <div class="bg-background rounded-lg border shadow-sm p-6 lg:col-span-2">
-      <h3 class="text-lg font-bold mb-4">Daily Clicks (Last 30 Days)</h3>
+      <h2 class="text-lg font-bold mb-4">Daily Clicks (Last 30 Days)</h2>
       <div class="h-64">
         <canvas id="dailyClicksChart"></canvas>
       </div>
@@ -96,12 +96,12 @@
   <section class="py-6">
     <div class="container mx-auto px-4">
       <div class="bg-background rounded-lg border shadow-sm p-6">
-        <h3 class="text-lg font-bold mb-8 md:mb-4">Top Countries</h3>
+        <h2 class="text-lg font-bold mb-8 md:mb-4">Top Countries</h2>
         <div class="h-fit lg:h-96 flex justify-center">
           <canvas id="countriesChart"></canvas>
         </div>
         <div class="border rounded-md mt-10 pt-6">
-          <h4 class="font-bold mb-4 px-4">Top Countries Clicks</h4>
+          <h3 class="font-bold mb-4 px-4">Top Countries Clicks</h3>
           <div class="w-full overflow-auto max-h-[500px] overscroll-contain">
             <table class="w-full text-sm border-t">
               <thead>
@@ -137,7 +137,7 @@
     <div class="bg-background rounded-lg border shadow-sm overflow-hidden">
       <div class="p-6 border-b">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <h3 class="text-lg font-bold">Latest links</h3>
+          <h2 class="text-lg font-bold">Latest links</h2>
           <div class="flex gap-3">
             <a href="{% url 'links' %}" class="button-outline">
               View All Links
@@ -161,7 +161,7 @@
   <div class="container mx-auto px-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="bg-background rounded-lg border shadow-sm p-6">
-        <h3 class="text-lg font-bold mb-4">Top Performing Links</h3>
+        <h2 class="text-lg font-bold mb-4">Top Performing Links</h2>
         <div class="space-y-4">
           {% for link in top_links %}
           <div class="flex items-center justify-between border-b pb-4 last:border-0">
@@ -185,7 +185,7 @@
       </div>
 
       <div class="bg-background rounded-lg border shadow-sm p-6">
-        <h3 class="text-lg font-bold mb-4">Most Active Links (Last 7 Days)</h3>
+        <h2 class="text-lg font-bold mb-4">Most Active Links (Last 7 Days)</h2>
         <div class="space-y-4">
           {% for link in active_links_data %}
           <div class="flex items-center justify-between border-b pb-4 last:border-0">

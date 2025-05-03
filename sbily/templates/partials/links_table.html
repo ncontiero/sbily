@@ -157,6 +157,9 @@
                   <a href="{% url 'link' link.shortened_link %}" class="dropdown-menu-item gap-1 p-2">
                     <i data-lucide="square-pen" class="size-3.5 stroke-[3px]"></i> Edit
                   </a>
+                  <a href="{% url 'link_statistics' link.shortened_link %}" class="dropdown-menu-item gap-1 p-2">
+                    <i data-lucide="chart-line" class="size-3.5 stroke-[3px]"></i> Stats
+                  </a>
                   <a
                     href="{% url 'link' link.shortened_link %}?deactivate={{ link.is_active }}"
                     class="dropdown-menu-item gap-1 p-2"
