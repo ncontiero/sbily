@@ -1,6 +1,5 @@
 /* eslint-disable node/no-unsupported-features/node-builtins */
 
-import Chart from "chart.js/auto";
 import { createElement, Moon, Sun } from "lucide";
 
 export function getTheme() {

@@ -2,7 +2,7 @@ import { ncontiero } from "@ncontiero/eslint-config";
 
 export default ncontiero(
   {
-    ignores: ["**/*.html"],
+    ignores: ["**/*.html", "**/countries-50m.json"],
     javascript: {
       overrides: {
         "node/no-unsupported-features/node-builtins": [
