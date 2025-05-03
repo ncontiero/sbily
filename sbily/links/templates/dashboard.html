@@ -101,22 +101,24 @@
           <canvas id="countriesChart"></canvas>
         </div>
         <div class="border rounded-md mt-10 pt-6">
-          <h4 class="font-bold mb-8 md:mb-4 px-6">Top Countries Clicks</h4>
+          <h4 class="font-bold mb-4 px-4">Top Countries Clicks</h4>
           <div class="w-full overflow-auto max-h-[500px] overscroll-contain">
             <table class="w-full text-sm border-t">
               <thead>
                 <tr class="border-b duration-200 bg-muted/30 hover:bg-muted/50">
-                  <th class="h-12 w-1/2 border-r-2 px-4 text-start align-middle font-medium text-muted-foreground">Country</th>
-                  <th class="h-12 w-1/2 px-4 text-end align-middle font-medium text-muted-foreground">Clicks</th>
+                  <th class="h-12 w-1/2 border-r-2 px-4 text-start align-middle font-bold">
+                    Country
+                  </th>
+                  <th class="h-12 w-1/2 px-4 text-end align-middle font-bold">Clicks</th>
                 </tr>
               </thead>
               <tbody>
                 {% for item in country_distribution %}
                   <tr class="border-b duration-200 hover:bg-muted/50">
-                    <td class="p-4 text-start align-middle font-medium border-r-2">
+                    <td class="p-4 text-start align-middle border-r-2">
                       {{ item.country }}
                     </td>
-                    <td class="p-4 text-end align-middle font-medium">
+                    <td class="p-4 text-end align-middle">
                       {{ item.count }}
                     </td>
                   </tr>
@@ -208,35 +210,6 @@
     </div>
   </div>
 </section>
-
-{% if not user.is_premium %}
-  <section class="py-6">
-    <div class="container mx-auto px-4">
-      <div class="bg-secondary/50 p-6 rounded-lg border border-primary/30 text-center mb-8">
-        <h2 class="text-xl font-bold mb-4">Unlock Advanced Analytics</h2>
-        <p class="mb-4">Upgrade to Premium to access advanced analytics and get deeper insights into your link performance.</p>
-        <div class="grid md:grid-cols-3 gap-4 max-w-3xl mx-auto mb-6">
-          <div class="bg-background p-4 rounded-lg border border-border">
-            <i data-lucide="map" class="text-primary size-6 mx-auto mb-2"></i>
-            <h3 class="font-bold mb-1">Geographic Data</h3>
-            <p class="text-sm text-muted-foreground">See where your visitors are coming from around the world.</p>
-          </div>
-          <div class="bg-background p-4 rounded-lg border border-border">
-            <i data-lucide="smartphone" class="text-primary size-6 mx-auto mb-2"></i>
-            <h3 class="font-bold mb-1">Device Analytics</h3>
-            <p class="text-sm text-muted-foreground">Understand which devices your audience is using.</p>
-          </div>
-          <div class="bg-background p-4 rounded-lg border border-border">
-            <i data-lucide="clock" class="text-primary size-6 mx-auto mb-2"></i>
-            <h3 class="font-bold mb-1">Time Analysis</h3>
-            <p class="text-sm text-muted-foreground">Discover when your links get the most engagement.</p>
-          </div>
-        </div>
-        <a href="{% url 'plans' %}" class="button-primary">Upgrade to Premium</a>
-      </div>
-    </div>
-  </section>
-{% endif %}
 {% endblock dashboard_content %}
 
 {% block js %}

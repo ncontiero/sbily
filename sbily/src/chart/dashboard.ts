@@ -1,6 +1,7 @@
 import { topojson } from "chartjs-chart-geo";
 import { Chart } from ".";
 import countriesJson from "./countries-50m.json";
+import { getChartBarConfig } from "./utils";
 
 declare const dailyClicksData: { date: string; count: string }[];
 declare const countryLabels: string[];
@@ -9,10 +10,6 @@ declare const countryData: string[];
 export function initDashboard() {
   const inDashboardPage = document.getElementById("dashboard");
   if (!inDashboardPage) return;
-
-  const styles = getComputedStyle(document.documentElement);
-  const primaryColor = styles.getPropertyValue("--primary").trim();
-  const foregroundColor = styles.getPropertyValue("--foreground").trim();
 
   const ctxDaily = (
     document.getElementById("dailyClicksChart") as HTMLCanvasElement
@@ -26,53 +23,14 @@ export function initDashboard() {
     return;
   }
 
-  new Chart(ctxDaily, {
-    type: "bar",
-    data: {
+  new Chart(
+    ctxDaily,
+    getChartBarConfig({
       labels: dailyClicksData.map((item) => item.date),
-      datasets: [
-        {
-          label: "Clicks",
-          data: dailyClicksData.map((item) => item.count),
-          backgroundColor: `hsl(${primaryColor}/0.2)`,
-          borderColor: `hsl(${primaryColor})`,
-          borderWidth: 2,
-          borderRadius: 5,
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      hoverBackgroundColor: `hsl(${primaryColor}/0.5)`,
-      plugins: {
-        legend: {
-          display: false,
-        },
-        tooltip: {
-          mode: "index",
-          intersect: false,
-        },
-      },
-      scales: {
-        x: {
-          grid: {
-            display: false,
-          },
-        },
-        y: {
-          grid: {
-            color: `hsl(${foregroundColor}/0.2)`,
-            tickColor: `hsl(${foregroundColor}/0.2)`,
-          },
-          beginAtZero: true,
-          ticks: {
-            precision: 0,
-          },
-        },
-      },
-    },
-  });
+      data: dailyClicksData.map((item) => item.count),
+      dataLabel: "Clicks",
+    }),
+  );
 
   if (!ctxCountries) return;
 

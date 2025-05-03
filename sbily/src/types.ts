@@ -1,5 +1,4 @@
 import type { Chart } from "chart.js";
-import type { getChartColors } from "./chart";
 import type { dialog } from "./components/dialog";
 import type { Switch } from "./components/switch";
 import type { closeToast, toast } from "./components/toast";
@@ -18,7 +17,6 @@ export interface WindowWithCustomProps {
   Switch: typeof Switch;
   stripe: ReturnType<typeof initStripe>;
   Chart: typeof Chart;
-  getChartColors: typeof getChartColors;
 }
 
 export type EventHandler<T> = (event: T) => void;

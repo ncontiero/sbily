@@ -1,14 +1,15 @@
 import "./index.css";
 
 import type { WindowWithCustomProps } from "./types";
-import { getChartColors, initializeChart } from "./chart";
+import { initializeChart } from "./chart";
 import { initDashboard } from "./chart/dashboard";
+import { initLinkStats } from "./chart/link-stats";
 import { dialog, initDialog } from "./components/dialog";
 import { initDropdownMenu } from "./components/dropdownMenu";
 import { initSwitch, Switch } from "./components/switch";
 import { initTabs } from "./components/tabs";
-import { initThemeToggle } from "./components/themeToggle";
 import "./components/links/select";
+import { initThemeToggle } from "./components/themeToggle";
 import { closeToast, toast } from "./components/toast";
 import {
   initConfirmPayment,
@@ -26,7 +27,6 @@ const windowExtensions: WindowWithCustomProps = {
   Switch,
   stripe: initStripe(),
   Chart: initializeChart(),
-  getChartColors,
 };
 
 Object.assign(window, windowExtensions);
@@ -46,6 +46,7 @@ const initApp = (): void => {
 
   initializeChart();
   initDashboard();
+  initLinkStats();
 };
 
 document.addEventListener("DOMContentLoaded", initApp);

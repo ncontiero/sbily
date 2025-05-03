@@ -8,23 +8,6 @@ import {
 
 export { Chart };
 
-export function getChartColors(count: number) {
-  const primaryColor = getComputedStyle(document.documentElement)
-    .getPropertyValue("--primary")
-    .trim();
-
-  const colors = [];
-  const opacity = 0.8;
-
-  // Primary color with varying brightness
-  for (let i = 0; i < count; i++) {
-    const hue = Number.parseInt(primaryColor) + ((i * 30) % 360);
-    colors.push(`hsl(${hue}, 70%, 60%, ${opacity})`);
-  }
-
-  return colors;
-}
-
 export function initializeChart() {
   const styles = getComputedStyle(document.documentElement);
   const primaryColor = styles.getPropertyValue("--primary").trim();

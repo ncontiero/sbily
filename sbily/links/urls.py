@@ -11,6 +11,7 @@ link_urlpatterns = [
     path("", views.link, name="link"),
     path("update/", views.update_link, name="update_link"),
     path("delete/", views.delete_link, name="delete_link"),
+    path("stats/", views.link_statistics, name="link_statistics"),
 ]
 
 

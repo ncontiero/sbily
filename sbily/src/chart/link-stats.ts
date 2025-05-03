@@ -1,0 +1,143 @@
+import { topojson } from "chartjs-chart-geo";
+import { Chart } from ".";
+import countriesJson from "./countries-50m.json";
+import { getChartBarConfig, getChartPieConfig } from "./utils";
+
+declare const dailyClicksData: { date: string; count: string }[];
+declare const hourlyClicksData: { hour: string; count: string }[];
+declare const countriesAndCitiesData: {
+  country: string;
+  city: string;
+  count: string;
+}[];
+declare const devicesData: { device_type: string; count: string }[];
+declare const browsersData: { browser: string; count: string }[];
+declare const osData: { operating_system: string; count: string }[];
+
+export function initLinkStats() {
+  const inLinkStatsPage = document.getElementById("links-stats");
+  if (!inLinkStatsPage) return;
+
+  const dailyClicksCtx = (
+    document.getElementById("dailyClicksChart") as HTMLCanvasElement
+  )?.getContext("2d");
+  if (!dailyClicksCtx) {
+    console.error("Failed to get canvas contexts.");
+    return;
+  }
+
+  new Chart(
+    dailyClicksCtx,
+    getChartBarConfig({
+      labels: dailyClicksData.map((data) => data.date),
+      data: dailyClicksData.map((data) => data.count),
+      dataLabel: "Daily Clicks",
+    }),
+  );
+
+  const hourlyClicksCtx = (
+    document.getElementById("hourlyClicksChart") as HTMLCanvasElement
+  )?.getContext("2d");
+  if (!hourlyClicksCtx) {
+    console.error("Failed to get canvas contexts.");
+    return;
+  }
+
+  new Chart(
+    hourlyClicksCtx,
+    getChartBarConfig({
+      labels: hourlyClicksData.map((data) => data.hour),
+      data: hourlyClicksData.map((data) => data.count),
+      dataLabel: "Clicks",
+    }),
+  );
+
+  const countriesAndCitiesChartCtx = (
+    document.getElementById("countriesAndCitiesChart") as HTMLCanvasElement
+  )?.getContext("2d");
+  if (!countriesAndCitiesChartCtx) {
+    console.error("Failed to get canvas contexts.");
+    return;
+  }
+
+  const countries = (
+    topojson.feature(
+      countriesJson as any,
+      countriesJson.objects.countries as any,
+    ) as unknown as GeoJSON.FeatureCollection
+  ).features;
+
+  const countryLabels = countriesAndCitiesData.map((data) => data.country);
+  const countryData = countriesAndCitiesData.map((data) => data.count);
+
+  new Chart(countriesAndCitiesChartCtx, {
+    type: "choropleth",
+    data: {
+      labels: countries.map((d) => d.properties?.name),
+      datasets: [
+        {
+          label: "Countries",
+          data: countries.map((d) => ({
+            feature: d,
+            value: countryData[countryLabels.indexOf(d.properties?.name)] || 0,
+          })),
+        },
+      ],
+    },
+    options: {
+      showOutline: true,
+      showGraticule: true,
+      plugins: {
+        legend: {
+          display: false,
+        },
+      },
+      scales: {
+        projection: {
+          axis: "x",
+          projection: "equalEarth",
+        },
+      },
+    },
+  });
+
+  const devicesChartCtx = (
+    document.getElementById("devicesChart") as HTMLCanvasElement
+  )?.getContext("2d");
+  const browsersChartCtx = (
+    document.getElementById("browsersChart") as HTMLCanvasElement
+  )?.getContext("2d");
+  const osChartCtx = (
+    document.getElementById("osChart") as HTMLCanvasElement
+  )?.getContext("2d");
+
+  if (!devicesChartCtx || !browsersChartCtx || !osChartCtx) {
+    console.error("Failed to get canvas contexts.");
+    return;
+  }
+
+  new Chart(
+    devicesChartCtx,
+    getChartPieConfig({
+      labels: devicesData.map((data) => data.device_type),
+      data: devicesData.map((data) => data.count),
+      dataLabel: "Devices",
+    }),
+  );
+  new Chart(
+    browsersChartCtx,
+    getChartPieConfig({
+      labels: browsersData.map((data) => data.browser),
+      data: browsersData.map((data) => data.count),
+      dataLabel: "Devices",
+    }),
+  );
+  new Chart(
+    osChartCtx,
+    getChartPieConfig({
+      labels: osData.map((data) => data.operating_system),
+      data: osData.map((data) => data.count),
+      dataLabel: "Devices",
+    }),
+  );
+}
