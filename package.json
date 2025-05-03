@@ -30,7 +30,7 @@
     "@types/node": "^22.15.3",
     "autoprefixer": "^10.4.21",
     "cross-env": "^7.0.3",
-    "eslint": "^9.25.1",
+    "eslint": "^9.26.0",
     "postcss": "^8.5.3",
     "postcss-loader": "^8.1.1",
     "postcss-preset-env": "^10.1.6",
