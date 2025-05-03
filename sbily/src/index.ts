@@ -4,11 +4,12 @@ import type { WindowWithCustomProps } from "./types";
 import { initializeChart } from "./chart";
 import { initDashboard } from "./chart/dashboard";
 import { initLinkStats } from "./chart/link-stats";
+import { initBreadcrumb } from "./components/breadcrumb";
 import { dialog, initDialog } from "./components/dialog";
 import { initDropdownMenu } from "./components/dropdownMenu";
 import { initSwitch, Switch } from "./components/switch";
-import { initTabs } from "./components/tabs";
 import "./components/links/select";
+import { initTabs } from "./components/tabs";
 import { initThemeToggle } from "./components/themeToggle";
 import { closeToast, toast } from "./components/toast";
 import {
@@ -43,6 +44,7 @@ const initApp = (): void => {
   initSwitch();
   initThemeToggle();
   initTabs();
+  initBreadcrumb();
 
   initializeChart();
   initDashboard();

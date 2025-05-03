@@ -254,6 +254,14 @@
     @apply bg-muted/80;
   }
 
+  /* Breadcrumb */
+  .breadcrumb {
+    @apply flex flex-wrap justify-center sm:justify-start items-center gap-1.5 break-words text-muted-foreground sm:gap-2.5;
+  }
+  .breadcrumb-item {
+    @apply inline-flex items-center gap-1.5 [&>a]:transition-colors [&>a]:hover:text-foreground [&>span]:font-normal [&>span]:text-foreground;
+  }
+
   /* Toast */
   .toast-list {
     @apply fixed top-0 right-0 left-0 z-[99999] flex gap-2 max-h-screen w-full md:max-w-[420px] flex-col-reverse md:left-auto md:top-5 sm:right-5 sm:flex-col;

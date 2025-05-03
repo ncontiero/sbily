@@ -1,12 +1,16 @@
-{% extends "base.html" %}
+{% extends "dashboard/base.html" %}
 
 {% block title %}Link - {{ link.shortened_link }}{% endblock title %}
+{% block dashboard_title %}Link - {{ link.shortened_link }}{% endblock dashboard_title %}
+{% block dashboard_description %}
+  Hello {{ user.get_short_name }}, you can update your link here.
+{% endblock dashboard_description %}
 
-{% block content %}
-  <div class="mt-16 flex flex-col justify-center max-w-xl mx-auto gap-4">
+{% block dashboard_content %}
+<section class="py-8">
+  <div class="max-w-5xl mx-auto px-4 flex flex-col justify-center gap-4">
     <div class="flex flex-col justify-center p-6 border rounded-md">
       <div class="flex items-center gap-4 sm:gap-6">
-        <h1 class="text-2xl font-bold">Link - {{ link.shortened_link }}</h1>
         <button
           type="button"
           class="button-primary w-fit gap-1 px-2 py-1"
@@ -101,11 +105,12 @@
           </button>
           {% include "partials/delete_link_dialog.html" %}
         </div>
-        <a href="{% url 'links' %}" class="button-outline px-2 w-fit">
-          <i data-lucide="chevron-left" class="stroke-[3px]"></i>
-          See your links
+        <a href="{% url 'link_statistics' link.shortened_link %}" class="button-outline w-fit gap-2">
+          <i data-lucide="chart-line" class="stroke-[3px]"></i>
+          See Stats
         </a>
       </form>
     </div>
   </div>
-{% endblock content %}
+</section>
+{% endblock dashboard_content %}
