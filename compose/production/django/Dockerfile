@@ -38,6 +38,7 @@ FROM python:3.12.10-slim-bookworm AS python
 # Python build stage
 FROM python AS python-build-stage
 
+ARG DJANGO_AWS_S3_CUSTOM_DOMAIN
 ARG BUILD_ENVIRONMENT=production
 
 # Install apt packages
@@ -45,7 +46,14 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   # dependencies for building Python packages
   build-essential \
   # psycopg dependencies
-  libpq-dev
+  libpq-dev \
+  # geoip2 dependencies
+  libmaxminddb0 libmaxminddb-dev mmdb-bin \
+  wget
+
+RUN wget -nv -t 3 -P ./config/geoip \
+  https://${DJANGO_AWS_S3_CUSTOM_DOMAIN}/geoip/GeoLite2-Country.mmdb \
+  https://${DJANGO_AWS_S3_CUSTOM_DOMAIN}/geoip/GeoLite2-City.mmdb
 
 # Requirements are installed here to ensure they will be cached.
 COPY ./requirements .
@@ -76,6 +84,8 @@ RUN addgroup --system django \
 RUN apt-get update && apt-get install --no-install-recommends -y \
   # psycopg dependencies
   libpq-dev \
+  # geoip2 dependencies
+  libmaxminddb0 libmaxminddb-dev mmdb-bin \
   # entrypoint
   wait-for-it \
   # Translations dependencies
@@ -85,6 +95,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   && rm -rf /var/lib/apt/lists/*
 
 # All absolute dir copies ignore workdir instruction. All relative dir copies are wrt to the workdir instruction
+# copy GeoIP database
+COPY --from=python-build-stage ./config/geoip ./config/geoip
 # copy python dependency wheels from python-build-stage
 COPY --from=python-build-stage /usr/src/app/wheels  /wheels/
 

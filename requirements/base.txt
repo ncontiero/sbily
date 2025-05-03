@@ -9,6 +9,9 @@ django-celery-beat==2.8.0  # https://github.com/celery/django-celery-beat
 flower==2.0.1  # https://github.com/mher/flower
 markdown==3.8  # https://github.com/Python-Markdown/markdown
 stripe==12.1.0  # https://github.com/stripe/stripe-python
+ua-parser[regex]==1.0.1  # https://github.com/ua-parser/uap-python
+user-agents==2.2.0  # https://github.com/selwin/python-user-agents
+geoip2==5.0.1  # https://github.com/maxmind/GeoIP2-python
 
 # Django
 # ------------------------------------------------------------------------------

@@ -66,10 +66,14 @@
         </caption>
         <thead>
           <tr class="border-b duration-200 hover:bg-muted/50">
-            <th class="h-12 px-4 align-middle font-medium text-muted-foreground">
+            <th class="size-10 min-w-10 align-middle font-medium">
               <input type="checkbox" id="check-all-links" />
             </th>
-            <th class="h-12 px-4 text-start align-middle font-medium text-muted-foreground">Shortened Link</th>
+            <th class="h-12 px-4 text-start whitespace-nowrap align-middle font-medium text-muted-foreground">Shortened Link</th>
+            <th class="h-12 px-4 text-start align-middle font-medium text-muted-foreground">Original URL</th>
+            <th class="h-12 px-4 text-start align-middle font-medium text-muted-foreground">Expire in</th>
+            <th class="h-12 px-4 text-start align-middle font-medium text-muted-foreground">Created at</th>
+            <th class="h-12 px-4 text-center align-middle font-medium text-muted-foreground">Clicks</th>
             <th class="h-12 px-4 text-center align-middle font-medium text-muted-foreground">Is Active</th>
             <th class="h-12 px-4 text-center align-middle font-medium text-muted-foreground">Actions</th>
           </tr>
@@ -89,12 +93,29 @@
                 />
               </td>
               <td class="flex items-center gap-1 px-4 py-2 align-middle font-medium text-lg">
-                <a href="{% url 'link' link.shortened_link %}" class="link">{{ link.shortened_link }}</a>
+                <a
+                  href="{% url 'link' link.shortened_link %}"
+                  class="link whitespace-nowrap"
+                >
+                  {{ link.shortened_link }}
+                </a>
                 {% if link.remove_at %}
                   <span title="This link is temporary" aria-label="This link is temporary">
                     <i data-lucide="clock-alert" class="size-5 stroke-[3px] text-yellow-500"></i>
                   </span>
                 {% endif %}
+              </td>
+              <td class="px-4 py-2 text-start align-middle font-medium">
+                {{ link.original_link|truncatechars:25 }}
+              </td>
+              <td class="px-4 py-2 text-start align-middle font-medium whitespace-nowrap">
+                {{ link.time_until_expiration_formatted }}
+              </td>
+              <td class="px-4 py-2 text-start align-middle font-medium whitespace-nowrap">
+                {{ link.created_at|date:"M d, Y" }}
+              </td>
+              <td class="px-4 py-2 text-center align-middle font-medium">
+                {{ link.clicks.count }}
               </td>
               <td class="px-4 py-2 text-center align-middle font-medium">
                 <span
@@ -135,6 +156,9 @@
                   </button>
                   <a href="{% url 'link' link.shortened_link %}" class="dropdown-menu-item gap-1 p-2">
                     <i data-lucide="square-pen" class="size-3.5 stroke-[3px]"></i> Edit
+                  </a>
+                  <a href="{% url 'link_statistics' link.shortened_link %}" class="dropdown-menu-item gap-1 p-2">
+                    <i data-lucide="chart-line" class="size-3.5 stroke-[3px]"></i> Stats
                   </a>
                   <a
                     href="{% url 'link' link.shortened_link %}?deactivate={{ link.is_active }}"

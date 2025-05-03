@@ -4,6 +4,7 @@ import { toast } from "@/components/toast";
 export function copy(
   value: string,
   btnId: string,
+  showMessage: boolean = true,
   timeout: number = 2000,
 ): void {
   const button = document.getElementById(btnId);
@@ -25,11 +26,11 @@ export function copy(
     try {
       // eslint-disable-next-line node/no-unsupported-features/node-builtins
       await navigator.clipboard.writeText(value);
-      button.innerHTML = `${ICONS.success.outerHTML} Copied`;
+      button.innerHTML = `${ICONS.success.outerHTML}${showMessage ? " Copied" : ""}`;
       toast(MESSAGES.success, "toast-success");
     } catch (error) {
       toast(MESSAGES.error, "toast-error");
-      button.innerHTML = `${ICONS.error.outerHTML} Error`;
+      button.innerHTML = `${ICONS.error.outerHTML}${showMessage ? " Error" : ""}`;
       console.error("Clipboard copy failed:", error);
     } finally {
       setTimeout(() => {

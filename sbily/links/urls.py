@@ -11,6 +11,7 @@ link_urlpatterns = [
     path("", views.link, name="link"),
     path("update/", views.update_link, name="update_link"),
     path("delete/", views.delete_link, name="delete_link"),
+    path("stats/", views.link_statistics, name="link_statistics"),
 ]
 
 
@@ -26,6 +27,7 @@ urlpatterns = [
         views.redirect_link,
         name="redirect_link",
     ),
+    path("dashboard/", views.dashboard, name="dashboard"),
     # Include sub-patterns
     path("links/", views.links, name="links"),
     path("link/<str:shortened_link>/", include(link_urlpatterns)),

@@ -1,12 +1,19 @@
 # ruff: noqa: BLE001
 
+import json
+import logging
 import re
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
+from django.db.models import Count
+from django.db.models import Q
+from django.db.models.functions import TruncDay
+from django.db.models.functions import TruncHour
 from django.http import HttpRequest
+from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.utils import timezone
@@ -14,10 +21,13 @@ from django.utils import timezone
 from sbily.utils.data import validate
 from sbily.utils.urls import redirect_with_params
 
+from .models import LinkClick
 from .models import ShortenedLink
 
 LINK_BASE_URL = getattr(settings, "LINK_BASE_URL", None)
 LINK_REMOVE_AT_EXCLUDE = r".\d*[-+]\d{2}:\d{2}"
+
+logger = logging.getLogger("links.views")
 
 
 def home(request: HttpRequest):
@@ -77,6 +87,12 @@ def redirect_link(request: HttpRequest, shortened_link: str):
             if request.user == link.user:
                 return redirect("link", link.shortened_link)
             return redirect("home")
+
+        try:
+            LinkClick.create_from_request(link, request)
+        except Exception as e:
+            logger.exception("Error creating link click.", exc_info=e)
+
         return redirect(link.original_link)
     except ShortenedLink.DoesNotExist:
         messages.error(request, "Link not found")
@@ -92,6 +108,61 @@ def links(request: HttpRequest):
     links = ShortenedLink.objects.filter(user=user)
 
     return render(request, "links.html", {"links": links})
+
+
+@login_required
+def dashboard(request: HttpRequest):
+    links = ShortenedLink.objects.filter(user=request.user)
+
+    clicks = LinkClick.objects.filter(link__user=request.user)
+    total_clicks = clicks.count()
+    active_links = links.filter(is_active=True).count()
+    expired_links = links.filter(remove_at__lt=timezone.now()).count()
+
+    thirty_days_ago = timezone.now() - timezone.timedelta(days=30)
+    clicks_last_30_days = clicks.filter(clicked_at__gte=thirty_days_ago)
+
+    daily_clicks = (
+        clicks_last_30_days.annotate(day=TruncDay("clicked_at"))
+        .values("day")
+        .annotate(count=Count("id"))
+        .order_by("day")
+    )
+    # Format dates for JSON serialization
+    daily_clicks_data = [
+        {"date": item["day"].strftime("%Y-%m-%d"), "count": item["count"]}
+        for item in daily_clicks
+    ]
+
+    top_links = links.annotate(click_count=Count("clicks")).order_by("-click_count")[:5]
+    latest_links = links.order_by("-created_at")[:10]
+
+    # Calculate most active links (most clicks in last 7 days)
+    seven_days_ago = timezone.now() - timezone.timedelta(days=7)
+    active_links_data = links.annotate(
+        recent_clicks=Count("clicks", filter=Q(clicks__clicked_at__gte=seven_days_ago)),
+    ).order_by("-recent_clicks")[:5]
+
+    context = {
+        "total_clicks": total_clicks,
+        "links_count": links.count(),
+        "active_links": active_links,
+        "expired_links": expired_links,
+        "daily_clicks_data": json.dumps(daily_clicks_data),
+        "top_links": top_links,
+        "latest_links": latest_links,
+        "active_links_data": active_links_data,
+    }
+
+    if request.user.is_premium:
+        country_distribution = (
+            clicks_last_30_days.values("country")
+            .annotate(count=Count("id"))
+            .order_by("-count")[:5]
+        )
+        context["country_distribution"] = list(country_distribution)
+
+    return render(request, "dashboard.html", context)
 
 
 @login_required
@@ -133,6 +204,107 @@ def link(request: HttpRequest, shortened_link: str):
     except Exception as e:
         messages.error(request, f"An error occurred: {e}")
         return redirect("my_account")
+
+
+@login_required
+def link_statistics(request: HttpRequest, shortened_link: str):
+    link = get_object_or_404(
+        ShortenedLink,
+        shortened_link=shortened_link,
+        user=request.user,
+    )
+
+    # Basic statistics (free users)
+    clicks = link.clicks.all()
+    total_clicks = clicks.count()
+    clicks_today = clicks.filter(clicked_at__date=timezone.localdate())
+    unique_visitors = clicks.values("ip_address").distinct().count()
+    unique_visitors_today = clicks_today.values("ip_address").distinct().count()
+
+    # Get daily clicks for the last 30 days
+    thirty_days_ago = timezone.now() - timezone.timedelta(days=30)
+    clicks_last_30_days = clicks.filter(clicked_at__gte=thirty_days_ago)
+
+    daily_clicks = (
+        clicks_last_30_days.annotate(day=TruncDay("clicked_at"))
+        .values("day")
+        .annotate(count=Count("id"))
+        .order_by("day")
+    )
+    daily_clicks_data = [
+        {"date": item["day"].strftime("%Y-%m-%d"), "count": item["count"]}
+        for item in daily_clicks
+    ]
+
+    context = {
+        "link": link,
+        "total_clicks": total_clicks,
+        "clicks_today": clicks_today.count(),
+        "unique_visitors": unique_visitors,
+        "unique_visitors_today": unique_visitors_today,
+        "daily_clicks_data": json.dumps(daily_clicks_data),
+    }
+
+    # Advanced statistics (premium users only)
+    if request.user.is_premium:
+        hourly_clicks = (
+            clicks_last_30_days.annotate(hour=TruncHour("clicked_at"))
+            .values("hour")
+            .annotate(count=Count("id"))
+            .order_by("hour")
+        )
+        hourly_clicks_data = [
+            {"hour": item["hour"].strftime("%H:00"), "count": item["count"]}
+            for item in hourly_clicks
+        ]
+
+        countries_and_cities = (
+            clicks.exclude(country="", city="")
+            .values("country", "city")
+            .annotate(count=Count("id"))
+            .order_by("-count")
+        )
+
+        devices = (
+            clicks.exclude(device_type="")
+            .values("device_type")
+            .annotate(count=Count("id"))
+            .order_by("-count")
+        )
+
+        browsers = (
+            clicks.exclude(browser="")
+            .values("browser")
+            .annotate(count=Count("id"))
+            .order_by("-count")[:10]
+        )
+
+        operating_systems = (
+            clicks.exclude(operating_system="")
+            .values("operating_system")
+            .annotate(count=Count("id"))
+            .order_by("-count")[:10]
+        )
+
+        referrers = (
+            clicks.exclude(referrer="")
+            .values("referrer")
+            .annotate(count=Count("id"))
+            .order_by("-count")[:10]
+        )
+
+        context.update(
+            {
+                "hourly_clicks_data": json.dumps(hourly_clicks_data),
+                "countries_and_cities": list(countries_and_cities),
+                "devices": list(devices),
+                "browsers": list(browsers),
+                "operating_systems": list(operating_systems),
+                "referrers": referrers,
+            },
+        )
+
+    return render(request, "statistics/link.html", context)
 
 
 @login_required

@@ -1,20 +1,26 @@
-{% extends "base.html" %}
+{% extends "dashboard/base.html" %}
 
-{% block title %}Links{% endblock title %}
+{% block title %}{{ block.super }} - My Links{% endblock title %}
+{% block dashboard_title %}My Links{% endblock dashboard_title %}
+{% block dashboard_description %}
+  Hello {{ user.get_short_name }}, you can see your links here.
+{% endblock dashboard_description %}
 
-{% block content %}
-  <div class="my-16 flex flex-col justify-center gap-2 max-w-3xl mx-auto">
-    <div class="flex-col justify-center p-6 border relative sm:rounded-md">
-      <h2 class="text-2xl font-bold mb-2">My links</h2>
-      <div class="mt-1 flex flex-wrap gap-0.5">
-        <span class="badge-default">
-          You have {{ user.permanent_links_used }} of {{ user.max_num_links }} links.
-        </span>
-        <span class="badge-yellow">
-          You have {{ user.temporary_links_used }} of {{ user.max_num_links_temporary }} temporary links.
-        </span>
+{% block dashboard_content %}
+  <section class="py-8">
+    <div class="container mx-auto px-4 flex flex-col justify-center gap-2">
+      <div class="flex-col justify-center p-6 border relative sm:rounded-md">
+        <h2 class="text-2xl font-bold my-2">Links</h2>
+        <div class="mt-1 mb-2 flex flex-wrap gap-0.5">
+          <span class="badge-default">
+            You have {{ user.permanent_links_used }} of {{ user.max_num_links }} links.
+          </span>
+          <span class="badge-yellow">
+            You have {{ user.temporary_links_used }} of {{ user.max_num_links_temporary }} temporary links.
+          </span>
+        </div>
+        {% include "partials/links_table.html" %}
       </div>
-      {% include "partials/links_table.html" %}
     </div>
-  </div>
-{% endblock content %}
+  </section>
+{% endblock dashboard_content %}

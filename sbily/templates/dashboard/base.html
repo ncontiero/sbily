@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock title %}
+
+{% block content %}
+<main class="bg-[radial-gradient(hsl(var(--primary)/0.2)_1px,transparent_1px)] [background-size:16px_16px] dark:bg-[radial-gradient(hsl(var(--secondary)/0.4)_1px,transparent_1px)] min-h-screen pb-12">
+  <section class="relative overflow-hidden bg-[radial-gradient(hsl(var(--primary)/0.5)_1px,transparent_1px)] [background-size:16px_16px]">
+    <div class="absolute inset-0 bg-gradient-to-br from-primary/30 to-background z-0"></div>
+    <div class="container mx-auto px-4 py-12 relative z-10">
+      <div class="flex flex-col md:flex-row text-center md:text-start justify-between items-center gap-6">
+        <div>
+          <h1 class="text-3xl md:text-4xl font-bold mb-2">
+            {% block dashboard_title %}Dashboard{% endblock dashboard_title %}
+          </h1>
+          <p class="text-lg text-muted-foreground">
+            {% block dashboard_description %}
+              Welcome back, {{ user.get_short_name }}
+            {% endblock dashboard_description %}
+          </p>
+          <nav
+            aria-label="breadcrumb"
+            class="mt-4 flex justify-center sm:justify-start"
+            data-jswc-breadcrumb
+            data-jswc-urls="{% url 'dashboard' %},{% url 'links' %}{% if link %},{% url 'link' link.shortened_link %},{% url 'link_statistics' link.shortened_link %}{% endif %}"
+            data-jswc-labels="Dashboard,Links{% if link %},{{ link.shortened_link }},Stats{% endif %}"
+          >
+          </nav>
+        </div>
+        <div class="flex flex-col sm:flex-row items-center gap-3">
+          <a href="{% url 'create_link' %}" class="button-primary gap-2 w-fit">
+            <i data-lucide="plus" class="size-5"></i>
+            New Link
+          </a>
+          {% if not user.is_premium %}
+            <a href="{% url 'plans' %}" class="button-outline bg-background/30 gap-2">
+              <i data-lucide="zap" class="size-5"></i>
+              Upgrade to Premium
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {% block dashboard_content %}{% endblock dashboard_content %}
+
+  {% if not user.is_premium %}
+  <section class="py-6">
+    <div class="container mx-auto px-4">
+      <div class="bg-secondary/50 p-6 rounded-lg border border-primary/30 text-center mb-8">
+        <h2 class="text-xl font-bold mb-4">Unlock Advanced Analytics</h2>
+        <p class="mb-4">Upgrade to Premium to access advanced analytics and get deeper insights into your link performance.</p>
+        <div class="grid md:grid-cols-3 gap-4 max-w-3xl mx-auto mb-6">
+          <div class="bg-background p-4 rounded-lg border border-border">
+            <i data-lucide="map" class="text-primary size-6 mx-auto mb-2"></i>
+            <h3 class="font-bold mb-1">Geographic Data</h3>
+            <p class="text-sm text-muted-foreground">See where your visitors are coming from around the world.</p>
+          </div>
+          <div class="bg-background p-4 rounded-lg border border-border">
+            <i data-lucide="smartphone" class="text-primary size-6 mx-auto mb-2"></i>
+            <h3 class="font-bold mb-1">Device Analytics</h3>
+            <p class="text-sm text-muted-foreground">Understand which devices your audience is using.</p>
+          </div>
+          <div class="bg-background p-4 rounded-lg border border-border">
+            <i data-lucide="clock" class="text-primary size-6 mx-auto mb-2"></i>
+            <h3 class="font-bold mb-1">Time Analysis</h3>
+            <p class="text-sm text-muted-foreground">Discover when your links get the most engagement.</p>
+          </div>
+        </div>
+        <a href="{% url 'plans' %}" class="button-primary">Upgrade to Premium</a>
+      </div>
+    </div>
+  </section>
+  {% endif %}
+</main>
+{% endblock content %}
