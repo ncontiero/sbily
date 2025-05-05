@@ -1,5 +1,6 @@
 # ruff: noqa: BLE001
 
+import contextlib
 import json
 import logging
 import re
@@ -214,19 +215,14 @@ def link_statistics(request: HttpRequest, shortened_link: str):
         user=request.user,
     )
 
-    # Basic statistics (free users)
-    clicks = link.clicks.all()
-    total_clicks = clicks.count()
-    clicks_today = clicks.filter(clicked_at__date=timezone.localdate())
-    unique_visitors = clicks.values("ip_address").distinct().count()
-    unique_visitors_today = clicks_today.values("ip_address").distinct().count()
+    clicks, from_date, to_date = filter_clicks(request, link)
+    context = generate_basic_statistics(clicks, link, from_date, to_date)
 
-    # Get daily clicks for the last 30 days
-    thirty_days_ago = timezone.now() - timezone.timedelta(days=30)
-    clicks_last_30_days = clicks.filter(clicked_at__gte=thirty_days_ago)
+    if request.user.is_premium:
+        context.update(generate_advanced_statistics(request, clicks))
 
     daily_clicks = (
-        clicks_last_30_days.annotate(day=TruncDay("clicked_at"))
+        clicks.annotate(day=TruncDay("clicked_at"))
         .values("day")
         .annotate(count=Count("id"))
         .order_by("day")
@@ -235,76 +231,135 @@ def link_statistics(request: HttpRequest, shortened_link: str):
         {"date": item["day"].strftime("%Y-%m-%d"), "count": item["count"]}
         for item in daily_clicks
     ]
+    context["daily_clicks_data"] = json.dumps(daily_clicks_data)
 
-    context = {
+    return render(request, "statistics/link.html", context)
+
+
+def filter_clicks(request: HttpRequest, link: ShortenedLink):
+    thirty_days_ago = timezone.now() - timezone.timedelta(days=30)
+    from_date = request.GET.get("from-date", str(thirty_days_ago.date()))
+    to_date = request.GET.get("to-date", None)
+
+    clicks = link.clicks.all()
+
+    if from_date:
+        with contextlib.suppress(ValueError):
+            from_date = timezone.datetime.strptime(from_date, "%Y-%m-%d")
+            from_date = timezone.make_aware(from_date)
+            from_date = min(from_date, timezone.localtime())
+            clicks = clicks.filter(clicked_at__gte=from_date)
+            from_date = from_date.date()
+
+    if to_date:
+        with contextlib.suppress(ValueError):
+            to_date = timezone.datetime.strptime(to_date, "%Y-%m-%d")
+            to_date = timezone.make_aware(to_date) + timezone.timedelta(days=1)
+            to_date = min(to_date, timezone.localtime())
+            clicks = clicks.filter(clicked_at__lte=to_date)
+            to_date = to_date.date()
+
+    return clicks, from_date, to_date
+
+
+def generate_basic_statistics(clicks, link, from_date, to_date):
+    total_clicks = clicks.count()
+    clicks_today = clicks.filter(clicked_at__date=timezone.localdate())
+    unique_visitors = clicks.values("ip_address").distinct().count()
+    unique_visitors_today = clicks_today.values("ip_address").distinct().count()
+
+    return {
         "link": link,
         "total_clicks": total_clicks,
         "clicks_today": clicks_today.count(),
         "unique_visitors": unique_visitors,
         "unique_visitors_today": unique_visitors_today,
-        "daily_clicks_data": json.dumps(daily_clicks_data),
+        "from_date": from_date,
+        "to_date": to_date or timezone.localdate(),
     }
 
-    # Advanced statistics (premium users only)
-    if request.user.is_premium:
-        hourly_clicks = (
-            clicks_last_30_days.annotate(hour=TruncHour("clicked_at"))
-            .values("hour")
-            .annotate(count=Count("id"))
-            .order_by("hour")
-        )
-        hourly_clicks_data = [
-            {"hour": item["hour"].strftime("%H:00"), "count": item["count"]}
-            for item in hourly_clicks
-        ]
 
-        countries_and_cities = (
-            clicks.exclude(country="", city="")
-            .values("country", "city")
-            .annotate(count=Count("id"))
-            .order_by("-count")
-        )
+def generate_advanced_statistics(request, clicks):
+    device_type = request.GET.get("device_type", None)
+    browser = request.GET.get("browser", None)
+    operating_system = request.GET.get("operating_system", None)
+    country = request.GET.get("country", None)
+    city = request.GET.get("city", None)
 
-        devices = (
-            clicks.exclude(device_type="")
-            .values("device_type")
-            .annotate(count=Count("id"))
-            .order_by("-count")
-        )
+    filters = {
+        "device_type": device_type,
+        "browser": browser,
+        "operating_system": operating_system,
+        "country": country,
+        "city": city,
+    }
 
-        browsers = (
-            clicks.exclude(browser="")
-            .values("browser")
-            .annotate(count=Count("id"))
-            .order_by("-count")[:10]
-        )
+    if device_type:
+        clicks = clicks.filter(device_type__icontains=device_type)
+    if browser:
+        clicks = clicks.filter(browser__icontains=browser)
+    if operating_system:
+        clicks = clicks.filter(operating_system__icontains=operating_system)
+    if country:
+        clicks = clicks.filter(country__icontains=country)
+    if city:
+        clicks = clicks.filter(city__icontains=city)
 
-        operating_systems = (
-            clicks.exclude(operating_system="")
-            .values("operating_system")
-            .annotate(count=Count("id"))
-            .order_by("-count")[:10]
-        )
+    hourly_clicks = (
+        clicks.annotate(hour=TruncHour("clicked_at"))
+        .values("hour")
+        .annotate(count=Count("id"))
+        .order_by("hour")
+    )
+    hourly_clicks_data = [
+        {"hour": item["hour"].strftime("%H:00"), "count": item["count"]}
+        for item in hourly_clicks
+    ]
 
-        referrers = (
-            clicks.exclude(referrer="")
-            .values("referrer")
-            .annotate(count=Count("id"))
-            .order_by("-count")[:10]
-        )
+    countries_and_cities = (
+        clicks.exclude(country="", city="")
+        .values("country", "city")
+        .annotate(count=Count("id"))
+        .order_by("-count")
+    )
 
-        context.update(
-            {
-                "hourly_clicks_data": json.dumps(hourly_clicks_data),
-                "countries_and_cities": list(countries_and_cities),
-                "devices": list(devices),
-                "browsers": list(browsers),
-                "operating_systems": list(operating_systems),
-                "referrers": referrers,
-            },
-        )
+    devices = (
+        clicks.exclude(device_type="")
+        .values("device_type")
+        .annotate(count=Count("id"))
+        .order_by("-count")
+    )
 
-    return render(request, "statistics/link.html", context)
+    browsers = (
+        clicks.exclude(browser="")
+        .values("browser")
+        .annotate(count=Count("id"))
+        .order_by("-count")[:10]
+    )
+
+    operating_systems = (
+        clicks.exclude(operating_system="")
+        .values("operating_system")
+        .annotate(count=Count("id"))
+        .order_by("-count")[:10]
+    )
+
+    referrers = (
+        clicks.exclude(referrer="")
+        .values("referrer")
+        .annotate(count=Count("id"))
+        .order_by("-count")[:10]
+    )
+
+    return {
+        "hourly_clicks_data": json.dumps(hourly_clicks_data),
+        "countries_and_cities": list(countries_and_cities),
+        "devices": list(devices),
+        "browsers": list(browsers),
+        "operating_systems": list(operating_systems),
+        "referrers": referrers,
+        "filters": filters,
+    }
 
 
 @login_required

@@ -68,7 +68,104 @@
   </div>
 </section>
 
-<section class="py-8">
+<section class="pb-6" id="filters">
+  <div class="container mx-auto px-4">
+    <form
+      method="get"
+      action="{% url 'link_statistics' link.shortened_link %}"
+      class="{% if user.is_premium %}grid grid-cols-2 md:grid-cols-4{% else %}flex flex-col sm:flex-row{% endif %} gap-4"
+    >
+      <div class="flex flex-col flex-1 gap-2">
+        <label for="from-date" class="label">From Date:</label>
+        <input type="date" id="from-date" name="from-date" class="input" value="{{ from_date|safe }}" />
+      </div>
+      <div class="flex flex-col flex-1 gap-2">
+        <label for="to-date" class="label">To Date:</label>
+        <input type="date" id="to-date" name="to-date" class="input" value="{{ to_date|safe }}" />
+      </div>
+      {% if user.is_premium %}
+      <div class="flex flex-col flex-1 gap-2">
+        <label for="device_type" class="label">Device Type:</label>
+        <select name="device_type" id="device_type" class="font-bold input px-2 py-0">
+          <option value="" {% if not filters.device_type %}selected{% endif %}>All</option>
+          {% for item in devices %}
+          <option
+            value="{{ item.device_type }}"
+            {% if filters.device_type == item.device_type %}selected{% endif %}
+          >
+            {{ item.device_type }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="flex flex-col flex-1 gap-2">
+        <label for="browser" class="label">Browser:</label>
+        <select name="browser" id="browser" class="font-bold input px-2 py-0">
+          <option value="" {% if not filters.browser %}selected{% endif %}>All</option>
+          {% for item in browsers %}
+          <option
+            value="{{ item.browser }}"
+            {% if filters.browser == item.browser %}selected{% endif %}
+          >
+            {{ item.browser }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="flex flex-col flex-1 gap-2">
+        <label for="operating_system" class="label">Operating System:</label>
+        <select name="operating_system" id="operating_system" class="font-bold input px-2 py-0">
+          <option value="" {% if not filters.operating_system %}selected{% endif %}>All</option>
+          {% for item in operating_systems %}
+          <option
+            value="{{ item.operating_system }}"
+            {% if filters.operating_system == item.operating_system %}selected{% endif %}
+          >
+            {{ item.operating_system }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="flex flex-col flex-1 gap-2">
+        <label for="country" class="label">Country:</label>
+        <select name="country" id="country" class="font-bold input px-2 py-0">
+          <option value="" {% if not filters.country %}selected{% endif %}>All</option>
+          {% for item in countries_and_cities %}
+          <option
+            value="{{ item.country }}"
+            {% if filters.country == item.country %}selected{% endif %}
+          >
+            {{ item.country }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="flex flex-col flex-1 gap-2">
+        <label for="city" class="label">City:</label>
+        <select name="city" id="city" class="font-bold input px-2 py-0">
+          <option value="" {% if not filters.city %}selected{% endif %}>All</option>
+          {% for item in countries_and_cities %}
+          <option
+            value="{{ item.city }}"
+            {% if filters.city == item.city %}selected{% endif %}
+          >
+            {{ item.city }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      {% endif %}
+      <div class="flex justify-center items-end gap-2">
+        <button type="submit" class="button-primary">Apply Filter</button>
+        <a href="{% url 'link_statistics' link.shortened_link %}#filters" class="button-outline">
+          Reset Filter
+        </a>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section class="py-6">
   <div class="container mx-auto px-4">
     <div class="grid grid-cols-2 gap-4">
       <div class="bg-background p-6 rounded-lg border {% if not user.is_premium %}col-span-2{% endif %}">
