@@ -3,7 +3,6 @@ import contextlib
 import json
 import re
 
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
@@ -19,7 +18,6 @@ from django.utils import timezone
 from sbily.links.models import LinkClick
 from sbily.links.models import ShortenedLink
 
-LINK_BASE_URL = getattr(settings, "LINK_BASE_URL", None)
 LINK_REMOVE_AT_EXCLUDE = r".\d*[-+]\d{2}:\d{2}"
 
 
@@ -111,11 +109,7 @@ def link(request: HttpRequest, shortened_link: str):
         return render(
             request,
             "link.html",
-            {
-                "link": link,
-                "link_remove_at": link_remove_at,
-                "LINK_BASE_URL": LINK_BASE_URL,
-            },
+            {"link": link, "link_remove_at": link_remove_at},
         )
     except ShortenedLink.DoesNotExist:
         messages.error(request, "Link not found")

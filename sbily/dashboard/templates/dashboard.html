@@ -142,10 +142,15 @@
             <a href="{% url 'links' %}" class="button-outline">
               View All Links
             </a>
-            <a href="{% url 'create_link' %}" class="button-primary gap-2">
+            <button
+              type="button"
+              data-jswc-dialog
+              data-jswc-target="create-link-dialog"
+              class="button-primary gap-2"
+            >
               <i data-lucide="plus" class="size-4"></i>
               New Link
-            </a>
+            </button>
           </div>
         </div>
       </div>

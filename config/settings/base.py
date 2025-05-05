@@ -160,6 +160,7 @@ TEMPLATES = [
                 "django.template.context_processors.media",
                 "django.template.context_processors.static",
                 "django.contrib.messages.context_processors.messages",
+                "sbily.links.context_processors.link_base_url",
             ],
         },
     },

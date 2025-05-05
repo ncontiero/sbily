@@ -3,7 +3,6 @@
 import logging
 import re
 
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
@@ -18,14 +17,13 @@ from sbily.utils.urls import redirect_with_params
 from .models import LinkClick
 from .models import ShortenedLink
 
-LINK_BASE_URL = getattr(settings, "LINK_BASE_URL", None)
 LINK_REMOVE_AT_EXCLUDE = r".\d*[-+]\d{2}:\d{2}"
 
 logger = logging.getLogger("links.views")
 
 
 def home(request: HttpRequest):
-    return render(request, "home.html", {"LINK_BASE_URL": LINK_BASE_URL})
+    return render(request, "home.html")
 
 
 def plans(request: HttpRequest):
@@ -57,7 +55,7 @@ def redirect_link(request: HttpRequest, shortened_link: str):
 
 def create_link(request: HttpRequest):
     if request.method != "POST":
-        return render(request, "create_link.html", {"LINK_BASE_URL": LINK_BASE_URL})
+        return redirect("dashboard")
 
     original_link = request.POST.get("original_link", "").strip()
     shortened_link = request.POST.get("shortened_link", "").strip()

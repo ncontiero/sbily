@@ -27,10 +27,15 @@
           </nav>
         </div>
         <div class="flex flex-col sm:flex-row items-center gap-3">
-          <a href="{% url 'create_link' %}" class="button-primary gap-2 w-fit">
+          <button
+            type="button"
+            data-jswc-dialog
+            data-jswc-target="create-link-dialog"
+            class="button-primary gap-2 w-fit"
+          >
             <i data-lucide="plus" class="size-5"></i>
             New Link
-          </a>
+          </button>
           {% if not user.is_premium %}
             <a href="{% url 'plans' %}" class="button-outline bg-background/30 gap-2">
               <i data-lucide="zap" class="size-5"></i>
@@ -72,5 +77,84 @@
     </div>
   </section>
   {% endif %}
+
+  <div id="create-link-dialog" class="hidden dialog" data-jswc-dialog-animation="true">
+    <form method="post" action="{% url 'create_link' %}" class="flex flex-col">
+      {% csrf_token %}
+      <div class="flex justify-between items-center">
+        <h2 class="text-xl font-bold">Create link</h2>
+      </div>
+      <div class="flex flex-col gap-4 mt-2">
+        <p>You can create a link by filling in the items below.</p>
+      </div>
+      <div class="my-6 flex flex-col">
+        <div class="flex flex-col gap-2 mb-4">
+          <label for="original_link" class="label">Destination URL</label>
+          <input
+            type="url"
+            id="original_link"
+            name="original_link"
+            class="input"
+            placeholder="https://www.google.com/"
+            required
+          />
+        </div>
+        <div class="flex flex-col mb-5 gap-2">
+          <label for="shortened_link" class="label">
+            Shortened URL <span class="text-sm font-medium text-muted-foreground">(Optional)</span>
+          </label>
+          <div class="flex items-center border rounded-md">
+            <label
+              class="h-10 flex items-center px-3 py-2"
+              for="shortened_link"
+            >
+              {{ LINK_BASE_URL }}
+            </label>
+            <input
+              type="text"
+              id="shortened_link"
+              name="shortened_link"
+              class="input border-0 rounded-l-none"
+              placeholder="my_link"
+            />
+          </div>
+        </div>
+        <div class="flex flex-col">
+          <label for="remove_at" class="label mb-2">
+            Remove At <span class="text-sm font-medium text-muted-foreground">(Optional)</span>
+          </label>
+          <input
+            type="datetime-local"
+            id="remove_at"
+            name="remove_at"
+            class="input"
+            {% if user.temporary_links_left < 1 %}disabled{% endif %}
+          />
+          <p class="text-xs font-medium w-fit text-foreground/80 mt-1 ml-0.5">
+            When this link should be automatically removed.
+          </p>
+          <p class="text-xs font-medium w-fit text-foreground/80 mt-2 ml-0.5">
+            NOTE: It will be considered “expired” and after a while removed.
+          </p>
+        </div>
+      </div>
+      <div class="w-full flex items-center gap-2 flex-wrap">
+        <button type="submit" class="button-primary w-full sm:w-auto">
+          Create
+        </button>
+        <button type="button" class="button-outline w-full sm:w-auto" data-jswc-dialog-close>
+          Cancel
+        </button>
+      </div>
+      <button
+        type="button"
+        class="absolute button-outline p-2 border-0 rounded-xl right-4 top-4"
+        aria-label="Close"
+        data-jswc-dialog-close
+      >
+        <i data-lucide="x" class="size-5"></i>
+      </button>
+    </form>
+  </div>
 </main>
 {% endblock content %}
