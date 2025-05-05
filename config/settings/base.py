@@ -76,6 +76,7 @@ LOCAL_APPS = [
     "sbily.authentication",
     "sbily.notifications",
     "sbily.payments",
+    "sbily.dashboard",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

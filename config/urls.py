@@ -10,6 +10,7 @@ urlpatterns = [
     path("", include("sbily.links.urls")),
     path("auth/", include("sbily.authentication.urls")),
     path("account/", include("sbily.users.urls")),
+    path("dashboard/", include("sbily.dashboard.urls")),
     path("notifications/", include("sbily.notifications.urls")),
     path("payments/", include("sbily.payments.urls")),
     # Media files
