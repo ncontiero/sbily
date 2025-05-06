@@ -95,6 +95,13 @@ def create_link(request: HttpRequest):
         return redirect("create_link")
 
 
+def get_current_path(request: HttpRequest):
+    current_path = request.POST.get("current_path", reverse("links")).strip()
+    if not current_path.startswith("/"):
+        current_path = reverse("links")
+    return current_path
+
+
 @login_required
 def update_link(request: HttpRequest, shortened_link: str):
     if request.method != "POST":
@@ -113,9 +120,7 @@ def update_link(request: HttpRequest, shortened_link: str):
             f"{timezone.localtime(link.remove_at)}",
         )
 
-        current_path = request.POST.get("current_path", reverse("links")).strip()
-        if not current_path.startswith("/"):
-            current_path = reverse("links")
+        current_path = get_current_path(request)
 
         form_data = {
             "original_link": request.POST.get("original_link", "").strip(),
@@ -231,9 +236,7 @@ def handle_link_actions(request: HttpRequest):
     user = request.user
     link_ids = request.POST.getlist("_selected_action")
     action = request.POST.get("action")
-    current_path = request.POST.get("current_path", reverse("links")).strip()
-    if not current_path.startswith("/"):
-        current_path = reverse("links")
+    current_path = get_current_path(request)
 
     shortened_links = ShortenedLink.objects.filter(id__in=link_ids, user=user)
 
