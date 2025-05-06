@@ -198,8 +198,10 @@ def handle_link_activation(request: HttpRequest, shortened_link: str):
 
 @login_required
 def delete_link(request: HttpRequest, shortened_link: str):
+    current_path = reverse("links")
+
     try:
-        current_path = request.GET.get("current_path", reverse("links")).strip()
+        current_path = request.GET.get("current_path", reverse("links"))
         if not current_path.startswith("/"):
             current_path = reverse("links")
         link = ShortenedLink.objects.get(
@@ -207,15 +209,18 @@ def delete_link(request: HttpRequest, shortened_link: str):
             user=request.user,
         )
 
+        if current_path.startswith(reverse("link", args=[link.shortened_link])):
+            current_path = reverse("links")
+
         link.delete()
         messages.success(request, "Link deleted successfully")
-        return redirect("links")
+        return redirect(current_path)
     except ShortenedLink.DoesNotExist:
         messages.error(request, "Link not found")
-        return redirect("links")
+        return redirect(current_path)
     except Exception as e:
         messages.error(request, f"An error occurred: {e}")
-        return redirect("links")
+        return redirect(current_path)
 
 
 @login_required
