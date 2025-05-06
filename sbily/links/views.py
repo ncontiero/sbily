@@ -139,6 +139,12 @@ def update_link(request: HttpRequest, shortened_link: str):
             messages.warning(request, "No changes were made")
             return redirect(current_path)
 
+        in_link_page = current_path.startswith(
+            reverse("link", args=[link.shortened_link]),
+        )
+        if link.shortened_link != form_data["shortened_link"] and in_link_page:
+            current_path = reverse("link", args=[form_data["shortened_link"]])
+
         link.original_link = form_data["original_link"]
         link.shortened_link = form_data["shortened_link"]
         link.remove_at = None
