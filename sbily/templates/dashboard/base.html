@@ -21,8 +21,8 @@
             aria-label="breadcrumb"
             class="mt-4 flex justify-center sm:justify-start"
             data-jswc-breadcrumb
-            data-jswc-urls="{% url 'dashboard' %},{% url 'links' %}{% if link %},{% url 'link' link.shortened_link %},{% url 'link_statistics' link.shortened_link %}{% endif %}"
-            data-jswc-labels="Dashboard,Links{% if link %},{{ link.shortened_link }},Stats{% endif %}"
+            data-jswc-urls="{% url 'dashboard' %},{% url 'links' %}{% if link %},{% url 'link' link.shortened_link %}{% endif %}"
+            data-jswc-labels="Dashboard,Links{% if link %},{{ link.shortened_link }}{% endif %}"
           >
           </nav>
         </div>
@@ -87,7 +87,8 @@
       <div class="flex flex-col gap-4 mt-2">
         <p>You can create a link by filling in the items below.</p>
       </div>
-      <div class="my-6 flex flex-col">
+      <div class="separator my-4"></div>
+      <div class="mb-6 flex flex-col">
         <div class="flex flex-col gap-2 mb-4">
           <label for="original_link" class="label">Destination URL</label>
           <input
@@ -130,10 +131,10 @@
             class="input"
             {% if user.temporary_links_left < 1 %}disabled{% endif %}
           />
-          <p class="text-xs font-medium w-fit text-foreground/80 mt-1 ml-0.5">
+          <p class="text-xs font-medium w-fit text-muted-foreground mt-1 ml-0.5">
             When this link should be automatically removed.
           </p>
-          <p class="text-xs font-medium w-fit text-foreground/80 mt-2 ml-0.5">
+          <p class="text-xs font-medium w-fit text-muted-foreground mt-2 ml-0.5">
             NOTE: It will be considered “expired” and after a while removed.
           </p>
         </div>

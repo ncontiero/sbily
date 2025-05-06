@@ -44,16 +44,6 @@
           <div class="relative flex items-center gap-2">
             {% if request.user.is_authenticated %}
               <a
-                href="{% url 'create_link' %}"
-                class="link relative p-2 border border-foreground/20 hover:border-foreground/40"
-                title="Create link"
-              >
-                <div class="size-5">
-                  <i data-lucide="circle-plus" class="size-5"></i>
-                  <span class="sr-only">Create link</span>
-                </div>
-              </a>
-              <a
                 href="{% url 'my_notifications' %}"
                 class="link relative p-2 border border-foreground/20 hover:border-foreground/40"
                 title="See your notifications"

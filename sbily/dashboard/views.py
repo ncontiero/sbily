@@ -1,9 +1,7 @@
 # ruff: noqa: BLE001
 import contextlib
 import json
-import re
 
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from django.db.models import Q
@@ -11,7 +9,6 @@ from django.db.models.functions import TruncDay
 from django.db.models.functions import TruncHour
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
-from django.shortcuts import redirect
 from django.shortcuts import render
 from django.utils import timezone
 
@@ -83,43 +80,6 @@ def links(request: HttpRequest):
 
 
 @login_required
-def link(request: HttpRequest, shortened_link: str):
-    try:
-        link = ShortenedLink.objects.get(
-            shortened_link=shortened_link,
-            user=request.user,
-        )
-
-        deactivate = request.GET.get("deactivate")
-        if deactivate is not None:
-            deactivate = deactivate.lower() == "true"
-            link.is_active = not deactivate
-            link.save(update_fields=["is_active"])
-            messages.success(
-                request,
-                f"Link {'deactivated' if deactivate else 'activated'}",
-            )
-            return redirect("links")
-
-        link_remove_at = link.remove_at and re.sub(
-            LINK_REMOVE_AT_EXCLUDE,
-            "",
-            f"{timezone.localtime(link.remove_at)}",
-        )
-        return render(
-            request,
-            "link.html",
-            {"link": link, "link_remove_at": link_remove_at},
-        )
-    except ShortenedLink.DoesNotExist:
-        messages.error(request, "Link not found")
-        return redirect("my_account")
-    except Exception as e:
-        messages.error(request, f"An error occurred: {e}")
-        return redirect("my_account")
-
-
-@login_required
 def link_statistics(request: HttpRequest, shortened_link: str):
     link = get_object_or_404(
         ShortenedLink,
@@ -145,7 +105,7 @@ def link_statistics(request: HttpRequest, shortened_link: str):
     ]
     context["daily_clicks_data"] = json.dumps(daily_clicks_data)
 
-    return render(request, "statistics/link.html", context)
+    return render(request, "link.html", context)
 
 
 def filter_clicks(request: HttpRequest, link: ShortenedLink):

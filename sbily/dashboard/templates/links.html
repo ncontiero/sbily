@@ -7,7 +7,7 @@
 {% endblock dashboard_description %}
 
 {% block dashboard_content %}
-  <section class="py-8">
+  <section class="py-8" id="links">
     <div class="container mx-auto px-4 flex flex-col justify-center gap-2">
       <div class="flex-col justify-center p-6 border relative sm:rounded-md">
         <h2 class="text-2xl font-bold my-2">Links</h2>
@@ -19,7 +19,7 @@
             You have {{ user.temporary_links_used }} of {{ user.max_num_links_temporary }} temporary links.
           </span>
         </div>
-        {% include "partials/links_table.html" %}
+        {% include "partials/links_table.html" with hash="links" %}
       </div>
     </div>
   </section>

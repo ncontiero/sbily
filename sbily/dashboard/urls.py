@@ -8,10 +8,9 @@ from . import views
 
 # URLs for managing individual links
 link_urlpatterns = [
-    path("", views.link, name="link"),
+    path("", views.link_statistics, name="link"),
     path("update/", update_link_view, name="update_link"),
     path("delete/", delete_link_view, name="delete_link"),
-    path("stats/", views.link_statistics, name="link_statistics"),
 ]
 
 links_urlpatterns = [

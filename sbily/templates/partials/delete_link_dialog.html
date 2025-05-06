@@ -12,7 +12,10 @@
       </ul>
     </div>
     <div class="mt-4 w-full flex items-center gap-2 flex-wrap">
-      <a href="{% url 'delete_link' link.shortened_link %}" class="button-destructive w-full sm:w-auto">
+      <a
+        href="{% url 'delete_link' link.shortened_link %}?current_path={{ request.path }}#{{ hash|default:'links-table' }}"
+        class="button-destructive w-full sm:w-auto"
+      >
         Yes, I’m sure
       </a>
       <button type="button" class="button-outline w-full sm:w-auto" data-jswc-dialog-close>

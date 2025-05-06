@@ -18,6 +18,10 @@ urlpatterns = [
         views.redirect_link,
         name="redirect_link",
     ),
-    # Include sub-patterns
     path("handle_link_actions/", views.handle_link_actions, name="handle_link_actions"),
+    path(
+        "handle_link_activation/<str:shortened_link>/",
+        views.handle_link_activation,
+        name="handle_link_activation",
+    ),
 ]

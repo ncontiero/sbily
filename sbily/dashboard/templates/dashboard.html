@@ -132,7 +132,7 @@
   </section>
 {% endif %}
 
-<section class="py-6">
+<section class="py-6" id="links">
   <div class="container mx-auto px-4">
     <div class="bg-background rounded-lg border shadow-sm overflow-hidden">
       <div class="p-6 border-b">
@@ -156,7 +156,7 @@
       </div>
 
       <div class="p-6">
-        {% include "partials/links_table.html" with links=latest_links %}
+        {% include "partials/links_table.html" with links=latest_links hash='links' %}
       </div>
     </div>
   </div>

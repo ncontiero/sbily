@@ -9,6 +9,7 @@ from django.core.exceptions import ValidationError
 from django.http import HttpRequest
 from django.shortcuts import redirect
 from django.shortcuts import render
+from django.urls import reverse
 from django.utils import timezone
 
 from sbily.utils.data import validate
@@ -99,7 +100,7 @@ def update_link(request: HttpRequest, shortened_link: str):
     if request.method != "POST":
         return redirect("links")
 
-    old_shortened_link = shortened_link
+    current_path = ""
 
     try:
         link = ShortenedLink.objects.select_for_update().get(
@@ -112,6 +113,10 @@ def update_link(request: HttpRequest, shortened_link: str):
             f"{timezone.localtime(link.remove_at)}",
         )
 
+        current_path = request.POST.get("current_path", reverse("links")).strip()
+        if not current_path.startswith("/"):
+            current_path = reverse("links")
+
         form_data = {
             "original_link": request.POST.get("original_link", "").strip(),
             "shortened_link": request.POST.get("shortened_link", "").strip(),
@@ -120,7 +125,7 @@ def update_link(request: HttpRequest, shortened_link: str):
         }
 
         if not validate([form_data["original_link"]]):
-            msg = "Please enter a valid original link"
+            msg = "Please enter a valid destination URL"
             raise ValidationError(msg)  # noqa: TRY301
 
         if form_data["remove_at"]:
@@ -132,7 +137,7 @@ def update_link(request: HttpRequest, shortened_link: str):
             and form_data["is_active"] == link.is_active
         ):
             messages.warning(request, "No changes were made")
-            return redirect("link", old_shortened_link)
+            return redirect(current_path)
 
         link.original_link = form_data["original_link"]
         link.shortened_link = form_data["shortened_link"]
@@ -145,7 +150,7 @@ def update_link(request: HttpRequest, shortened_link: str):
         link.save()
 
         messages.success(request, "Link updated successfully")
-        return redirect("link", link.shortened_link)
+        return redirect(current_path)
     except ShortenedLink.DoesNotExist:
         messages.error(request, "Link not found")
         return redirect("links")
@@ -154,15 +159,43 @@ def update_link(request: HttpRequest, shortened_link: str):
             request,
             str(e) if isinstance(e.messages, str) else e.messages[0],
         )
-        return redirect("link", old_shortened_link)
+        return redirect(current_path)
     except Exception as e:
         messages.error(request, f"An error occurred: {e}")
         return redirect("links")
 
 
 @login_required
+def handle_link_activation(request: HttpRequest, shortened_link: str):
+    if request.method == "POST":
+        return redirect("links")
+
+    current_path = request.GET.get("current_path", reverse("links")).strip()
+    if not current_path.startswith("/"):
+        current_path = reverse("links")
+    try:
+        link = ShortenedLink.objects.get(
+            shortened_link=shortened_link,
+            user=request.user,
+        )
+        link.is_active = not link.is_active
+        link.save(update_fields=["is_active", "updated_at"])
+        messages.success(request, "Link updated successfully")
+        return redirect(current_path)
+    except ShortenedLink.DoesNotExist:
+        messages.error(request, "Link not found")
+        return redirect("links")
+    except Exception as e:
+        messages.error(request, f"An error occurred: {e}")
+        return redirect(current_path)
+
+
+@login_required
 def delete_link(request: HttpRequest, shortened_link: str):
     try:
+        current_path = request.GET.get("current_path", reverse("links")).strip()
+        if not current_path.startswith("/"):
+            current_path = reverse("links")
         link = ShortenedLink.objects.get(
             shortened_link=shortened_link,
             user=request.user,
@@ -187,6 +220,9 @@ def handle_link_actions(request: HttpRequest):
     user = request.user
     link_ids = request.POST.getlist("_selected_action")
     action = request.POST.get("action")
+    current_path = request.POST.get("current_path", reverse("links")).strip()
+    if not current_path.startswith("/"):
+        current_path = reverse("links")
 
     shortened_links = ShortenedLink.objects.filter(id__in=link_ids, user=user)
 
@@ -198,10 +234,10 @@ def handle_link_actions(request: HttpRequest):
 
     if not action or action not in actions:
         messages.error(request, "Invalid action")
-        return redirect("links")
+        return redirect(current_path)
     if not link_ids:
         messages.error(request, "No links selected")
-        return redirect("links")
+        return redirect(current_path)
 
     try:
         if action in ("activate_selected", "deactivate_selected"):
@@ -214,8 +250,8 @@ def handle_link_actions(request: HttpRequest):
             request,
             str(e) if isinstance(e.messages, str) else e.messages[0],
         )
-        return redirect("links")
+        return redirect(current_path)
     except Exception as e:
         messages.error(request, f"An error occurred: {e}")
-        return redirect("links")
-    return redirect("links")
+        return redirect(current_path)
+    return redirect(current_path)
