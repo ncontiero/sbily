@@ -111,7 +111,7 @@ function positionDropdownElement(
   switch (position) {
     case "top":
       targetElement.style.bottom = `${windowHeight - triggerRect.top + offsetDistance}px`;
-      targetElement.style.left = `${triggerRect.left + triggerRect.width / 2 - targetRect.width / 2}px`;
+      targetElement.style.left = `${triggerRect.left + triggerRect.width / 2 - targetRect.width / 2 - 25}px`;
       break;
     case "right":
       targetElement.style.left = `${triggerRect.right + offsetDistance}px`;
@@ -119,7 +119,7 @@ function positionDropdownElement(
       break;
     case "bottom":
       targetElement.style.top = `${triggerRect.bottom + offsetDistance}px`;
-      targetElement.style.left = `${triggerRect.left + triggerRect.width / 2 - targetRect.width / 2}px`;
+      targetElement.style.left = `${triggerRect.left + triggerRect.width / 2 - targetRect.width / 2 - 25}px`;
       break;
     case "left":
       targetElement.style.right = `${windowWidth - triggerRect.left + offsetDistance}px`;
