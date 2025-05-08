@@ -7,7 +7,6 @@ from django.db.models.functions import Now
 from django.utils.timezone import timedelta
 from django.utils.translation import gettext_lazy as _
 
-from sbily.payments.admin import LinkPackageInline
 from sbily.payments.admin import PaymentInline
 from sbily.payments.admin import SubscriptionInline
 
@@ -90,7 +89,7 @@ class UserAdmin(auth_admin.UserAdmin):
         "stripe_customer_id",
     )
     ordering = ("-date_joined",)
-    inlines = [SubscriptionInline, PaymentInline, LinkPackageInline]
+    inlines = [SubscriptionInline, PaymentInline]
 
 
 @admin.register(Token)

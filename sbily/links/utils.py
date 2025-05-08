@@ -18,10 +18,9 @@ def validate_link_creation(is_temporary: bool, user: User) -> None:  # noqa: FBT
     """
 
     error_message = _(
-        "You have reached the maximum number of links allowed for your account. "
-        "If you want to create more links, you can buy more links in your account settings."  # noqa: E501
+        "You have reached the maximum number of links allowed for your account."
         if user.is_premium
-        else "Please upgrade your account to create more links.",
+        else " Please upgrade your account to create more links.",
     )
     if (is_temporary and not user.can_create_temporary_link()) or (
         not is_temporary and not user.can_create_link()

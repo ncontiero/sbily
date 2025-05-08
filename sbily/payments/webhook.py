@@ -7,7 +7,6 @@ from django.utils.timezone import now
 from stripe import Customer
 from stripe import Event
 from stripe import Invoice
-from stripe import PaymentIntent
 from stripe import Subscription as StripeSubscription
 
 from sbily.users.models import User
@@ -23,15 +22,7 @@ def handle_stripe_webhook(event: Event):
     """Handle Stripe webhook events"""
     event_type = event.type
 
-    if event_type == "payment_intent.succeeded":
-        payment_intent = event["data"]["object"]
-        handle_payment_intent_succeeded(payment_intent)
-
-    elif event_type == "payment_intent.payment_failed":
-        payment_intent = event["data"]["object"]
-        handle_payment_intent_failed(payment_intent)
-
-    elif event_type == "invoice.payment_succeeded":
+    if event_type == "invoice.payment_succeeded":
         invoice = event["data"]["object"]
         handle_invoice_payment_succeeded(invoice)
 
@@ -60,24 +51,6 @@ def handle_stripe_webhook(event: Event):
         handle_customer_updated(customer)
 
     return {"status": "success", "event_type": event_type}
-
-
-def handle_payment_intent_succeeded(payment_intent: PaymentIntent):
-    """Handle successful payment intent"""
-    with contextlib.suppress(Payment.DoesNotExist):
-        payment = Payment.objects.get(transaction_id=payment_intent.id)
-        payment.complete(transaction_id=payment_intent.id)
-
-
-def handle_payment_intent_failed(payment_intent: PaymentIntent):
-    """Handle failed payment intent"""
-    with contextlib.suppress(Payment.DoesNotExist):
-        payment = Payment.objects.get(transaction_id=payment_intent.id)
-        last_payment_error = payment_intent.get("last_payment_error", {}).get(
-            "message",
-            "Unknown error",
-        )
-        payment.fail(f"Payment failed: {last_payment_error}")
 
 
 def handle_invoice_payment_succeeded(invoice: Invoice):
