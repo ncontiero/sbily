@@ -362,19 +362,9 @@
                 <i data-lucide="check" class="size-4 text-primary"></i>
                 <span>
                   {% if user.is_premium %}
-                    Up to 10 permanent links
+                    Up to 10 links
                   {% else %}
-                    Up to 5 permanent links
-                  {% endif %}
-                </span>
-              </li>
-              <li class="flex items-center gap-2">
-                <i data-lucide="check" class="size-4 text-primary"></i>
-                <span>
-                  {% if user.is_premium %}
-                    Up to 5 temporary links
-                  {% else %}
-                    Up to 2 temporary links
+                    Up to 5 links
                   {% endif %}
                 </span>
               </li>
@@ -385,11 +375,7 @@
               {% if user.is_premium %}
                 <li class="flex items-center gap-2">
                   <i data-lucide="check" class="size-4 text-primary"></i>
-                  <span>Advanced statistics <span class="badge-yellow text-xs">Coming Soon</span></span>
-                </li>
-                <li class="flex items-center gap-2">
-                  <i data-lucide="check" class="size-4 text-primary"></i>
-                  <span>Link monitoring <span class="badge-yellow text-xs">Coming Soon</span></span>
+                  <span>Advanced statistics</span>
                 </li>
                 <li class="flex items-center gap-2">
                   <i data-lucide="check" class="size-4 text-primary"></i>
@@ -403,10 +389,6 @@
                 <li class="flex items-center gap-2 text-muted-foreground">
                   <i data-lucide="x" class="size-4"></i>
                   <span>Advanced statistics</span>
-                </li>
-                <li class="flex items-center gap-2 text-muted-foreground">
-                  <i data-lucide="x" class="size-4"></i>
-                  <span>Link monitoring</span>
                 </li>
                 <li class="flex items-center gap-2 text-muted-foreground">
                   <i data-lucide="x" class="size-4"></i>

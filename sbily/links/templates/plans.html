@@ -27,23 +27,19 @@
             <ul class="space-y-3 mb-8">
               <li class="flex items-center gap-2">
                 <i data-lucide="check" class="size-4 text-primary"></i>
-                <span>Up to 5 permanent links</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <i data-lucide="check" class="size-4 text-primary"></i>
-                <span>Up to 2 temporary links</span>
+                <span>Up to 5 links</span>
               </li>
               <li class="flex items-center gap-2">
                 <i data-lucide="check" class="size-4 text-primary"></i>
                 <span>Basic statistics</span>
               </li>
-              <li class="flex items-center gap-2 text-muted-foreground">
-                <i data-lucide="x" class="size-4"></i>
-                <span>No monitoring</span>
+              <li class="flex items-center gap-2">
+                <i data-lucide="check" class="size-4 text-primary"></i>
+                <span>30-day analytics retention</span>
               </li>
-              <li class="flex items-center gap-2 text-muted-foreground">
-                <i data-lucide="x" class="size-4"></i>
-                <span>No additional links</span>
+              <li class="flex items-center gap-2">
+                <i data-lucide="check" class="size-4 text-primary"></i>
+                <span>Basic support</span>
               </li>
             </ul>
 
@@ -69,23 +65,15 @@
             <ul class="space-y-3 mb-8">
               <li class="flex items-center gap-2">
                 <i data-lucide="check" class="size-4 text-primary"></i>
-                <span>Up to 10 permanent links</span>
+                <span>Up to 10 links</span>
               </li>
               <li class="flex items-center gap-2">
                 <i data-lucide="check" class="size-4 text-primary"></i>
-                <span>Up to 5 temporary links</span>
+                <span>Advanced statistics</span>
               </li>
               <li class="flex items-center gap-2">
                 <i data-lucide="check" class="size-4 text-primary"></i>
-                <span>Advanced statistics (coming soon)</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <i data-lucide="check" class="size-4 text-primary"></i>
-                <span>Monitoring (coming soon)</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <i data-lucide="check" class="size-4 text-primary"></i>
-                <span>Purchase additional links anytime</span>
+                <span>1-year analytics retention</span>
               </li>
               <li class="flex items-center gap-2">
                 <i data-lucide="check" class="size-4 text-primary"></i>
@@ -222,14 +210,9 @@
                 </thead>
                 <tbody>
                   <tr class="border-b border-dashed duration-200 hover:bg-muted/50">
-                    <td class="p-4 font-medium">Permanent Links</td>
+                    <td class="p-4 font-medium">Links</td>
                     <td class="p-4 text-center">5</td>
-                    <td class="p-4 text-center">10 + Additional</td>
-                  </tr>
-                  <tr class="border-b border-dashed duration-200 hover:bg-muted/50">
-                    <td class="p-4 font-medium">Temporary Links</td>
-                    <td class="p-4 text-center">2</td>
-                    <td class="p-4 text-center">5 + Additional</td>
+                    <td class="p-4 text-center">10</td>
                   </tr>
                   <tr class="border-b border-dashed duration-200 hover:bg-muted/50">
                     <td class="p-4 font-medium">Basic Statistics</td>
@@ -239,12 +222,12 @@
                   <tr class="border-b border-dashed duration-200 hover:bg-muted/50">
                     <td class="p-4 font-medium">Advanced Statistics</td>
                     <td class="p-4 text-center"><i data-lucide="x" class="size-4 text-muted-foreground mx-auto"></i></td>
-                    <td class="p-4 text-center"><span class="badge-yellow text-xs">Coming Soon</span></td>
+                    <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
                   </tr>
                   <tr class="border-b border-dashed duration-200 hover:bg-muted/50">
-                    <td class="p-4 font-medium">Link Monitoring</td>
-                    <td class="p-4 text-center"><i data-lucide="x" class="size-4 text-muted-foreground mx-auto"></i></td>
-                    <td class="p-4 text-center"><span class="badge-yellow text-xs">Coming Soon</span></td>
+                    <td class="p-4 font-medium">Analytics Retention</td>
+                    <td class="p-4 text-center">30-day</td>
+                    <td class="p-4 text-center">1-year</td>
                   </tr>
                   <tr class="border-b border-dashed duration-200 hover:bg-muted/50">
                     <td class="p-4 font-medium">Additional Links Purchase</td>
@@ -270,7 +253,9 @@
         <div class="max-w-3xl mx-auto space-y-6">
           <div class="bg-background/40 border p-6 rounded-lg shadow-lg">
             <h3 class="text-xl font-bold mb-2">How do I purchase additional links?</h3>
-            <p>Premium users can purchase additional links from their dashboard. Simply navigate to the "Purchase Links" section and select the type and quantity of links you want to add to your account.</p>
+            <p>
+              Premium users can purchase additional links from their <a href="{% url "my_account" %}?tab=plan" class="link underline">manage plan page</a>. Simply navigate to the "Link Usage" section and select the type and quantity of links you want to add to your account.
+            </p>
           </div>
           <div class="bg-background/40 border p-6 rounded-lg shadow-lg">
             <h3 class="text-xl font-bold mb-2">Can I upgrade from Free to Premium?</h3>
@@ -278,7 +263,7 @@
           </div>
           <div class="bg-background/40 border p-6 rounded-lg shadow-lg">
             <h3 class="text-xl font-bold mb-2">Do additional links expire?</h3>
-            <p>No, once purchased, additional link slots remain in your account indefinitely until used. Only the temporary links themselves expire based on the timeframe you set.</p>
+            <p>No, once purchased, additional link slots remain in your account indefinitely until used.</p>
           </div>
           <div class="bg-background/40 border p-6 rounded-lg shadow-lg">
             <h3 class="text-xl font-bold mb-2">Are there any discounts for bulk purchases?</h3>
@@ -295,7 +280,7 @@
           <p class="text-lg mb-8 text-muted-foreground">Join thousands of users who are already simplifying their link sharing with Sbily.</p>
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
             {% if request.user.is_authenticated %}
-              <a href="{% url "my_account" %}?tab=plan" class="button-primary">Go to manage plan</a>
+              <a href="{% url "dashboard" %}" class="button-primary">Go to dashboard</a>
               {% if not request.user.is_premium %}
                 <button type="button" class="button-outline" data-jswc-dialog data-jswc-target="upgrade-dialog">
                   Upgrade to Premium

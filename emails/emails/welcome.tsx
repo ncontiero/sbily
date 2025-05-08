@@ -11,9 +11,9 @@ const features = [
       "Shorten your links in seconds, without complications. Intuitive and easy-to-use interface.",
   },
   {
-    title: "Temporary Links",
+    title: "Detailed statistics",
     description:
-      "Create links that automatically expire after a period you determine.",
+      "Track the performance of your links with click analysis, geographic location, devices, and more.",
   },
   {
     title: "Open Source",
@@ -62,7 +62,7 @@ export default function WelcomeEmail() {
         <Section>
           <Row className="w-full max-w-[300px]">
             <Column>
-              <Button href={`{{ BASE_URL }}{% url "my_account" %}`}>
+              <Button href={`{{ BASE_URL }}{% url "dashboard" %}`}>
                 Go to Dashboard
               </Button>
             </Column>
