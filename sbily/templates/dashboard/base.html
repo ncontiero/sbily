@@ -36,7 +36,7 @@
             <i data-lucide="plus" class="size-5"></i>
             New Link
           </button>
-          {% if not user.is_premium %}
+          {% if not perms.links.view_advanced_statistics %}
             <a href="{% url 'plans' %}" class="button-outline bg-background/30 gap-2">
               <i data-lucide="zap" class="size-5"></i>
               Upgrade to Premium
@@ -49,7 +49,7 @@
 
   {% block dashboard_content %}{% endblock dashboard_content %}
 
-  {% if not user.is_premium %}
+  {% if not perms.links.view_advanced_statistics %}
   <section class="py-6">
     <div class="container mx-auto px-4">
       <div class="bg-secondary/50 p-6 rounded-lg border border-primary/30 text-center mb-8">

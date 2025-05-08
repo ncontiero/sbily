@@ -62,7 +62,7 @@ def dashboard(request: HttpRequest):
         "active_links_data": active_links_data,
     }
 
-    if request.user.is_premium:
+    if request.user.has_perm("links.view_advanced_statistics"):
         country_distribution = (
             clicks_last_30_days.values("country")
             .annotate(count=Count("id"))
@@ -90,7 +90,7 @@ def link_statistics(request: HttpRequest, shortened_link: str):
     clicks, from_date, to_date = filter_clicks(request, link)
     context = generate_basic_statistics(clicks, link, from_date, to_date)
 
-    if request.user.is_premium:
+    if request.user.has_perm("links.view_advanced_statistics"):
         context.update(generate_advanced_statistics(request, clicks))
 
     daily_clicks = (

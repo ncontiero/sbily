@@ -92,7 +92,7 @@
   </div>
 </section>
 
-{% if user.is_premium %}
+{% if perms.links.view_advanced_statistics %}
   <section class="py-6">
     <div class="container mx-auto px-4">
       <div class="bg-background rounded-lg border shadow-sm p-6">
@@ -228,7 +228,7 @@
 {% block js %}
 <script>
   const dailyClicksData = {{ daily_clicks_data|safe }};
-  {% if user.is_premium %}
+  {% if perms.links.view_advanced_statistics %}
   const countryLabels = [
     {% for item in country_distribution %}
       '{{ item.country|default:"Unknown" }}',

@@ -265,6 +265,9 @@ class LinkClick(models.Model):
         indexes = [
             models.Index(fields=["link", "clicked_at"]),
         ]
+        permissions = [
+            ("view_advanced_statistics", _("Can view advanced statistics")),
+        ]
 
     def __str__(self) -> str:
         return f"Click on {self.link.shortened_link} at {self.clicked_at}"

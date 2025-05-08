@@ -88,7 +88,7 @@
     <form
       method="get"
       action="{% url 'link' link.shortened_link %}"
-      class="{% if user.is_premium %}grid grid-cols-2 md:grid-cols-4{% else %}flex flex-col sm:flex-row{% endif %} gap-4"
+      class="{% if perms.links.view_advanced_statistics %}grid grid-cols-2 md:grid-cols-4{% else %}flex flex-col sm:flex-row{% endif %} gap-4"
     >
       <div class="flex flex-col flex-1 gap-2">
         <label for="from-date" class="label">From Date:</label>
@@ -98,7 +98,7 @@
         <label for="to-date" class="label">To Date:</label>
         <input type="date" id="to-date" name="to-date" class="input" value="{{ to_date|safe }}" />
       </div>
-      {% if user.is_premium %}
+      {% if perms.links.view_advanced_statistics %}
       <div class="flex flex-col flex-1 gap-2">
         <label for="device_type" class="label">Device Type:</label>
         <select name="device_type" id="device_type" class="font-bold input px-2 py-0">
@@ -183,13 +183,13 @@
 <section class="py-6">
   <div class="container mx-auto px-4">
     <div class="grid grid-cols-2 gap-4">
-      <div class="bg-background p-6 rounded-lg border {% if not user.is_premium %}col-span-2{% endif %}">
+      <div class="bg-background p-6 rounded-lg border {% if not perms.links.view_advanced_statistics %}col-span-2{% endif %}">
         <h2 class="text-xl font-bold mb-4">Daily Clicks</h2>
         <div class="h-64">
           <canvas id="dailyClicksChart"></canvas>
         </div>
       </div>
-      {% if user.is_premium %}
+      {% if perms.links.view_advanced_statistics %}
       <div class="bg-background p-6 rounded-lg border">
         <h2 class="text-xl font-bold mb-4">Hourly Distribution</h2>
         <div class="h-64">
@@ -201,7 +201,7 @@
   </div>
 </section>
 
-{% if user.is_premium %}
+{% if perms.links.view_advanced_statistics %}
 <section class="py-6">
   <div class="container mx-auto px-4">
     <div class="bg-background rounded-lg border shadow-sm p-6">
@@ -308,7 +308,7 @@
 {% block js %}
 <script>
   const dailyClicksData = {{ daily_clicks_data|safe }};
-  {% if user.is_premium %}
+  {% if perms.links.view_advanced_statistics %}
   const hourlyClicksData = {{ hourly_clicks_data|safe }};
   const countriesAndCitiesData = {{ countries_and_cities|safe }};
   const devicesData = {{ devices|safe }};

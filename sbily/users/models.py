@@ -5,6 +5,7 @@ from urllib.parse import urljoin
 import stripe
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import Permission
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db import transaction
@@ -114,7 +115,7 @@ class User(AbstractUser):
         return max(0, self.max_num_links_temporary - self.temporary_links_used)
 
     def save(self, *args, **kwargs):
-        if not self.pk:
+        if self.pk is None:
             role_limits = {
                 self.ROLE_ADMIN: (100, 100),
                 self.ROLE_PREMIUM: (
@@ -146,18 +147,20 @@ class User(AbstractUser):
         """Check if user can create temporary links"""
         return self.temporary_links_left > 0
 
+    @transaction.atomic
     def upgrade_to_premium(self):
         """Upgrade user to premium"""
         self.role = self.ROLE_PREMIUM
         self.max_num_links = self.MAX_NUM_LINKS_PER_PREMIUM_USER
         self.max_num_links_temporary = self.MAX_NUM_LINKS_TEMP_PER_PREMIUM_USER
         self.save(update_fields=["role", "max_num_links", "max_num_links_temporary"])
+        self.user_permissions.add(
+            Permission.objects.get(codename="view_advanced_statistics"),
+        )
 
     @transaction.atomic
     def downgrade_to_free(self) -> None | str:
         """Downgrade user from premium to free"""
-        self.role = self.ROLE_USER
-
         excess_permalinks = self.permanent_links_used - self.max_num_links
         excess_temporary_links = (
             self.temporary_links_used - self.max_num_links_temporary
@@ -190,8 +193,12 @@ class User(AbstractUser):
                 ).delete()
                 total_deleted += deleted[0]
 
+        self.role = self.ROLE_USER
         self.max_num_links = self.MAX_NUM_LINKS_PER_USER
         self.max_num_links_temporary = self.MAX_NUM_LINKS_TEMP_PER_USER
+        self.user_permissions.remove(
+            Permission.objects.get(codename="view_advanced_statistics"),
+        )
         self.save(update_fields=["role", "max_num_links", "max_num_links_temporary"])
 
         return (
