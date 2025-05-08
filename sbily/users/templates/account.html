@@ -298,7 +298,7 @@
                   </span>
                 </div>
                 <div class="bg-secondary/60 rounded-full h-2 overflow-hidden">
-                  <div class="bg-primary h-full" style="width: {{ user.permanent_links_used_percentage }}%"></div>
+                  <div class="bg-primary h-full" style="width: {% widthratio user.permanent_links_used user.max_num_links 100 %}%"></div>
                 </div>
                 <div class="flex justify-between text-xs text-foreground/80 mt-1">
                   <span>Used</span>
@@ -314,7 +314,7 @@
                   </span>
                 </div>
                 <div class="bg-secondary/60 rounded-full h-2 overflow-hidden">
-                  <div class="bg-primary h-full" style="width: {{ user.temporary_links_used_percentage }}%"></div>
+                  <div class="bg-primary h-full" style="width: {% widthratio user.temporary_links_used user.max_num_links_temporary 100 %}%"></div>
                 </div>
                 <div class="flex justify-between text-xs text-foreground/80 mt-1">
                   <span>Used</span>

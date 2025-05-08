@@ -113,23 +113,6 @@ class User(AbstractUser):
         """Returns the number of temporary links left for user"""
         return max(0, self.max_num_links_temporary - self.temporary_links_used)
 
-    @property
-    def permanent_links_used_percentage(self) -> float:
-        """Returns the percentage of permanent links used by user"""
-        if self.max_num_links == 0:
-            return 0
-        return min(100, int((self.permanent_links_used / self.max_num_links) * 100))
-
-    @property
-    def temporary_links_used_percentage(self) -> float:
-        """Returns the percentage of temporary links used by user"""
-        if self.max_num_links_temporary == 0:
-            return 0
-        return min(
-            100,
-            int((self.temporary_links_used / self.max_num_links_temporary) * 100),
-        )
-
     def save(self, *args, **kwargs):
         if not self.pk:
             role_limits = {
