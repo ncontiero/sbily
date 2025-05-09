@@ -68,39 +68,6 @@ def delete_expired_links(self) -> dict:
     )
 
 
-@shared_task(**default_task_params("delete_excess_user_links", acks_late=True))
-def delete_excess_user_links(self) -> dict:
-    """Delete excess links for users that have exceeded their link limit."""
-    users = User.objects.prefetch_related("shortened_links").all()
-    total_deleted_count = 0
-
-    for user in users:
-        links = user.shortened_links.all().order_by("-updated_at")
-        exceeded_links = user.monthly_limit_links_used - user.monthly_link_limit
-        user_deleted_count = 0
-        deleted_links = []
-
-        if exceeded_links > 0:
-            links_to_delete = links[:exceeded_links]
-            deleted_links.extend(list(links_to_delete))
-            deleted = links.filter(pk__in=links_to_delete).delete()[0]
-            user_deleted_count += deleted
-            total_deleted_count += deleted
-
-        if user_deleted_count > 0:
-            send_notification_deleted_links(
-                user=user,
-                links=deleted_links,
-                need_upgrade=True,
-            )
-
-    return task_response(
-        "COMPLETED",
-        f"Deleted {total_deleted_count} excess links for users.",
-        deleted_count=total_deleted_count,
-    )
-
-
 @shared_task(**default_task_params("delete_link_by_id", acks_late=True))
 def delete_link_by_id(self, link_id: int) -> dict:
     """Delete a link by its ID."""
