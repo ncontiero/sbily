@@ -3,7 +3,6 @@ from decimal import Decimal
 
 import stripe
 from django.conf import settings
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.db import transaction
 from django.utils.timezone import now
@@ -274,14 +273,6 @@ class Subscription(models.Model):
 
 
 class Payment(models.Model):
-    TYPE_SUBSCRIPTION = "subscription"
-    TYPE_PACKAGE = "package"
-
-    TYPE_CHOICES = [
-        (TYPE_SUBSCRIPTION, _("Subscription")),
-        (TYPE_PACKAGE, _("Link Package")),
-    ]
-
     STATUS_PENDING = "pending"
     STATUS_COMPLETED = "completed"
     STATUS_FAILED = "failed"
@@ -307,11 +298,6 @@ class Payment(models.Model):
         max_length=10,
         choices=STATUS_CHOICES,
         default=STATUS_PENDING,
-    )
-    payment_type = models.CharField(
-        _("payment type"),
-        max_length=12,
-        choices=TYPE_CHOICES,
     )
     description = models.CharField(_("description"), max_length=255)
     transaction_id = models.CharField(_("transaction ID"), max_length=255, blank=True)
@@ -345,170 +331,3 @@ class Payment(models.Model):
         if error_message:
             self.description += f" - Error: {error_message}"
         self.save()
-
-
-class LinkPackage(models.Model):
-    TYPE_PERMANENT = "permanent"
-    TYPE_TEMPORARY = "temporary"
-
-    TYPE_CHOICES = [
-        (TYPE_PERMANENT, _("Permanent")),
-        (TYPE_TEMPORARY, _("Temporary")),
-    ]
-
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name="link_packages",
-        verbose_name=_("user"),
-    )
-    link_type = models.CharField(
-        _("link type"),
-        max_length=10,
-        choices=TYPE_CHOICES,
-    )
-    quantity = models.PositiveIntegerField(_("quantity"))
-    purchase_date = models.DateTimeField(_("purchase date"), default=now)
-    unit_price = models.DecimalField(_("unit price"), max_digits=6, decimal_places=2)
-    payment = models.ForeignKey(
-        Payment,
-        on_delete=models.SET_NULL,
-        related_name="packages",
-        verbose_name=_("payment"),
-        null=True,
-        blank=True,
-    )
-
-    class Meta:
-        verbose_name = _("Link package")
-        verbose_name_plural = _("Link packages")
-
-    def __str__(self):
-        return f"{self.user.username} - {self.get_link_type_display()} x{self.quantity}"
-
-    @classmethod
-    @transaction.atomic
-    def buy_link_package(
-        cls,
-        user: User,
-        link_type: str,
-        quantity: int,
-        payment_method_id=None,
-    ):
-        """Buy a link package"""
-        try:
-            unit_price = 1.00 if link_type == "permanent" else 2.00
-
-            cls._validate_package_purchase(user, link_type, quantity, unit_price)
-
-            unit_price = cls._apply_discount(link_type, quantity, unit_price)
-            payment, intent = cls._create_payment_and_intent(
-                user,
-                link_type,
-                quantity,
-                unit_price,
-                payment_method_id,
-            )
-
-            if intent.status == "succeeded":
-                payment.complete(transaction_id=intent.id)
-                cls.objects.create(
-                    user=user,
-                    link_type=link_type,
-                    quantity=quantity,
-                    unit_price=unit_price,
-                    payment=payment,
-                )
-                cls._update_user_links(user, link_type, quantity)
-                return {"status": "success", "payment": payment, "intent": intent}
-            if intent.status in {
-                "requires_action",
-                "requires_payment_method",
-                "requires_confirmation",
-            }:
-                payment.status = Payment.STATUS_PENDING
-                payment.save()
-                return {
-                    "status": "action_required",
-                    "payment": payment,
-                    "client_secret": intent.client_secret,
-                    "intent": intent,
-                }
-            payment.status = Payment.STATUS_PENDING
-            payment.save()
-        except stripe.error.StripeError as e:
-            payment.fail(error_message=str(e))
-            return {"status": "error", "error": str(e), "payment": payment}
-        except (ValueError, ValidationError) as e:
-            payment.fail(error_message=str(e))
-            return {"status": "error", "error": str(e.message or e)}
-        else:
-            return {"status": "pending", "payment": payment, "intent": intent}
-
-    @staticmethod
-    def _validate_package_purchase(user, link_type, quantity, unit_price):
-        if not user.is_premium:
-            msg = "User is not premium"
-            raise ValidationError(msg)
-        if link_type not in dict(LinkPackage.TYPE_CHOICES):
-            msg = f"Invalid link type: {link_type}"
-            raise ValueError(msg)
-        if quantity < 1:
-            msg = "Quantity must be greater than 0"
-            raise ValueError(msg)
-        if unit_price < 0:
-            msg = "Unit price must be greater than or equal to 0"
-            raise ValueError(msg)
-
-    @staticmethod
-    def _apply_discount(link_type, quantity, unit_price):
-        discount_with_quantity = 100 if link_type == "permanent" else 50
-        if quantity >= discount_with_quantity:
-            unit_price *= 0.90  # 10% discount
-        return unit_price
-
-    @classmethod
-    def _create_payment_and_intent(
-        cls,
-        user: User,
-        link_type,
-        quantity,
-        unit_price,
-        payment_method_id,
-    ):
-        customer = user.get_stripe_customer()
-        pm = user.update_card_details(payment_method_id)
-
-        payment = Payment.objects.create(
-            user=user,
-            amount=Decimal(unit_price) * quantity,
-            description=f"Purchase of {quantity} {link_type} links",
-            payment_type=Payment.TYPE_PACKAGE,
-            status=Payment.STATUS_PENDING,
-        )
-
-        intent = stripe.PaymentIntent.create(
-            amount=int(float(payment.amount) * 100),  # Convert to cents
-            currency="usd",
-            customer=customer.id,
-            payment_method_types=["card"],
-            description=payment.description,
-            metadata={
-                "payment_id": payment.id,
-                "user_id": user.id,
-                "package_type": link_type,
-                "quantity": quantity,
-            },
-            confirm=bool(pm),
-            payment_method=pm or None,
-        )
-
-        payment.transaction_id = intent.id
-        payment.save()
-        return payment, intent
-
-    @staticmethod
-    def _update_user_links(user, link_type, quantity):
-        if link_type == LinkPackage.TYPE_PERMANENT:
-            user.monthly_link_limit += quantity
-        user.save(update_fields=["monthly_link_limit"])

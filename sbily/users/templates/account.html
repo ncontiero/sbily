@@ -264,7 +264,8 @@
                 <button
                   type="button"
                   class="button-outline button-sm"
-                  data-jswc-dialog data-jswc-target="cancel-subscription-dialog"
+                  data-jswc-dialog
+                  data-jswc-target="cancel-subscription-dialog"
                 >
                   Cancel Subscription
                 </button>
@@ -272,7 +273,8 @@
                 <button
                   type="button"
                   class="button-primary button-sm"
-                  data-jswc-dialog data-jswc-target="resume-subscription-dialog"
+                  data-jswc-dialog
+                  data-jswc-target="resume-subscription-dialog"
                 >
                   Resume Subscription
                 </button>
@@ -307,35 +309,6 @@
               </div>
             </div>
           </div>
-
-          <div class="card-footer">
-            {% if user.is_premium %}
-              <p class="card-footer-description">Purchase additional links.</p>
-              <div class="flex flex-col sm:flex-row gap-3" id="purchase_links">
-                <button
-                  type="button"
-                  class="button-primary button-sm gap-1"
-                  data-jswc-dialog data-jswc-target="purchase-permanent-links"
-                >
-                  <i data-lucide="plus" class="size-4"></i>
-                  Add Permanent Links
-                </button>
-                <button
-                  type="button"
-                  class="button-primary button-sm gap-1"
-                  data-jswc-dialog data-jswc-target="purchase-temporary-links"
-                >
-                  <i data-lucide="plus" class="size-4"></i>
-                  Add Temporary Links
-                </button>
-              </div>
-            {% else %}
-              <p class="card-footer-description">
-                <i data-lucide="info" class="size-4 inline-block mr-1"></i>
-                Upgrade to Premium to purchase additional links and unlock more features.
-              </p>
-            {% endif %}
-          </div>
         </div>
 
         <div class="card mt-7">
@@ -351,10 +324,6 @@
                     Up to 5 links
                   {% endif %}
                 </span>
-              </li>
-              <li class="flex items-center gap-2">
-                <i data-lucide="check" class="size-4 text-primary"></i>
-                <span>Basic statistics</span>
               </li>
               {% if user.is_premium %}
                 <li class="flex items-center gap-2">
@@ -490,114 +459,6 @@
               </div>
             </div>
           {% endif %}
-
-          <!-- Purchase Permanent Links Dialog -->
-          <div id="purchase-permanent-links" class="hidden dialog" data-jswc-dialog-animation="true">
-            <div class="flex flex-col">
-              <div class="flex justify-between items-center">
-                <h2 class="text-xl font-bold">Purchase Permanent Links</h2>
-              </div>
-              <div class="mt-4">
-                <p class="mb-4">Each permanent link costs $1.00. Select the quantity you wish to purchase:</p>
-
-                <form method="post" action="{% url 'purchase_links' %}" class="w-full">
-                  {% csrf_token %}
-                  <input type="hidden" name="link_type" value="permanent" />
-
-                  <div class="flex flex-col gap-4 mb-6">
-                    <div class="flex items-center gap-4">
-                      <label for="quantity" class="w-24">Quantity:</label>
-                      <select id="quantity" name="quantity" class="input">
-                        <option value="5">5 links ($5.00)</option>
-                        <option value="10">10 links ($10.00)</option>
-                        <option value="25">25 links ($25.00)</option>
-                        <option value="50">50 links ($50.00)</option>
-                        <option value="100">100 links ($90.00 - Save 10%)</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div class="separator my-6"></div>
-
-                  <div class="flex flex-col gap-2" id="price-calculation">
-                    <div class="flex justify-between">
-                      <span>5 permanent links</span>
-                      <span>$5.00</span>
-                    </div>
-                    <div class="separator my-2"></div>
-                    <div class="flex justify-between font-bold">
-                      <span>Total</span>
-                      <span>$5.00</span>
-                    </div>
-                  </div>
-
-                  <div class="flex items-center gap-2 mt-6">
-                    <button type="submit" class="button-primary" id="purchase-permanent-button">
-                      Purchase Now
-                    </button>
-                    <button type="button" class="button-outline" data-jswc-dialog-close>Cancel</button>
-                  </div>
-                </form>
-              </div>
-              <button type="button" class="button-outline absolute p-2 border-0 rounded-xl right-4 top-4" aria-label="Close" data-jswc-dialog-close>
-                <i data-lucide="x" class="size-5"></i>
-              </button>
-            </div>
-          </div>
-
-          <!-- Purchase Temporary Links Dialog -->
-          <div id="purchase-temporary-links" class="hidden dialog" data-jswc-dialog-animation="true">
-            <div class="flex flex-col">
-              <div class="flex justify-between items-center">
-                <h2 class="text-xl font-bold">Purchase Temporary Links</h2>
-              </div>
-              <div class="mt-4">
-                <p class="mb-4">Each temporary link costs $2.00. Select the quantity you wish to purchase:</p>
-
-                <form method="post" action="{% url 'purchase_links' %}" class="w-full">
-                  {% csrf_token %}
-                  <input type="hidden" name="link_type" value="temporary" />
-
-                  <div class="flex flex-col gap-4 mb-6">
-                    <div class="flex items-center gap-4">
-                      <label for="temp_quantity" class="w-24">Quantity:</label>
-                      <select id="temp_quantity" name="quantity" class="input">
-                        <option value="5">5 links ($10.00)</option>
-                        <option value="10">10 links ($20.00)</option>
-                        <option value="25">25 links ($50.00)</option>
-                        <option value="50">50 links ($90.00)</option>
-                        <option value="100">100 links ($180.00 - Save 10%)</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div class="separator my-6"></div>
-
-                  <div class="flex flex-col gap-2" id="temp-price-calculation">
-                    <div class="flex justify-between">
-                      <span>5 temporary links</span>
-                      <span>$10.00</span>
-                    </div>
-                    <div class="separator my-2"></div>
-                    <div class="flex justify-between font-bold">
-                      <span>Total</span>
-                      <span>$10.00</span>
-                    </div>
-                  </div>
-
-                  <div class="flex items-center gap-2 mt-6">
-                    <button type="submit" class="button-primary" id="purchase-temporary-button">
-                      Purchase Now
-                    </button>
-                    <button type="button" class="button-outline" data-jswc-dialog-close>Cancel</button>
-                  </div>
-                </form>
-              </div>
-              <button type="button" class="button-outline absolute p-2 border-0 rounded-xl right-4 top-4" aria-label="Close" data-jswc-dialog-close>
-                <i data-lucide="x" class="size-5"></i>
-              </button>
-            </div>
-          </div>
         {% endif %}
       </div>
       <div data-jwsc-tab-panel="billing" class="hidden flex-col size-full data-[state=active]:flex">
