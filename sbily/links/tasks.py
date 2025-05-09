@@ -75,27 +75,15 @@ def delete_excess_user_links(self) -> dict:
     total_deleted_count = 0
 
     for user in users:
-        links = user.shortened_links.order_by("-updated_at")
-        excess_permalinks = user.permanent_links_used - user.max_num_links
-        excess_temporary_links = (
-            user.temporary_links_used - user.max_num_links_temporary
-        )
+        links = user.shortened_links.all().order_by("-updated_at")
+        exceeded_links = user.monthly_limit_links_used - user.monthly_link_limit
         user_deleted_count = 0
         deleted_links = []
 
-        if excess_permalinks > 0:
-            links_to_delete = links.filter(remove_at__isnull=True)[:excess_permalinks]
+        if exceeded_links > 0:
+            links_to_delete = links[:exceeded_links]
             deleted_links.extend(list(links_to_delete))
             deleted = links.filter(pk__in=links_to_delete).delete()[0]
-            user_deleted_count += deleted
-            total_deleted_count += deleted
-
-        if excess_temporary_links > 0:
-            temp_links_to_delete = links.filter(remove_at__isnull=False)[
-                :excess_temporary_links
-            ]
-            deleted_links.extend(list(temp_links_to_delete))
-            deleted = links.filter(pk__in=temp_links_to_delete).delete()[0]
             user_deleted_count += deleted
             total_deleted_count += deleted
 

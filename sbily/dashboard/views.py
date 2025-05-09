@@ -24,6 +24,7 @@ def dashboard(request: HttpRequest):
 
     clicks = LinkClick.objects.filter(link__user=request.user)
     total_clicks = clicks.count()
+    unique_visitors = clicks.values("ip_address").distinct().count()
     active_links = links.filter(is_active=True).count()
     expired_links = links.filter(remove_at__lt=timezone.now()).count()
 
@@ -53,6 +54,7 @@ def dashboard(request: HttpRequest):
 
     context = {
         "total_clicks": total_clicks,
+        "unique_visitors": unique_visitors,
         "links_count": links.count(),
         "active_links": active_links,
         "expired_links": expired_links,

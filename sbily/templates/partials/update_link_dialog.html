@@ -65,7 +65,7 @@
           name="remove_at"
           class="input"
           {% if link.remove_at %}value="{{ link.remove_at|date:"Y-m-d H:i" }}"{% endif %}
-          {% if user.temporary_links_left < 1 and not link.remove_at %}disabled{% endif %}
+          {% if user.remaining_monthly_link_limit < 1 and not link.remove_at %}disabled{% endif %}
         />
         <p class="text-xs font-medium w-fit text-muted-foreground mt-1 ml-0.5">
           When this link should be automatically removed.

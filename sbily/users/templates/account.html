@@ -292,29 +292,13 @@
             <div class="flex flex-col gap-6 mt-4">
               <div>
                 <div class="flex justify-between items-center mb-2">
-                  <h4 class="font-medium">Permanent Links</h4>
+                  <h4 class="font-medium">Links</h4>
                   <span class="text-sm">
-                    {{ user.permanent_links_used }} / {{ user.max_num_links }}
+                    {{ user.monthly_limit_links_used }} / {{ user.monthly_link_limit }}
                   </span>
                 </div>
                 <div class="bg-secondary/60 rounded-full h-2 overflow-hidden">
-                  <div class="bg-primary h-full" style="width: {% widthratio user.permanent_links_used user.max_num_links 100 %}%"></div>
-                </div>
-                <div class="flex justify-between text-xs text-foreground/80 mt-1">
-                  <span>Used</span>
-                  <span>Total</span>
-                </div>
-              </div>
-
-              <div>
-                <div class="flex justify-between items-center mb-2">
-                  <h4 class="font-medium">Temporary Links</h4>
-                  <span class="text-sm">
-                    {{ user.temporary_links_used }} / {{ user.max_num_links_temporary }}
-                  </span>
-                </div>
-                <div class="bg-secondary/60 rounded-full h-2 overflow-hidden">
-                  <div class="bg-primary h-full" style="width: {% widthratio user.temporary_links_used user.max_num_links_temporary 100 %}%"></div>
+                  <div class="bg-primary h-full" style="width: {% widthratio user.monthly_limit_links_used user.monthly_link_limit 100 %}%"></div>
                 </div>
                 <div class="flex justify-between text-xs text-foreground/80 mt-1">
                   <span>Used</span>
@@ -435,7 +419,7 @@
                 <ul class="space-y-2 mb-6">
                   <li class="flex items-center gap-2">
                     <i data-lucide="minus" class="size-4 text-destructive"></i>
-                    <span>Your link limits will be reduced to 5 permanent and 2 temporary links;</span>
+                    <span>Your link limits will be reduced to 5 links;</span>
                   </li>
                   <li class="flex items-center gap-2">
                     <i data-lucide="minus" class="size-4 text-destructive"></i>
@@ -444,10 +428,6 @@
                   <li class="flex items-center gap-2">
                     <i data-lucide="minus" class="size-4 text-destructive"></i>
                     <span>You will lose access to premium features;</span>
-                  </li>
-                  <li class="flex items-center gap-2 font-bold">
-                    <i data-lucide="alert-circle" class="size-4 text-warning"></i>
-                    <span>If you have more than the free limits, excess links will be removed.</span>
                   </li>
                 </ul>
 
@@ -632,9 +612,9 @@
             <h3 class="card-title">Payment Method</h3>
             <p class="card-description">
               {% if user.card_last_four_digits %}
-                Subscription fees and link purchases will be billed to this card.
+                Subscription fees will be billed to this card.
               {% else %}
-              No payment methods added
+                No payment methods added
               {% endif %}
             </p>
             {% if user.card_last_four_digits %}
@@ -649,9 +629,9 @@
           <div class="card-footer">
             <p class="card-footer-description">
               {% if user.card_last_four_digits %}
-                Keep your card up to date to purchase links and keep your plan on auto-renew.
+                Keep your card up to date to keep your plan on auto-renew.
               {% else %}
-                Add a card to purchase links and keep your plan with automatic renewal.
+                Add a card to keep your plan with automatic renewal.
               {% endif %}
             </p>
             <a href="{% url 'add_payment_method' %}" class="button-primary button-sm">

@@ -510,7 +510,5 @@ class LinkPackage(models.Model):
     @staticmethod
     def _update_user_links(user, link_type, quantity):
         if link_type == LinkPackage.TYPE_PERMANENT:
-            user.max_num_links += quantity
-        if link_type == LinkPackage.TYPE_TEMPORARY:
-            user.max_num_links_temporary += quantity
-        user.save(update_fields=["max_num_links", "max_num_links_temporary"])
+            user.monthly_link_limit += quantity
+        user.save(update_fields=["monthly_link_limit"])

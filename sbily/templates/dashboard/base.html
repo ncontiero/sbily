@@ -129,7 +129,7 @@
             id="remove_at"
             name="remove_at"
             class="input"
-            {% if user.temporary_links_left < 1 %}disabled{% endif %}
+            {% if user.remaining_monthly_link_limit < 1 %}disabled{% endif %}
           />
           <p class="text-xs font-medium w-fit text-muted-foreground mt-1 ml-0.5">
             When this link should be automatically removed.

@@ -27,10 +27,8 @@ class User(AbstractUser):
     ROLE_USER = "user"
     ROLE_PREMIUM = "premium"
 
-    MAX_NUM_LINKS_PER_USER = 5
-    MAX_NUM_LINKS_PER_PREMIUM_USER = 10
-    MAX_NUM_LINKS_TEMP_PER_USER = 2
-    MAX_NUM_LINKS_TEMP_PER_PREMIUM_USER = 5
+    MONTHLY_LINK_LIMIT_PER_USER = 5
+    MONTHLY_LINK_LIMIT_PER_PREMIUM = 10
 
     ROLE_CHOICES = [
         (ROLE_ADMIN, _("Admin")),
@@ -56,15 +54,15 @@ class User(AbstractUser):
         default=False,
         help_text=_("Designates whether the user can login with email."),
     )
-    max_num_links = models.PositiveIntegerField(
-        _("max number of links"),
-        default=MAX_NUM_LINKS_PER_USER,
-        help_text=_("Maximum number of links a user can create"),
+    monthly_link_limit = models.PositiveIntegerField(
+        _("monthly link limit"),
+        default=MONTHLY_LINK_LIMIT_PER_USER,
+        help_text=_("Monthly limit of links a user can create."),
     )
-    max_num_links_temporary = models.PositiveIntegerField(
-        _("max number of temporary links"),
-        default=MAX_NUM_LINKS_TEMP_PER_USER,
-        help_text=_("Maximum number of temporary links a user can create"),
+    monthly_limit_links_used = models.PositiveIntegerField(
+        _("monthly limit links used"),
+        default=0,
+        help_text=_("Monthly limit of links a user has used."),
     )
     stripe_customer_id = models.CharField(
         _("Stripe customer ID"),
@@ -95,65 +93,23 @@ class User(AbstractUser):
         return self.role == self.ROLE_PREMIUM and self.subscription.is_active
 
     @property
-    def permanent_links_used(self):
-        """Returns the number of permanent links used"""
-        return self.shortened_links.filter(remove_at__isnull=True).count()
-
-    @property
-    def temporary_links_used(self):
-        """Returns the number of temporary links used"""
-        return self.shortened_links.filter(remove_at__isnull=False).count()
-
-    @property
-    def permanent_links_left(self):
-        """Returns the number of permanent links left for user"""
-        return max(0, self.max_num_links - self.permanent_links_used)
-
-    @property
-    def temporary_links_left(self):
-        """Returns the number of temporary links left for user"""
-        return max(0, self.max_num_links_temporary - self.temporary_links_used)
-
-    def save(self, *args, **kwargs):
-        if self.pk is None:
-            role_limits = {
-                self.ROLE_ADMIN: (100, 100),
-                self.ROLE_PREMIUM: (
-                    self.MAX_NUM_LINKS_PER_PREMIUM_USER,
-                    self.MAX_NUM_LINKS_TEMP_PER_PREMIUM_USER,
-                ),
-                self.ROLE_USER: (
-                    self.MAX_NUM_LINKS_PER_USER,
-                    self.MAX_NUM_LINKS_TEMP_PER_USER,
-                ),
-            }
-
-            if self.is_superuser:
-                self.role = self.ROLE_ADMIN
-                self.email_verified = True
-
-            if self.role in role_limits:
-                self.max_num_links, self.max_num_links_temporary = role_limits[
-                    self.role
-                ]
-
-        super().save(*args, **kwargs)
+    def remaining_monthly_link_limit(self) -> int:
+        """Returns the number of remaining links limit for the user."""
+        return max(0, self.monthly_link_limit - self.monthly_limit_links_used)
 
     def can_create_link(self) -> bool:
         """Check if user can create links"""
-        return self.permanent_links_left > 0
-
-    def can_create_temporary_link(self) -> bool:
-        """Check if user can create temporary links"""
-        return self.temporary_links_left > 0
+        return self.remaining_monthly_link_limit > 0
 
     @transaction.atomic
     def upgrade_to_premium(self):
         """Upgrade user to premium"""
         self.role = self.ROLE_PREMIUM
-        self.max_num_links = self.MAX_NUM_LINKS_PER_PREMIUM_USER
-        self.max_num_links_temporary = self.MAX_NUM_LINKS_TEMP_PER_PREMIUM_USER
-        self.save(update_fields=["role", "max_num_links", "max_num_links_temporary"])
+        self.monthly_link_limit = self.MONTHLY_LINK_LIMIT_PER_PREMIUM
+        self.monthly_limit_links_used = 0
+        self.save(
+            update_fields=["role", "monthly_link_limit", "monthly_limit_links_used"],
+        )
         self.user_permissions.add(
             Permission.objects.get(codename="view_advanced_statistics"),
         )
@@ -161,45 +117,29 @@ class User(AbstractUser):
     @transaction.atomic
     def downgrade_to_free(self) -> None | str:
         """Downgrade user from premium to free"""
-        excess_permalinks = self.permanent_links_used - self.max_num_links
-        excess_temporary_links = (
-            self.temporary_links_used - self.max_num_links_temporary
-        )
+        exceeded_links = self.monthly_limit_links_used - self.monthly_link_limit
         total_deleted = 0
 
-        if excess_permalinks > 0:
-            if permalinks_to_delete := (
-                self.shortened_links.filter(
-                    remove_at__isnull=True,
-                )
-                .order_by("-updated_at")[:excess_permalinks]
+        if exceeded_links > 0:
+            if links_to_delete := (
+                self.shortened_links.all()
+                .order_by("-updated_at")[:exceeded_links]
                 .values_list("id", flat=True)
             ):
                 deleted = self.shortened_links.filter(
-                    id__in=list(permalinks_to_delete),
-                ).delete()
-                total_deleted += deleted[0]
-
-        if excess_temporary_links > 0:
-            if temp_links_to_delete := (
-                self.shortened_links.filter(
-                    remove_at__isnull=False,
-                )
-                .order_by("-updated_at")[:excess_temporary_links]
-                .values_list("id", flat=True)
-            ):
-                deleted = self.shortened_links.filter(
-                    id__in=list(temp_links_to_delete),
+                    id__in=list(links_to_delete),
                 ).delete()
                 total_deleted += deleted[0]
 
         self.role = self.ROLE_USER
-        self.max_num_links = self.MAX_NUM_LINKS_PER_USER
-        self.max_num_links_temporary = self.MAX_NUM_LINKS_TEMP_PER_USER
+        self.monthly_link_limit = self.MONTHLY_LINK_LIMIT_PER_USER
+        self.monthly_limit_links_used = 0
+        self.save(
+            update_fields=["role", "monthly_link_limit", "monthly_limit_links_used"],
+        )
         self.user_permissions.remove(
             Permission.objects.get(codename="view_advanced_statistics"),
         )
-        self.save(update_fields=["role", "max_num_links", "max_num_links_temporary"])
 
         return (
             f"Deleted {total_deleted} excess links due to downgrading to free plan."

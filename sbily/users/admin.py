@@ -33,13 +33,7 @@ class UserAdmin(auth_admin.UserAdmin):
         ),
         (
             _("Role & Limits"),
-            {
-                "fields": (
-                    "role",
-                    "max_num_links",
-                    "max_num_links_temporary",
-                ),
-            },
+            {"fields": ("role", "monthly_link_limit", "monthly_limit_links_used")},
         ),
         (
             _("Permissions"),
@@ -71,8 +65,7 @@ class UserAdmin(auth_admin.UserAdmin):
         "email",
         "role",
         "email_verified",
-        "permanent_links_used",
-        "temporary_links_used",
+        "monthly_limit_links_used",
         "is_active",
     )
     list_filter = (
