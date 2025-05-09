@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from .models import LinkPackage
 from .models import Payment
 from .models import Subscription
 
@@ -15,15 +14,8 @@ class SubscriptionInline(admin.TabularInline):
 class PaymentInline(admin.TabularInline):
     model = Payment
     extra = 0
-    fields = ("amount", "payment_date", "status", "payment_type", "description")
+    fields = ("amount", "payment_date", "status", "description")
     readonly_fields = ("payment_date",)
-
-
-class LinkPackageInline(admin.TabularInline):
-    model = LinkPackage
-    extra = 0
-    fields = ("link_type", "quantity", "purchase_date", "unit_price")
-    readonly_fields = ("purchase_date",)
 
 
 @admin.register(Subscription)
@@ -65,10 +57,9 @@ class PaymentAdmin(admin.ModelAdmin):
         "amount",
         "payment_date",
         "status",
-        "payment_type",
         "description",
     )
-    list_filter = ("status", "payment_type", "payment_date")
+    list_filter = ("status", "payment_date")
     search_fields = ("user__username", "user__email", "description", "transaction_id")
     date_hierarchy = "payment_date"
     actions = ["mark_as_completed", "mark_as_failed", "mark_as_refunded"]
@@ -93,27 +84,3 @@ class PaymentAdmin(admin.ModelAdmin):
     def mark_as_refunded(self, request, queryset):
         queryset.update(status=Payment.STATUS_REFUNDED)
         self.message_user(request, _("Selected payments have been marked as refunded."))
-
-
-@admin.register(LinkPackage)
-class LinkPackageAdmin(admin.ModelAdmin):
-    list_display = (
-        "user",
-        "link_type",
-        "quantity",
-        "purchase_date",
-        "unit_price",
-        "total_price",
-    )
-    list_filter = ("link_type", "purchase_date")
-    search_fields = ("user__username", "user__email")
-    date_hierarchy = "purchase_date"
-
-    def get_readonly_fields(self, request, obj=None):
-        return ("user", "purchase_date", "payment") if obj else ()
-
-    @admin.display(
-        description=_("Total Price"),
-    )
-    def total_price(self, obj):
-        return obj.quantity * obj.unit_price

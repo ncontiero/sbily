@@ -19,7 +19,6 @@ from sbily.utils.errors import bad_request_error
 from sbily.utils.urls import redirect_with_params
 from sbily.utils.urls import redirect_with_tab
 
-from .models import LinkPackage
 from .models import Subscription
 from .webhook import handle_stripe_webhook
 
@@ -213,63 +212,6 @@ def resume_plan(request: HttpRequest):
 
 
 @login_required
-def purchase_links(request: HttpRequest):
-    if request.method != "POST":
-        return redirect_with_tab("plan")
-
-    try:
-        user = request.user
-        if not user.is_premium:
-            bad_request_error(
-                "You need to be a premium user to purchase additional links",
-            )
-
-        customer = user.get_stripe_customer()
-        default_payment_method = customer.invoice_settings.default_payment_method
-        if not default_payment_method:
-            messages.error(request, "Please add a payment method first")
-            return add_payment_method(request)
-
-        link_type = request.POST.get("link_type")
-        quantity = int(request.POST.get("quantity", 0))
-
-        result = LinkPackage.buy_link_package(
-            user=user,
-            link_type=link_type,
-            quantity=quantity,
-            payment_method_id=default_payment_method,
-        )
-
-        if result["status"] == "success":
-            messages.success(
-                request,
-                f"Successfully purchased {quantity} {link_type} links!",
-            )
-        elif result["status"] == "action_required":
-            return render(
-                request,
-                "confirm_payment.html",
-                {
-                    "client_secret": result["client_secret"],
-                    "redirect_url": request.build_absolute_uri(
-                        reverse("purchase_complete"),
-                    ),
-                },
-            )
-        else:
-            messages.error(
-                request,
-                f"Payment failed: {result.get('error', 'Unknown error')}",
-            )
-    except BadRequestError as e:
-        messages.error(request, e.message)
-    except Exception as e:
-        messages.error(request, f"Error purchasing links: {e!s}")
-
-    return redirect_with_tab("plan")
-
-
-@login_required
 def add_payment_method(request: HttpRequest):
     """Add a new payment method to the user's account"""
     try:
@@ -308,42 +250,6 @@ def payment_method_added(request: HttpRequest):
             messages.error(request, f"Error adding payment method: {e!s}")
 
     return redirect_with_tab("billing")
-
-
-@login_required
-def purchase_complete(request: HttpRequest):
-    """Handle completion of link purchase payment"""
-    if request.method != "GET":
-        return redirect_with_tab("plan")
-
-    payment_intent = request.GET.get("payment_intent")
-
-    if not payment_intent:
-        messages.error(request, "Missing payment information")
-        return redirect_with_tab("plan")
-
-    try:
-        intent = stripe.PaymentIntent.retrieve(payment_intent)
-
-        if intent.status == "succeeded":
-            metadata = intent.metadata
-            link_type = metadata.get("package_type")
-            quantity = int(metadata.get("quantity", 0))
-
-            if link_type and quantity > 0:
-                messages.success(
-                    request,
-                    f"Successfully purchased {quantity} {link_type} links!",
-                )
-            else:
-                messages.success(request, "Payment completed successfully!")
-        else:
-            messages.error(request, f"Payment not completed: {intent.status}")
-
-        return redirect_with_tab("plan")
-    except stripe.error.StripeError as e:
-        messages.error(request, f"Payment verification error: {e!s}")
-        return redirect_with_tab("plan")
 
 
 @csrf_exempt
