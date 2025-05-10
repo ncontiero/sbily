@@ -11,7 +11,7 @@ class ShortenedLinkAdmin(admin.ModelAdmin):
         "shortened_link",
         "created_at",
         "updated_at",
-        "remove_at",
+        "expires_at",
         "is_active",
     ]
     list_filter = ["created_at", "updated_at", "is_active"]

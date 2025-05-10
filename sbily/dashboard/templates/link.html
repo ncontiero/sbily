@@ -34,7 +34,7 @@
         <p class="text-muted-foreground">Created:</p>
         <p>{{ link.created_at|date:"F j, Y, P" }}</p>
       </div>
-      {% if link.remove_at %}
+      {% if link.expires_at %}
       <div class="mb-4">
         <p class="text-muted-foreground">Expires in:</p>
         <p>{{ link.time_until_expiration_formatted }}</p>

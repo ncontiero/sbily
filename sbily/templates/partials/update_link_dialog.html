@@ -9,18 +9,17 @@
     </div>
     <input type="hidden" name="current_path" value="{{ request.path }}#{{ hash|default:'links-table' }}" />
     <div class="flex flex-col mt-2">
-      {% if link.time_until_expiration %}
+      {% if link.expires_at %}
         <p class="font-medium text-sm text-muted-foreground">
-          This link will expire in {{ link.time_until_expiration_formatted }}!
-        </p>
-        {% endif %}
-      {% if link.is_expired %}
-        <p class="font-medium text-sm">
-          This link has expired and will be removed!
+          {% if link.is_expired %}
+            This link has expired!
+          {% else %}
+            This link will expire in {{ link.time_until_expiration_formatted }}!
+          {% endif %}
         </p>
       {% endif %}
     </div>
-    <div class="separator my-4"></div>
+    <div class="separator mb-4 mt-2"></div>
     <div class="mb-6 flex flex-col">
       <div class="flex flex-col gap-2 mb-4">
         <label for="original_link" class="label">Destination URL</label>
@@ -56,23 +55,16 @@
         </div>
       </div>
       <div class="flex flex-col mb-5">
-        <label for="remove_at" class="label mb-2">
-          Remove At <span class="text-sm font-medium text-muted-foreground">(Optional)</span>
+        <label for="expires_at" class="label mb-2">
+          Expires At <span class="text-sm font-medium text-muted-foreground">(Optional)</span>
         </label>
         <input
           type="datetime-local"
-          id="remove_at"
-          name="remove_at"
+          id="expires_at"
+          name="expires_at"
           class="input"
-          {% if link.remove_at %}value="{{ link.remove_at|date:"Y-m-d H:i" }}"{% endif %}
-          {% if user.remaining_monthly_link_limit < 1 and not link.remove_at %}disabled{% endif %}
+          {% if link.expires_at %}value="{{ link.expires_at|date:"Y-m-d H:i" }}"{% endif %}
         />
-        <p class="text-xs font-medium w-fit text-muted-foreground mt-1 ml-0.5">
-          When this link should be automatically removed.
-        </p>
-        <p class="text-xs font-medium w-fit text-muted-foreground mt-2 ml-0.5">
-          NOTE: It will be considered “expired” and after a while removed.
-        </p>
       </div>
       <div class="flex gap-3 items-center">
         <label for="is_active" class="label">Link is active:</label>

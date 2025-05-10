@@ -100,9 +100,15 @@
                 >
                   {{ link.shortened_link }}
                 </a>
-                {% if link.remove_at %}
-                  <span title="This link is temporary" aria-label="This link is temporary">
-                    <i data-lucide="clock-alert" class="size-5 stroke-[3px] text-yellow-500"></i>
+                {% if link.expires_at %}
+                  <span
+                    title="{% if link.is_expired %}Expired{% else %}This link will expire in {{ link.time_until_expiration_formatted }}{% endif %}"
+                    aria-label="{% if link.is_expired %}Expired{% else %}This link will expire in {{ link.time_until_expiration_formatted }}{% endif %}"
+                  >
+                    <i
+                      data-lucide="{% if link.is_expired %}clock-alert{% else %}clock-fading{% endif %}"
+                      class="size-5 stroke-[3px] text-yellow-500"
+                    ></i>
                   </span>
                 {% endif %}
               </td>
