@@ -18,7 +18,7 @@ from sbily.utils.urls import redirect_with_params
 from .models import LinkClick
 from .models import ShortenedLink
 
-LINK_REMOVE_AT_EXCLUDE = r".\d*[-+]\d{2}:\d{2}"
+LINK_EXPIRES_AT_EXCLUDE = r".\d*[-+]\d{2}:\d{2}"
 
 logger = logging.getLogger("links.views")
 
@@ -34,10 +34,12 @@ def plans(request: HttpRequest):
 def redirect_link(request: HttpRequest, shortened_link: str):
     try:
         link = ShortenedLink.objects.get(shortened_link=shortened_link)
-        if not link.is_functional():
-            messages.error(request, "Link is expired or deactivated")
-            if request.user == link.user:
-                return redirect("link", link.shortened_link)
+
+        if link.is_expired():
+            return render(request, "expired.html")
+
+        if not link.is_active:
+            messages.error(request, "Link not found")
             return redirect("home")
 
         try:
@@ -49,8 +51,7 @@ def redirect_link(request: HttpRequest, shortened_link: str):
     except ShortenedLink.DoesNotExist:
         messages.error(request, "Link not found")
         return redirect("home")
-    except Exception as e:
-        messages.error(request, f"An error occurred: {e}")
+    except Exception:
         return redirect("home")
 
 
@@ -60,8 +61,7 @@ def create_link(request: HttpRequest):
 
     original_link = request.POST.get("original_link", "").strip()
     shortened_link = request.POST.get("shortened_link", "").strip()
-    remove_at = request.POST.get("remove_at", "").strip()
-    is_temporary = request.POST.get("is_temporary") == "on"
+    expires_at = request.POST.get("expires_at", "").strip()
 
     try:
         if not validate([original_link]):
@@ -77,11 +77,9 @@ def create_link(request: HttpRequest):
             "user": request.user,
         }
 
-        if is_temporary:
-            link_data["remove_at"] = timezone.now() + ShortenedLink.DEFAULT_EXPIRY
-        if remove_at:
-            link_data["remove_at"] = timezone.datetime.fromisoformat(
-                f"{remove_at}+00:00",
+        if expires_at:
+            link_data["expires_at"] = timezone.datetime.fromisoformat(
+                f"{expires_at}+00:00",
             )
 
         link = ShortenedLink.objects.create(**link_data)
@@ -114,10 +112,10 @@ def update_link(request: HttpRequest, shortened_link: str):
             shortened_link=shortened_link,
             user=request.user,
         )
-        link.remove_at = re.sub(
-            LINK_REMOVE_AT_EXCLUDE,
+        link.expires_at = re.sub(
+            LINK_EXPIRES_AT_EXCLUDE,
             "",
-            f"{timezone.localtime(link.remove_at)}",
+            f"{timezone.localtime(link.expires_at)}",
         )
 
         current_path = get_current_path(request)
@@ -125,7 +123,7 @@ def update_link(request: HttpRequest, shortened_link: str):
         form_data = {
             "original_link": request.POST.get("original_link", "").strip(),
             "shortened_link": request.POST.get("shortened_link", "").strip(),
-            "remove_at": request.POST.get("remove_at", "").strip(),
+            "expires_at": request.POST.get("expires_at", "").strip(),
             "is_active": request.POST.get("is_active") == "on",
         }
 
@@ -133,12 +131,12 @@ def update_link(request: HttpRequest, shortened_link: str):
             msg = "Please enter a valid destination URL"
             raise ValidationError(msg)  # noqa: TRY301
 
-        if form_data["remove_at"]:
-            form_data["remove_at"] = f"{form_data['remove_at'].replace('T', ' ')}"
+        if form_data["expires_at"]:
+            form_data["expires_at"] = f"{form_data['expires_at'].replace('T', ' ')}"
         if (
             form_data["original_link"] == link.original_link
             and form_data["shortened_link"] == link.shortened_link
-            and form_data["remove_at"] == str(link.remove_at)
+            and form_data["expires_at"] == str(link.expires_at)
             and form_data["is_active"] == link.is_active
         ):
             messages.warning(request, "No changes were made")
@@ -152,10 +150,10 @@ def update_link(request: HttpRequest, shortened_link: str):
 
         link.original_link = form_data["original_link"]
         link.shortened_link = form_data["shortened_link"]
-        link.remove_at = None
-        if form_data["remove_at"]:
-            link.remove_at = timezone.datetime.fromisoformat(
-                f"{form_data['remove_at']}+00:00",
+        link.expires_at = None
+        if form_data["expires_at"]:
+            link.expires_at = timezone.datetime.fromisoformat(
+                f"{form_data['expires_at']}+00:00",
             )
         link.is_active = form_data["is_active"]
         link.save()

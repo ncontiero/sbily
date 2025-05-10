@@ -115,28 +115,21 @@
               type="text"
               id="shortened_link"
               name="shortened_link"
-              class="input border-0 rounded-l-none"
+              class="input border-y-0 border-r-0 rounded-l-none"
               placeholder="my_link"
             />
           </div>
         </div>
         <div class="flex flex-col">
-          <label for="remove_at" class="label mb-2">
-            Remove At <span class="text-sm font-medium text-muted-foreground">(Optional)</span>
+          <label for="expires_at" class="label mb-2">
+            Expires At <span class="text-sm font-medium text-muted-foreground">(Optional)</span>
           </label>
           <input
             type="datetime-local"
-            id="remove_at"
-            name="remove_at"
+            id="expires_at"
+            name="expires_at"
             class="input"
-            {% if user.remaining_monthly_link_limit < 1 %}disabled{% endif %}
           />
-          <p class="text-xs font-medium w-fit text-muted-foreground mt-1 ml-0.5">
-            When this link should be automatically removed.
-          </p>
-          <p class="text-xs font-medium w-fit text-muted-foreground mt-2 ml-0.5">
-            NOTE: It will be considered “expired” and after a while removed.
-          </p>
         </div>
       </div>
       <div class="w-full flex items-center gap-2 flex-wrap">

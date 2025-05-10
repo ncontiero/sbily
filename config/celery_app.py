@@ -4,8 +4,6 @@ from celery import Celery
 from celery.schedules import crontab
 from celery.signals import setup_logging
 
-from .tasks import cleanup_clocked_schedules
-
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.local")
 
@@ -35,11 +33,6 @@ app.autodiscover_tasks()
 def setup_periodic_tasks(sender: Celery, **kwargs):
     from sbily.users.tasks import reset_free_user_link_limit
 
-    sender.add_periodic_task(
-        crontab(minute=0, hour="0,12"),
-        cleanup_clocked_schedules.s(),
-        name="Cleanup Clocked Schedules",
-    )
     sender.add_periodic_task(
         crontab(minute=0, hour=0),
         reset_free_user_link_limit.s(),

@@ -1,4 +1,3 @@
-import json
 import logging
 import secrets
 from urllib.parse import urljoin
@@ -15,8 +14,6 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.timesince import timesince
 from django.utils.translation import gettext_lazy as _
-from django_celery_beat.models import ClockedSchedule
-from django_celery_beat.models import PeriodicTask
 from user_agents import parse
 
 from sbily.users.models import User
@@ -83,13 +80,13 @@ class ShortenedLink(models.Model):
         auto_now=True,
         help_text=_("When this shortened link was last updated"),
     )
-    remove_at = models.DateTimeField(
-        _("Remove At"),
+    expires_at = models.DateTimeField(
+        _("Expires At"),
         null=True,
         blank=True,
         db_index=True,
         validators=[future_date_validator],
-        help_text=_("When this link should be automatically removed"),
+        help_text=_("When this shortened link will expire"),
     )
     is_active = models.BooleanField(
         _("Is Active"),
@@ -117,9 +114,9 @@ class ShortenedLink(models.Model):
 
     @transaction.atomic
     def save(self, *args, **kwargs) -> None:
-        if self.remove_at:
+        if self.expires_at:
             current_timezone = timezone.get_current_timezone()
-            self.remove_at = self.remove_at.replace(tzinfo=current_timezone)
+            self.expires_at = self.expires_at.replace(tzinfo=current_timezone)
         self.full_clean()
         if not self.shortened_link:
             self._generate_unique_shortened_link()
@@ -128,25 +125,6 @@ class ShortenedLink(models.Model):
             self.user.monthly_limit_links_used += 1
             self.user.save(update_fields=["monthly_limit_links_used"])
         super().save(*args, **kwargs)
-
-        if self.remove_at:
-            schedule, _ = ClockedSchedule.objects.get_or_create(
-                clocked_time=self.remove_at,
-            )
-            PeriodicTask.objects.update_or_create(
-                name=f"Remove link {self.id}",
-                defaults={
-                    "task": "delete_link_by_id",
-                    "args": json.dumps([self.pk]),
-                    "clocked": schedule,
-                    "one_off": True,
-                    "expires": self.remove_at + timezone.timedelta(minutes=1),
-                    "start_time": self.remove_at,
-                    "enabled": True,
-                },
-            )
-        else:
-            PeriodicTask.objects.filter(name=f"Remove link {self.id}").delete()
 
     def get_absolute_url(self) -> str:
         """Returns the absolute URL for this shortened link"""
@@ -187,25 +165,23 @@ class ShortenedLink(models.Model):
                     ) from e
 
     def is_expired(self) -> bool:
-        """Check if the link has expired based on remove_at timestamp"""
-        return bool(self.remove_at and self.remove_at <= timezone.now())
-
-    def is_functional(self) -> bool:
-        """Check if the link is functional based on is_active and remove_at timestamp"""
-        return self.is_active and not self.is_expired()
+        """Check if the link has expired based on expires_at timestamp"""
+        return bool(self.expires_at and self.expires_at <= timezone.now())
 
     def time_until_expiration(self) -> timezone.timedelta | None:
         """Returns the time remaining until link expiration or None"""
-        if not self.remove_at or self.is_expired():
+        if not self.expires_at or self.is_expired():
             return None
-        return self.remove_at - timezone.now()
+        return self.expires_at - timezone.now()
 
     @property
     def time_until_expiration_formatted(self) -> str:
         """Returns the time remaining until link expiration in a human-readable format"""  # noqa: E501
-        if not self.remove_at or self.is_expired():
+        if not self.expires_at:
             return _("Never")
-        return timesince(timezone.now(), self.remove_at)
+        if self.is_expired():
+            return _("Expired")
+        return timesince(timezone.now(), self.expires_at)
 
 
 class LinkClick(models.Model):

@@ -15,8 +15,6 @@ from django.utils import timezone
 from sbily.links.models import LinkClick
 from sbily.links.models import ShortenedLink
 
-LINK_REMOVE_AT_EXCLUDE = r".\d*[-+]\d{2}:\d{2}"
-
 
 @login_required
 def dashboard(request: HttpRequest):
@@ -26,7 +24,7 @@ def dashboard(request: HttpRequest):
     total_clicks = clicks.count()
     unique_visitors = clicks.values("ip_address").distinct().count()
     active_links = links.filter(is_active=True).count()
-    expired_links = links.filter(remove_at__lt=timezone.now()).count()
+    expired_links = links.filter(expires_at__lt=timezone.now()).count()
 
     thirty_days_ago = timezone.now() - timezone.timedelta(days=30)
     clicks_last_30_days = clicks.filter(clicked_at__gte=thirty_days_ago)
