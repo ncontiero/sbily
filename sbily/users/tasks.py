@@ -1,5 +1,7 @@
 from celery import shared_task
 from celery.utils.log import get_task_logger
+from django.utils.timezone import now
+from django.utils.timezone import timedelta
 
 from sbily.utils.tasks import default_task_params
 from sbily.utils.tasks import task_response
@@ -177,4 +179,22 @@ def send_deleted_account_email(self, user_email: int, username: str):
         "COMPLETED",
         f"Account deleted email sent to {user_email}.",
         user_email=user_email,
+    )
+
+
+@shared_task(**default_task_params("reset_free_user_link_limit", acks_late=True))
+def reset_free_user_link_limit(self) -> dict:
+    """Reset free user link limit."""
+
+    users = User.objects.filter(
+        role=User.ROLE_USER,
+        date_joined__lte=now() - timedelta(days=30),
+        monthly_limit_links_used__gt=0,
+    ).filter(date_joined__day=now().day)
+
+    count = users.update(monthly_limit_links_used=0)
+
+    return task_response(
+        "COMPLETED",
+        f"Free plan users link limit successfully reset for {count} users.",
     )

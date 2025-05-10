@@ -21,8 +21,6 @@ from user_agents import parse
 
 from sbily.users.models import User
 
-from .utils import user_can_create_link
-
 SITE_BASE_URL = settings.BASE_URL or ""
 
 
@@ -115,8 +113,7 @@ class ShortenedLink(models.Model):
         ]
 
     def __str__(self) -> str:
-        status = _("Temporary") if self.remove_at else _("Permanent")
-        return f"{self.shortened_link} ({status})"
+        return self.shortened_link
 
     @transaction.atomic
     def save(self, *args, **kwargs) -> None:
@@ -127,6 +124,9 @@ class ShortenedLink(models.Model):
         if not self.shortened_link:
             self._generate_unique_shortened_link()
 
+        if not self.pk:
+            self.user.monthly_limit_links_used += 1
+            self.user.save(update_fields=["monthly_limit_links_used"])
         super().save(*args, **kwargs)
 
         if self.remove_at:
@@ -154,8 +154,14 @@ class ShortenedLink(models.Model):
         return urljoin(SITE_BASE_URL, path)
 
     def clean(self) -> None:
-        user_can_create_link(self.id, self.remove_at, self.user)
         super().clean()
+        if not self.user.can_create_link():
+            error_message = _(
+                "You have reached the maximum number of links allowed for your account."
+                if self.user.is_premium
+                else " Please upgrade your account to create more links.",
+            )
+            raise ValidationError(error_message, code="max_links_reached")
 
     def _generate_unique_shortened_link(self) -> None:
         """Helper method to generate unique shortened link with retries"""
@@ -189,7 +195,7 @@ class ShortenedLink(models.Model):
         return self.is_active and not self.is_expired()
 
     def time_until_expiration(self) -> timezone.timedelta | None:
-        """Returns the time remaining until link expiration or None if permanent"""
+        """Returns the time remaining until link expiration or None"""
         if not self.remove_at or self.is_expired():
             return None
         return self.remove_at - timezone.now()
@@ -198,7 +204,7 @@ class ShortenedLink(models.Model):
     def time_until_expiration_formatted(self) -> str:
         """Returns the time remaining until link expiration in a human-readable format"""  # noqa: E501
         if not self.remove_at or self.is_expired():
-            return _("Permanent")
+            return _("Never")
         return timesince(timezone.now(), self.remove_at)
 
 

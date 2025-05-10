@@ -47,33 +47,31 @@
       <div class="bg-background rounded-lg border shadow-sm p-6">
         <div class="flex items-center gap-4">
           <div class="size-12 bg-primary/10 rounded-full flex items-center justify-center">
-            <i data-lucide="infinity" class="text-primary size-6"></i>
+            <i data-lucide="mouse-pointer-click" class="text-primary size-6"></i>
           </div>
           <div>
-            <p class="text-sm text-muted-foreground">Permanent Links</p>
-            <h2 class="text-2xl font-bold">{{ user.permanent_links_used }} / {{ user.max_num_links }}</h2>
+            <p class="text-sm text-muted-foreground">Unique Visitor</p>
+            <h2 class="text-2xl font-bold">{{ unique_visitors }}</h2>
           </div>
         </div>
         <div class="mt-4 pt-4 border-t">
-          <div class="w-full bg-muted rounded-full h-2">
-            <div class="bg-primary h-2 rounded-full" style="width: {% widthratio user.permanent_links_used user.max_num_links 100 %}%"></div>
-          </div>
+          <p class="text-sm text-muted-foreground">Across all your links</p>
         </div>
       </div>
 
       <div class="bg-background rounded-lg border shadow-sm p-6">
         <div class="flex items-center gap-4">
           <div class="size-12 bg-primary/10 rounded-full flex items-center justify-center">
-            <i data-lucide="hourglass" class="text-primary size-6"></i>
+            <i data-lucide="infinity" class="text-primary size-6"></i>
           </div>
           <div>
-            <p class="text-sm text-muted-foreground">Temporary Links</p>
-            <h2 class="text-2xl font-bold">{{ user.temporary_links_used }} / {{ user.max_num_links_temporary }}</h2>
+            <p class="text-sm text-muted-foreground">Links Limit</p>
+            <h2 class="text-2xl font-bold">{{ user.monthly_limit_links_used }} / {{ user.monthly_link_limit }}</h2>
           </div>
         </div>
         <div class="mt-4 pt-4 border-t">
           <div class="w-full bg-muted rounded-full h-2">
-            <div class="bg-primary h-2 rounded-full" style="width: {% widthratio user.temporary_links_used user.max_num_links_temporary 100 %}%"></div>
+            <div class="bg-primary h-2 rounded-full" style="width: {% widthratio user.monthly_limit_links_used user.monthly_link_limit 100 %}%"></div>
           </div>
         </div>
       </div>

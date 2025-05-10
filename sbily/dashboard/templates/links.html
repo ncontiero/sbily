@@ -13,10 +13,7 @@
         <h2 class="text-2xl font-bold my-2">Links</h2>
         <div class="mt-1 mb-2 flex flex-wrap gap-0.5">
           <span class="badge-default">
-            You have {{ user.permanent_links_used }} of {{ user.max_num_links }} links.
-          </span>
-          <span class="badge-yellow">
-            You have {{ user.temporary_links_used }} of {{ user.max_num_links_temporary }} temporary links.
+            You have {{ user.monthly_limit_links_used }} of {{ user.monthly_link_limit }} links.
           </span>
         </div>
         {% include "partials/links_table.html" with hash="links" %}
