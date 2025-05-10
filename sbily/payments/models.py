@@ -117,7 +117,6 @@ class Subscription(models.Model):
             user=self.user,
             amount=self.price,
             description="Subscription Renewal (30 days)",
-            payment_type=Payment.TYPE_SUBSCRIPTION,
             transaction_id=transaction_id,
         )
 

@@ -101,6 +101,11 @@ class User(AbstractUser):
         """Check if user can create links"""
         return self.remaining_monthly_link_limit > 0
 
+    def reset_monthly_link_limit(self) -> None:
+        """Reset the monthly link limit for the user."""
+        self.monthly_limit_links_used = 0
+        self.save(update_fields=["monthly_limit_links_used"])
+
     @transaction.atomic
     def upgrade_to_premium(self):
         """Upgrade user to premium"""

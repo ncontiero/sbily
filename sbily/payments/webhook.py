@@ -74,7 +74,6 @@ def handle_invoice_payment_succeeded(invoice: Invoice):
                     "amount": Decimal(invoice.get("amount_paid", 0))
                     / 100,  # Convert from cents
                     "description": payment_description,
-                    "payment_type": Payment.TYPE_SUBSCRIPTION,
                     "status": Payment.STATUS_COMPLETED,
                     "transaction_id": invoice.id,
                 },
@@ -90,6 +89,7 @@ def handle_invoice_payment_succeeded(invoice: Invoice):
             period_end = invoice.lines.data[0].period.end
             subscription.end_date = datetime.fromtimestamp(period_end, tz=now().tzinfo)
             subscription.save()
+            subscription.user.reset_monthly_link_limit()
 
 
 def handle_invoice_payment_failed(invoice: Invoice):
@@ -109,7 +109,6 @@ def handle_invoice_payment_failed(invoice: Invoice):
                     "amount": Decimal(invoice.get("amount_due", 0))
                     / 100,  # Convert from cents
                     "description": "Failed Monthly Premium Subscription",
-                    "payment_type": Payment.TYPE_SUBSCRIPTION,
                     "status": Payment.STATUS_FAILED,
                 },
             )
@@ -135,7 +134,6 @@ def handle_invoice_payment_action_required(invoice: Invoice):
                     "amount": Decimal(invoice.amount_due or 0)
                     / 100,  # Convert from cents
                     "description": f"Monthly Premium Subscription - Invoice {invoice.number}",  # noqa: E501
-                    "payment_type": Payment.TYPE_SUBSCRIPTION,
                     "status": Payment.STATUS_PENDING,
                 },
             )
