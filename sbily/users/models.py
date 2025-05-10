@@ -97,6 +97,12 @@ class User(AbstractUser):
         """Returns the number of remaining links limit for the user."""
         return max(0, self.monthly_link_limit - self.monthly_limit_links_used)
 
+    def save(self, *args, **kwargs):
+        if self.pk is None and self.is_superuser:
+            self.role = self.ROLE_ADMIN
+
+        super().save(*args, **kwargs)
+
     def can_create_link(self) -> bool:
         """Check if user can create links"""
         return self.remaining_monthly_link_limit > 0
