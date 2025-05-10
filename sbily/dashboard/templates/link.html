@@ -31,6 +31,22 @@
         </p>
       </div>
       <div class="mb-4">
+        <p
+          aria-label="Link is {% if not link.is_active %}not {% endif %}active"
+          title="Link is {% if not link.is_active %}not {% endif %}active"
+          class="text-muted-foreground flex items-center gap-1"
+        >
+          Is active:
+          <span class="mt-1">
+            {% if link.is_active %}
+              <i data-lucide="circle-check" class="stroke-[3px] text-green-600"></i>
+            {% else %}
+              <i data-lucide="circle-x" class="stroke-[3px] text-red-600"></i>
+            {% endif %}
+          </span>
+        </p>
+      </div>
+      <div class="mb-4">
         <p class="text-muted-foreground">Created:</p>
         <p>{{ link.created_at|date:"F j, Y, P" }}</p>
       </div>

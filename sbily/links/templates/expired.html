@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}Expired Link - Sbily{% endblock title %}
+
+{% block content %}
+<main class="bg-[radial-gradient(hsl(var(--primary)/0.2)_1px,transparent_1px)] [background-size:16px_16px] dark:bg-[radial-gradient(hsl(var(--secondary)/0.4)_1px,transparent_1px)]">
+  <section class="relative overflow-hidden bg-[radial-gradient(hsl(var(--primary)/0.5)_1px,transparent_1px)] [background-size:16px_16px]">
+    <div class="absolute inset-0 bg-gradient-to-br from-primary/30 to-background z-0"></div>
+    <div class="container mx-auto px-4 py-20 md:py-28 relative z-10">
+      <div class="flex flex-col text-center items-center max-w-2xl mx-auto gap-8">
+        <div class="relative">
+          <div class="absolute -inset-3 bg-primary/40 rounded-full blur-lg opacity-50"></div>
+          <div class="relative p-4 rounded-full bg-background border border-border shadow-lg">
+            <i data-lucide="clock-fading" class="size-20"></i>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <h1 class="text-3xl md:text-5xl font-bold">This link has expired</h1>
+          <p class="text-lg md:text-xl text-foreground/80 max-w-lg mx-auto">
+            This link has expired. Please contact the link owner to get a new one.
+          </p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-4 mt-6">
+          {% if request.user.is_authenticated %}
+            <a href="{% url 'dashboard' %}" class="button-primary">
+              <i data-lucide="plus" class="size-4 mr-2"></i>
+              Create link
+            </a>
+            <a href="{% url 'plans' %}" class="button-outline">View plans</a>
+          {% else %}
+            <a href="{% url 'sign_up' %}" class="button-primary">
+              <i data-lucide="arrow-right" class="size-4 mr-2"></i>
+              Try Sbily
+            </a>
+            <a href="{% url 'sign_in' %}" class="button-outline">Sign in</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-16 bg-secondary/50">
+    <div class="container">
+      <div class="text-center max-w-3xl mx-auto">
+        <h2 class="text-2xl md:text-3xl font-bold mb-6">
+          Full control over your links with Sbily
+        </h2>
+        <p class="text-lg text-muted-foreground mb-12">
+          Set custom expiration dates and manage your links with complete flexibility.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="bg-background/80 backdrop-blur-sm p-6 rounded-lg border border-border">
+            <div class="size-12 bg-primary/10 rounded-full flex items-center justify-center mb-4 mx-auto">
+              <i data-lucide="calendar-clock" class="text-primary size-6"></i>
+            </div>
+            <h3 class="font-semibold mb-2">Custom expiration</h3>
+            <p class="text-sm text-muted-foreground">Set the perfect lifespan for each link</p>
+          </div>
+
+          <div class="bg-background/80 backdrop-blur-sm p-6 rounded-lg border border-border">
+            <div class="size-12 bg-primary/10 rounded-full flex items-center justify-center mb-4 mx-auto">
+              <i data-lucide="settings" class="text-primary size-6"></i>
+            </div>
+            <h3 class="font-semibold mb-2">Easy management</h3>
+            <p class="text-sm text-muted-foreground">Edit or extend expiration dates when needed</p>
+          </div>
+
+          <div class="bg-background/80 backdrop-blur-sm p-6 rounded-lg border border-border">
+            <div class="size-12 bg-primary/10 rounded-full flex items-center justify-center mb-4 mx-auto">
+              <i data-lucide="shield-check" class="text-primary size-6"></i>
+            </div>
+            <h3 class="font-semibold mb-2">Advanced security</h3>
+            <p class="text-sm text-muted-foreground">Keep your links secure with automatic expiration</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-16 bg-background/50">
+    <div class="container">
+      <div class="max-w-2xl mx-auto">
+        <h2 class="text-2xl font-bold text-center mb-8">Frequently asked questions</h2>
+
+        <div class="space-y-4">
+          <div class="bg-background border border-border rounded-lg p-4">
+            <h3 class="font-semibold text-sm flex items-start gap-2">
+              <i data-lucide="circle-help" class="size-4 mt-0.5 shrink-0 text-primary"></i>
+              Can the link creator change the expiration date?
+            </h3>
+            <p class="text-sm text-muted-foreground mt-2 ml-6">
+              Yes! The link creator can access their dashboard and modify the expiration date or even remove the time limit at any time.
+            </p>
+          </div>
+
+          <div class="bg-background border border-border rounded-lg p-4">
+            <h3 class="font-semibold text-sm flex items-start gap-2">
+              <i data-lucide="circle-help" class="size-4 mt-0.5 shrink-0 text-primary"></i>
+              How can I get a new link?
+            </h3>
+            <p class="text-sm text-muted-foreground mt-2 ml-6">
+              Contact the person who shared the link. They can extend the expiration date or create a new link with a longer duration.
+            </p>
+          </div>
+
+          <div class="bg-background border border-border rounded-lg p-4">
+            <h3 class="font-semibold text-sm flex items-start gap-2">
+              <i data-lucide="circle-help" class="size-4 mt-0.5 shrink-0 text-primary"></i>
+              Can I create links without an expiration date?
+            </h3>
+            <p class="text-sm text-muted-foreground mt-2 ml-6">
+              Yes! You can create links with unlimited duration or set any expiration period you desire.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-16 bg-muted/50">
+    <div class="container">
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="text-2xl md:text-3xl font-bold mb-6">
+          Take full control of your links
+        </h2>
+        <p class="text-lg text-muted-foreground mb-12">
+          With Sbily, you decide when and how your links should expire, ensuring your content stays relevant.
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
+          <div class="flex flex-col items-center justify-center bg-background p-6 rounded-lg border border-border">
+            <i data-lucide="infinity" class="size-8 text-primary mb-3"></i>
+            <h3 class="font-semibold mb-2">Permanent links</h3>
+            <p class="text-sm text-muted-foreground">Create links without expiration for lasting content</p>
+          </div>
+
+          <div class="flex flex-col items-center justify-center bg-background p-6 rounded-lg border border-border">
+            <i data-lucide="clock" class="size-8 text-primary mb-3"></i>
+            <h3 class="font-semibold mb-2">Scheduled expiration</h3>
+            <p class="text-sm text-muted-foreground">Set specific dates for campaigns and temporary events</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-16 bg-background/50">
+    <div class="container">
+      <div class="max-w-3xl mx-auto text-center bg-gradient-to-r from-primary/10 to-background/30 border border-primary/20 rounded-lg p-8 md:p-12">
+        <h2 class="text-2xl md:text-3xl font-bold mb-4">
+          Ready to create your links?
+        </h2>
+        <p class="text-lg text-muted-foreground mb-8">
+          Join thousands of users who already trust Sbily to manage their links with security and flexibility.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          {% if request.user.is_authenticated %}
+            <a href="{% url 'dashboard' %}" class="button-primary">Go to dashboard</a>
+            {% if not request.user.is_premium %}
+              <button type="button" class="button-outline" data-jswc-dialog data-jswc-target="upgrade-dialog">
+                Upgrade to Premium
+              </button>
+            {% endif %}
+          {% else %}
+            <a href="{% url 'sign_up' %}" class="button-primary">Create free account</a>
+            <a href="{% url 'sign_in' %}" class="button-outline">Sign in</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock content %}

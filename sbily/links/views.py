@@ -36,11 +36,10 @@ def redirect_link(request: HttpRequest, shortened_link: str):
         link = ShortenedLink.objects.get(shortened_link=shortened_link)
 
         if link.is_expired():
-            messages.error(request, "Link is expired!")
-            return redirect("home")
+            return render(request, "expired.html")
 
         if not link.is_active:
-            messages.error(request, "Link is deactivated!")
+            messages.error(request, "Link not found")
             return redirect("home")
 
         try:
@@ -52,8 +51,7 @@ def redirect_link(request: HttpRequest, shortened_link: str):
     except ShortenedLink.DoesNotExist:
         messages.error(request, "Link not found")
         return redirect("home")
-    except Exception as e:
-        messages.error(request, f"An error occurred: {e}")
+    except Exception:
         return redirect("home")
 
 
