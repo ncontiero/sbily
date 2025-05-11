@@ -103,7 +103,24 @@ def link_statistics(request: HttpRequest, shortened_link: str):
         {"date": item["day"].strftime("%Y-%m-%d"), "count": item["count"]}
         for item in daily_clicks
     ]
-    context["daily_clicks_data"] = json.dumps(daily_clicks_data)
+
+    hourly_clicks = (
+        clicks.annotate(hour=TruncHour("clicked_at"))
+        .values("hour")
+        .annotate(count=Count("id"))
+        .order_by("hour")
+    )
+    hourly_clicks_data = [
+        {"hour": item["hour"].strftime("%H:00"), "count": item["count"]}
+        for item in hourly_clicks
+    ]
+
+    context.update(
+        {
+            "hourly_clicks_data": json.dumps(hourly_clicks_data),
+            "daily_clicks_data": json.dumps(daily_clicks_data),
+        },
+    )
 
     return render(request, "link.html", context)
 
@@ -177,17 +194,6 @@ def generate_advanced_statistics(request, clicks):
     if city:
         clicks = clicks.filter(city__icontains=city)
 
-    hourly_clicks = (
-        clicks.annotate(hour=TruncHour("clicked_at"))
-        .values("hour")
-        .annotate(count=Count("id"))
-        .order_by("hour")
-    )
-    hourly_clicks_data = [
-        {"hour": item["hour"].strftime("%H:00"), "count": item["count"]}
-        for item in hourly_clicks
-    ]
-
     countries_and_cities = (
         clicks.exclude(country="", city="")
         .values("country", "city")
@@ -224,7 +230,6 @@ def generate_advanced_statistics(request, clicks):
     )
 
     return {
-        "hourly_clicks_data": json.dumps(hourly_clicks_data),
         "countries_and_cities": list(countries_and_cities),
         "devices": list(devices),
         "browsers": list(browsers),
