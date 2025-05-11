@@ -133,7 +133,7 @@ class ShortenedLink(models.Model):
 
     def clean(self) -> None:
         super().clean()
-        if not self.user.can_create_link():
+        if self.pk is None and not self.user.can_create_link():
             error_message = _(
                 "You have reached the maximum number of links allowed for your account."
                 if self.user.is_premium
