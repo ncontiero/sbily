@@ -4,7 +4,7 @@
 
 {% block content %}
   <div class="mt-16 flex flex-col items-center justify-center max-w-md mx-auto p-6 border rounded-md">
-    <form method="post" action="{% url 'sign_up' %}" class="w-full">
+    <form method="post" action="{% url 'sign_up' %}" class="w-full" data-jswc-add-load>
       {% csrf_token %}
       <div class="text-center mb-8 mt-2">
         <h2 class="text-3xl font-bold">Create your account</h2>

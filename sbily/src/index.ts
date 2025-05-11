@@ -1,14 +1,16 @@
 import "./index.css";
 
 import type { WindowWithCustomProps } from "./types";
+import { createElement, Loader } from "lucide";
 import { initializeChart } from "./chart";
 import { initDashboard } from "./chart/dashboard";
 import { initLinkStats } from "./chart/link-stats";
+import { initAddLoad } from "./components/addLoad";
 import { initBreadcrumb } from "./components/breadcrumb";
 import { dialog, initDialog } from "./components/dialog";
 import { initDropdownMenu } from "./components/dropdownMenu";
-import { initSwitch, Switch } from "./components/switch";
 import "./components/links/select";
+import { initSwitch, Switch } from "./components/switch";
 import { initTabs } from "./components/tabs";
 import { initThemeToggle } from "./components/themeToggle";
 import { closeToast, toast } from "./components/toast";
@@ -45,6 +47,7 @@ const initApp = (): void => {
   initThemeToggle();
   initTabs();
   initBreadcrumb();
+  initAddLoad();
 
   initializeChart();
   initDashboard();

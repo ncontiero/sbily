@@ -195,7 +195,7 @@ def handle_link_activation(request: HttpRequest, shortened_path: str):
         messages.error(request, "Link not found")
         return redirect("links")
     except Exception as e:
-        messages.error(request, f"An error occurred: {e}")
+        messages.error(request, f"An error occurred: {e!s}")
         return redirect(current_path)
 
 

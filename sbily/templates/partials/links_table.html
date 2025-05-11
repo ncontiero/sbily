@@ -1,4 +1,4 @@
-<form id="links-table" method="post" action="{% url "handle_link_actions" %}" class="mt-2">
+<form id="links-table" method="post" action="{% url "handle_link_actions" %}" class="mt-2" data-jswc-add-load>
   {% csrf_token %}
   <div class="flex items-center flex-wrap gap-1">
     <div class="flex items-center gap-1.5">
@@ -175,6 +175,7 @@
                   <a
                     href="{% url 'handle_link_activation' link.shortened_path %}?current_path={{ request.path }}#{{ hash|default:'links-table' }}"
                     class="dropdown-menu-item gap-1 p-2"
+                    data-jswc-add-load
                   >
                     {% if link.is_active %}
                       <i data-lucide="circle-x" class="size-3.5 stroke-[3px] text-red-600"></i> Deactivate

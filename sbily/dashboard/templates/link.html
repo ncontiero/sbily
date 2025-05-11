@@ -105,6 +105,7 @@
       method="get"
       action="{% url 'link' link.shortened_path %}"
       class="{% if perms.links.view_advanced_statistics %}grid grid-cols-2 md:grid-cols-4{% else %}flex flex-col sm:flex-row{% endif %} gap-4"
+      data-jswc-add-load
     >
       <div class="flex flex-col flex-1 gap-2">
         <label for="from-date" class="label">From Date:</label>

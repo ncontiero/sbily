@@ -74,7 +74,7 @@
   {% endif %}
 
   <div id="create-link-dialog" class="hidden dialog" data-jswc-dialog-animation="true">
-    <form method="post" action="{% url 'create_link' %}" class="flex flex-col">
+    <form method="post" action="{% url 'create_link' %}" class="flex flex-col" data-jswc-add-load>
       {% csrf_token %}
       <div class="flex justify-between items-center">
         <h2 class="text-xl font-bold">Create link</h2>

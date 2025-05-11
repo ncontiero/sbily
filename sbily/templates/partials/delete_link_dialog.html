@@ -15,6 +15,7 @@
       <a
         href="{% url 'delete_link' link.shortened_path %}?current_path={{ request.path }}#{{ hash|default:'links-table' }}"
         class="button-destructive w-full sm:w-auto"
+        data-jswc-add-load
       >
         Yes, I’m sure
       </a>

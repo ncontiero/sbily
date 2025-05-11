@@ -45,7 +45,7 @@
           <p class="text-foreground/80">Manage your account settings.</p>
         </div>
         <div class="separator w-full mt-5 mb-7"></div>
-        <form method="post" class="card" action="{% url 'my_account' %}">
+        <form method="post" class="card" action="{% url 'my_account' %}" data-jswc-add-load>
           {% csrf_token %}
           <div class="card-content">
             <h3 class="card-title">Account info</h3>
@@ -98,7 +98,7 @@
                 </div>
                 <div class="separator my-6"></div>
                 <div>
-                  <form method="post" action="{% url "delete_account" %}" class="flex flex-col">
+                  <form method="post" action="{% url "delete_account" %}" class="flex flex-col" data-jswc-add-load>
                     {% csrf_token %}
                     <div class="flex flex-col gap-2 mb-4">
                       <label for="confirm_username" class="label text-foreground/80">Your username:</label>
@@ -156,7 +156,7 @@
               {% endif %}
             </p>
             {% if token %}
-              <form method="post" class="flex flex-col" action="{% url 'change_email' token %}">
+              <form method="post" class="flex flex-col" action="{% url 'change_email' token %}" data-jswc-add-load>
                 {% csrf_token %}
                 <div class="flex flex-col gap-3">
                   <label for="new_email" class="label text-foreground/80">New email:</label>
@@ -388,7 +388,7 @@
                   </li>
                 </ul>
 
-                <form method="post" action="{% url 'cancel_plan' %}" class="w-full">
+                <form method="post" action="{% url 'cancel_plan' %}" class="w-full" data-jswc-add-load>
                   {% csrf_token %}
                   <div class="flex items-center gap-2">
                     <button type="submit" class="button-destructive">Cancel Subscription</button>
@@ -433,7 +433,7 @@
                     </li>
                   </ul>
 
-                  <form method="post" action="{% url 'resume_plan' %}" class="w-full">
+                  <form method="post" action="{% url 'resume_plan' %}" class="w-full" data-jswc-add-load>
                     {% csrf_token %}
                     <div class="flex items-center gap-2">
                       <button type="submit" class="button-primary">Resume Subscription</button>
@@ -575,6 +575,7 @@
                     method="post"
                     action="{% url "change_password" %}"
                     class="mt-6 w-full flex flex-col gap-2 flex-wrap"
+                    data-jswc-add-load
                   >
                     {% csrf_token %}
                     <div class="w-full flex flex-col gap-2 mb-2">
@@ -599,7 +600,7 @@
               </div>
             </div>
           </div>
-          <form method="post" class="card mt-7" action="{% url 'account_security' %}">
+          <form method="post" class="card mt-7" action="{% url 'account_security' %}" data-jswc-add-load>
             {% csrf_token %}
             <div class="card-content flex-row items-center justify-between">
               <label for="login_with_email">

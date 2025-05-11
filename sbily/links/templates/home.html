@@ -18,7 +18,12 @@
           </h1>
           <p class="text-xl md:text-2xl mb-8">A simple, fast, and secure Open-Source link shortener.</p>
           <div class="max-w-3xl mx-auto">
-            <form class="flex flex-col md:flex-row gap-4 max-w-2xl mx-auto" method="post" action="{% url 'create_link' %}">
+            <form
+              class="flex flex-col md:flex-row gap-4 max-w-2xl mx-auto"
+              method="post"
+              action="{% url 'create_link' %}"
+              data-jswc-add-load
+            >
               {% csrf_token %}
               <label for="destination_url" class="sr-only">Paste your link here</label>
               <input

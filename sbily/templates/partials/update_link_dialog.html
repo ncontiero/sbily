@@ -1,5 +1,5 @@
 <div id="update-link-{{ link.id }}-dialog" class="hidden dialog" data-jswc-dialog-animation="true">
-  <form method="post" action="{% url 'update_link' link.shortened_path %}" class="flex flex-col">
+  <form method="post" action="{% url 'update_link' link.shortened_path %}" class="flex flex-col" data-jswc-add-load>
     {% csrf_token %}
     <div class="flex justify-between items-center">
       <h2 class="text-xl font-bold">Update link "{{ link.shortened_path }}"</h2>
