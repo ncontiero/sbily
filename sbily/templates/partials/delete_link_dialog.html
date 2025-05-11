@@ -7,13 +7,13 @@
       <p>Are you sure you want to delete the "{{ link }}" link permanently?</p>
       <ul class="list-disc list-inside">
         <li>
-          Link: <a href="{% url 'link' link.shortened_link %}" class="link-primary">{{ link }}</a>
+          Link: <a href="{% url 'link' link.shortened_path %}" class="link-primary">{{ link }}</a>
         </li>
       </ul>
     </div>
     <div class="mt-4 w-full flex items-center gap-2 flex-wrap">
       <a
-        href="{% url 'delete_link' link.shortened_link %}?current_path={{ request.path }}#{{ hash|default:'links-table' }}"
+        href="{% url 'delete_link' link.shortened_path %}?current_path={{ request.path }}#{{ hash|default:'links-table' }}"
         class="button-destructive w-full sm:w-auto"
       >
         Yes, I’m sure

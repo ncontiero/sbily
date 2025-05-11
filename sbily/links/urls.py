@@ -14,13 +14,13 @@ urlpatterns = [
     path("create_link/", views.create_link, name="create_link"),
     # Link redirection
     path(
-        "{prefix}<str:shortened_link>/".format(prefix=LINK_PREFIX or ""),
+        "{prefix}<str:shortened_path>/".format(prefix=LINK_PREFIX or ""),
         views.redirect_link,
         name="redirect_link",
     ),
     path("handle_link_actions/", views.handle_link_actions, name="handle_link_actions"),
     path(
-        "handle_link_activation/<str:shortened_link>/",
+        "handle_link_activation/<str:shortened_path>/",
         views.handle_link_activation,
         name="handle_link_activation",
     ),

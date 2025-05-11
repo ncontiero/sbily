@@ -174,10 +174,10 @@
               </div>
               <div class="truncate">
                 <a href="{{ link.get_absolute_url }}" target="_blank" class="font-medium hover:underline">
-                  {{ link.shortened_link }}
+                  {{ link.shortened_path }}
                 </a>
                 <div class="pb-2 overflow-auto overscroll-contain">
-                  <p class="text-sm text-muted-foreground">{{ link.original_link }}</p>
+                  <p class="text-sm text-muted-foreground">{{ link.destination_url }}</p>
                 </div>
               </div>
             </div>
@@ -202,10 +202,10 @@
               </div>
               <div class="truncate">
                 <a href="{{ link.get_absolute_url }}" target="_blank" class="font-medium hover:underline">
-                  {{ link.shortened_link }}
+                  {{ link.shortened_path }}
                 </a>
                 <div class="pb-2 overflow-auto overscroll-contain">
-                  <p class="text-sm text-muted-foreground">{{ link.original_link }}</p>
+                  <p class="text-sm text-muted-foreground">{{ link.destination_url }}</p>
                 </div>
               </div>
             </div>

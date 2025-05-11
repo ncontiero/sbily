@@ -1,7 +1,7 @@
 {% extends "dashboard/base.html" %}
 
-{% block title %}Statistics for {{ link.shortened_link }}{% endblock title %}
-{% block dashboard_title %}Statistics for {{ link.shortened_link }}{% endblock dashboard_title %}
+{% block title %}Statistics for {{ link.shortened_path }}{% endblock title %}
+{% block dashboard_title %}Statistics for {{ link.shortened_path }}{% endblock dashboard_title %}
 {% block dashboard_description %}
   Hello {{ user.get_short_name }}, see the performance of your link.
 {% endblock dashboard_description %}
@@ -12,8 +12,8 @@
   <div class="container mx-auto px-4 grid md:grid-cols-2 gap-6">
     <div class="bg-background p-6 rounded-lg border border-border">
       <div class="mb-4">
-        <p class="text-muted-foreground">Original URL:</p>
-        <p class="truncate">{{ link.original_link }}</p>
+        <p class="text-muted-foreground">Destination URL:</p>
+        <p class="truncate">{{ link.destination_url }}</p>
       </div>
       <div class="mb-4">
         <p class="text-muted-foreground">Short URL:</p>
@@ -103,7 +103,7 @@
   <div class="container mx-auto px-4">
     <form
       method="get"
-      action="{% url 'link' link.shortened_link %}"
+      action="{% url 'link' link.shortened_path %}"
       class="{% if perms.links.view_advanced_statistics %}grid grid-cols-2 md:grid-cols-4{% else %}flex flex-col sm:flex-row{% endif %} gap-4"
     >
       <div class="flex flex-col flex-1 gap-2">
@@ -188,7 +188,7 @@
       {% endif %}
       <div class="flex justify-center items-end gap-2 {% if perms.links.view_advanced_statistics %}col-span-2 md:col-span-1{% endif %}">
         <button type="submit" class="button-primary">Apply Filter</button>
-        <a href="{% url 'link' link.shortened_link %}#filters" class="button-outline">
+        <a href="{% url 'link' link.shortened_path %}#filters" class="button-outline">
           Reset Filter
         </a>
       </div>

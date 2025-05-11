@@ -31,19 +31,19 @@ def get_post_auth_redirect(request, user, form):
     Determine the redirect path after authentication.
     """
     plan = form.cleaned_data.get("plan", "free")
-    original_link = form.cleaned_data.get("original_link", "")
+    destination_url = form.cleaned_data.get("destination_url", "")
     next_path = form.cleaned_data.get("next_path", "my_account")
 
     if plan == "premium":
         return redirect("upgrade_plan")
 
-    if original_link:
+    if destination_url:
         link = ShortenedLink.objects.create(
-            original_link=original_link,
+            destination_url=destination_url,
             user=user,
         )
         messages.success(request, "Link created successfully.")
-        return redirect("link", shortened_link=link.shortened_link)
+        return redirect("link", shortened_path=link.shortened_path)
 
     return redirect(next_path)
 
@@ -74,7 +74,7 @@ def sign_up(request: HttpRequest):
             initial={
                 "plan": request.GET.get("plan"),
                 "next_path": request.GET.get("next"),
-                "original_link": request.GET.get("original_link"),
+                "destination_url": request.GET.get("destination_url"),
             },
         )
 
@@ -82,7 +82,7 @@ def sign_up(request: HttpRequest):
         "sign_in",
         {
             "next": request.GET.get("next"),
-            "original_link": request.GET.get("original_link"),
+            "destination_url": request.GET.get("destination_url"),
         },
     )
 
@@ -109,7 +109,7 @@ def sign_in(request: HttpRequest):
         form = SignInForm(
             initial={
                 "next_path": request.GET.get("next", "my_account"),
-                "original_link": request.GET.get("original_link"),
+                "destination_url": request.GET.get("destination_url"),
             },
         )
 
@@ -117,7 +117,7 @@ def sign_in(request: HttpRequest):
         "sign_up",
         {
             "next": request.GET.get("next", "my_account"),
-            "original_link": request.GET.get("original_link"),
+            "destination_url": request.GET.get("destination_url"),
         },
     )
 

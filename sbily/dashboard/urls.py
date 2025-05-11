@@ -15,7 +15,7 @@ link_urlpatterns = [
 
 links_urlpatterns = [
     path("", views.links, name="links"),
-    path("<str:shortened_link>/", include(link_urlpatterns)),
+    path("<str:shortened_path>/", include(link_urlpatterns)),
 ]
 
 urlpatterns = [

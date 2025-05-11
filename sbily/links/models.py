@@ -35,26 +35,26 @@ def future_date_validator(value: timezone.datetime) -> None:
 
 
 class ShortenedLink(models.Model):
-    SHORTENED_LINK_PATTERN = r"^[a-zA-Z0-9-_]*$"
-    SHORTENED_LINK_MAX_LENGTH = 10
+    SHORTENED_PATH_PATTERN = r"^[a-zA-Z0-9-_]*$"
+    SHORTENED_PATH_MAX_LENGTH = 10
     DEFAULT_EXPIRY = timezone.timedelta(days=1)
     MAX_RETRIES = 3
 
-    original_link = models.URLField(
-        _("Original URL"),
+    destination_url = models.URLField(
+        _("Destination URL"),
         max_length=2000,
-        help_text=_("The original URL that will be shortened"),
+        help_text=_("The destination URL that will be shortened"),
     )
-    shortened_link = models.CharField(
-        _("Shortened URL"),
-        max_length=SHORTENED_LINK_MAX_LENGTH,
+    shortened_path = models.CharField(
+        _("Shortened path"),
+        max_length=SHORTENED_PATH_MAX_LENGTH,
         null=True,
         blank=True,
         unique=True,
         db_index=True,
         validators=[
             RegexValidator(
-                regex=SHORTENED_LINK_PATTERN,
+                regex=SHORTENED_PATH_PATTERN,
                 message=_(
                     "Shortened link must be alphanumeric with "
                     "hyphens and underscores only",
@@ -65,7 +65,7 @@ class ShortenedLink(models.Model):
             "unique": _("This shortened link already exists"),
             "max_length": _(
                 "Shortened link must be at most {0} characters long",
-            ).format(SHORTENED_LINK_MAX_LENGTH),
+            ).format(SHORTENED_PATH_MAX_LENGTH),
         },
         help_text=_("The shortened URL path"),
     )
@@ -106,11 +106,11 @@ class ShortenedLink(models.Model):
         verbose_name_plural = _("Shortened Links")
         ordering = ["-updated_at"]
         indexes = [
-            models.Index(fields=["shortened_link", "user"]),
+            models.Index(fields=["shortened_path", "user"]),
         ]
 
     def __str__(self) -> str:
-        return self.shortened_link
+        return self.shortened_path
 
     @transaction.atomic
     def save(self, *args, **kwargs) -> None:
@@ -118,8 +118,8 @@ class ShortenedLink(models.Model):
             current_timezone = timezone.get_current_timezone()
             self.expires_at = self.expires_at.replace(tzinfo=current_timezone)
         self.full_clean()
-        if not self.shortened_link:
-            self._generate_unique_shortened_link()
+        if not self.shortened_path:
+            self._generate_unique_shortened_path()
 
         if not self.pk:
             self.user.monthly_limit_links_used += 1
@@ -128,7 +128,7 @@ class ShortenedLink(models.Model):
 
     def get_absolute_url(self) -> str:
         """Returns the absolute URL for this shortened link"""
-        path = reverse("redirect_link", kwargs={"shortened_link": self.shortened_link})
+        path = reverse("redirect_link", kwargs={"shortened_path": self.shortened_path})
         return urljoin(SITE_BASE_URL, path)
 
     def clean(self) -> None:
@@ -141,12 +141,12 @@ class ShortenedLink(models.Model):
             )
             raise ValidationError(error_message, code="max_links_reached")
 
-    def _generate_unique_shortened_link(self) -> None:
+    def _generate_unique_shortened_path(self) -> None:
         """Helper method to generate unique shortened link with retries"""
         for retry in range(self.MAX_RETRIES):
             try:
-                self.shortened_link = secrets.token_urlsafe(8)[
-                    : self.SHORTENED_LINK_MAX_LENGTH
+                self.shortened_path = secrets.token_urlsafe(8)[
+                    : self.SHORTENED_PATH_MAX_LENGTH
                 ]
                 self.full_clean()
                 break
@@ -252,7 +252,7 @@ class LinkClick(models.Model):
         ]
 
     def __str__(self) -> str:
-        return f"Click on {self.link.shortened_link} at {self.clicked_at}"
+        return f"Click on {self.link.shortened_path} at {self.clicked_at}"
 
     @classmethod
     def create_from_request(cls, link: ShortenedLink, request: HttpRequest):

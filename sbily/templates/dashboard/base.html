@@ -21,8 +21,8 @@
             aria-label="breadcrumb"
             class="mt-4 flex justify-center sm:justify-start"
             data-jswc-breadcrumb
-            data-jswc-urls="{% url 'dashboard' %},{% url 'links' %}{% if link %},{% url 'link' link.shortened_link %}{% endif %}"
-            data-jswc-labels="Dashboard,Links{% if link %},{{ link.shortened_link }}{% endif %}"
+            data-jswc-urls="{% url 'dashboard' %},{% url 'links' %}{% if link %},{% url 'link' link.shortened_path %}{% endif %}"
+            data-jswc-labels="Dashboard,Links{% if link %},{{ link.shortened_path }}{% endif %}"
           >
           </nav>
         </div>
@@ -90,31 +90,32 @@
       <div class="separator my-4"></div>
       <div class="mb-6 flex flex-col">
         <div class="flex flex-col gap-2 mb-4">
-          <label for="original_link" class="label">Destination URL</label>
+          <label for="destination_url" class="label">Destination URL</label>
           <input
             type="url"
-            id="original_link"
-            name="original_link"
+            id="destination_url"
+            name="destination_url"
+            autocomplete="url"
             class="input"
             placeholder="https://www.google.com/"
             required
           />
         </div>
         <div class="flex flex-col mb-5 gap-2">
-          <label for="shortened_link" class="label">
+          <label for="shortened_path" class="label">
             Shortened URL <span class="text-sm font-medium text-muted-foreground">(Optional)</span>
           </label>
           <div class="flex items-center border rounded-md">
             <label
               class="h-10 flex items-center px-3 py-2"
-              for="shortened_link"
+              for="shortened_path"
             >
               {{ LINK_BASE_URL }}
             </label>
             <input
               type="text"
-              id="shortened_link"
-              name="shortened_link"
+              id="shortened_path"
+              name="shortened_path"
               class="input border-y-0 border-r-0 rounded-l-none"
               placeholder="my_link"
             />

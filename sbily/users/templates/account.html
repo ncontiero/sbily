@@ -89,7 +89,7 @@
                         {% for link in user.shortened_links.all %}
                           <li>
                             Link:
-                            <a href="{% url "link" link.shortened_link %}" class="link-primary">{{ link }}</a>
+                            <a href="{% url "link" link.shortened_path %}" class="link-primary">{{ link }}</a>
                           </li>
                         {% endfor %}
                       </ul>

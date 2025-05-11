@@ -1,8 +1,8 @@
 <div id="update-link-{{ link.id }}-dialog" class="hidden dialog" data-jswc-dialog-animation="true">
-  <form method="post" action="{% url 'update_link' link.shortened_link %}" class="flex flex-col">
+  <form method="post" action="{% url 'update_link' link.shortened_path %}" class="flex flex-col">
     {% csrf_token %}
     <div class="flex justify-between items-center">
-      <h2 class="text-xl font-bold">Update link "{{ link.shortened_link }}"</h2>
+      <h2 class="text-xl font-bold">Update link "{{ link.shortened_path }}"</h2>
     </div>
     <div class="flex flex-col gap-4 mt-2">
       <p>Change the necessary data of your link and click save.</p>
@@ -22,54 +22,54 @@
     <div class="separator mb-4 mt-2"></div>
     <div class="mb-6 flex flex-col">
       <div class="flex flex-col gap-2 mb-4">
-        <label for="original_link" class="label">Destination URL</label>
+        <label for="update_destination_url" class="label">Destination URL</label>
         <input
           type="url"
-          id="original_link"
-          name="original_link"
+          id="update_destination_url"
+          name="destination_url"
           class="input"
           placeholder="https://www.google.com/"
-          value="{{ link.original_link }}"
+          value="{{ link.destination_url }}"
           required
         />
       </div>
       <div class="flex flex-col mb-5 gap-2">
-        <label for="shortened_link" class="label">
+        <label for="update_shortened_path" class="label">
           Shortened URL <span class="text-sm font-medium text-muted-foreground">(Optional)</span>
         </label>
         <div class="flex items-center border rounded-md">
           <label
             class="h-10 flex items-center px-3 py-2"
-            for="shortened_link"
+            for="update_shortened_path"
           >
             {{ LINK_BASE_URL }}
           </label>
           <input
             type="text"
-            id="shortened_link"
-            name="shortened_link"
-            class="input border-0 rounded-l-none"
+            id="update_shortened_path"
+            name="shortened_path"
+            class="input border-y-0 border-r-0 rounded-l-none"
             placeholder="my_link"
-            value="{{ link.shortened_link }}"
+            value="{{ link.shortened_path }}"
           />
         </div>
       </div>
       <div class="flex flex-col mb-5">
-        <label for="expires_at" class="label mb-2">
+        <label for="update_expires_at" class="label mb-2">
           Expires At <span class="text-sm font-medium text-muted-foreground">(Optional)</span>
         </label>
         <input
           type="datetime-local"
-          id="expires_at"
+          id="update_expires_at"
           name="expires_at"
           class="input"
           {% if link.expires_at %}value="{{ link.expires_at|date:"Y-m-d H:i" }}"{% endif %}
         />
       </div>
       <div class="flex gap-3 items-center">
-        <label for="is_active" class="label">Link is active:</label>
+        <label for="update_is_active" class="label">Link is active:</label>
         <button
-          id="is_active"
+          id="update_is_active"
           type="button"
           class="switch-button"
           data-jswc-switch

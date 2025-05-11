@@ -31,9 +31,9 @@ def plans(request: HttpRequest):
     return render(request, "plans.html")
 
 
-def redirect_link(request: HttpRequest, shortened_link: str):
+def redirect_link(request: HttpRequest, shortened_path: str):
     try:
-        link = ShortenedLink.objects.get(shortened_link=shortened_link)
+        link = ShortenedLink.objects.get(shortened_path=shortened_path)
 
         if link.is_expired():
             return render(request, "expired.html")
@@ -47,7 +47,7 @@ def redirect_link(request: HttpRequest, shortened_link: str):
         except Exception as e:
             logger.exception("Error creating link click.", exc_info=e)
 
-        return redirect(link.original_link)
+        return redirect(link.destination_url)
     except ShortenedLink.DoesNotExist:
         messages.error(request, "Link not found")
         return redirect("home")
@@ -59,21 +59,21 @@ def create_link(request: HttpRequest):
     if request.method != "POST":
         return redirect("dashboard")
 
-    original_link = request.POST.get("original_link", "").strip()
-    shortened_link = request.POST.get("shortened_link", "").strip()
+    destination_url = request.POST.get("destination_url", "").strip()
+    shortened_path = request.POST.get("shortened_path", "").strip()
     expires_at = request.POST.get("expires_at", "").strip()
 
     try:
-        if not validate([original_link]):
-            messages.error(request, "Please enter a valid original link")
+        if not validate([destination_url]):
+            messages.error(request, "Please enter a valid destination URL")
             return redirect("create_link")
 
         if not request.user.is_authenticated:
-            return redirect_with_params("sign_in", {"original_link": original_link})
+            return redirect_with_params("sign_in", {"destination_url": destination_url})
 
         link_data = {
-            "original_link": original_link,
-            "shortened_link": shortened_link,
+            "destination_url": destination_url,
+            "shortened_path": shortened_path,
             "user": request.user,
         }
 
@@ -84,7 +84,7 @@ def create_link(request: HttpRequest):
 
         link = ShortenedLink.objects.create(**link_data)
         messages.success(request, "Link created successfully")
-        return redirect("link", shortened_link=link.shortened_link)
+        return redirect("link", shortened_path=link.shortened_path)
     except ValidationError as e:
         messages.error(request, str(e.messages[0]))
         return redirect("create_link")
@@ -101,7 +101,7 @@ def get_current_path(request: HttpRequest):
 
 
 @login_required
-def update_link(request: HttpRequest, shortened_link: str):
+def update_link(request: HttpRequest, shortened_path: str):
     if request.method != "POST":
         return redirect("links")
 
@@ -109,7 +109,7 @@ def update_link(request: HttpRequest, shortened_link: str):
 
     try:
         link = ShortenedLink.objects.select_for_update().get(
-            shortened_link=shortened_link,
+            shortened_path=shortened_path,
             user=request.user,
         )
         link.expires_at = re.sub(
@@ -121,21 +121,21 @@ def update_link(request: HttpRequest, shortened_link: str):
         current_path = get_current_path(request)
 
         form_data = {
-            "original_link": request.POST.get("original_link", "").strip(),
-            "shortened_link": request.POST.get("shortened_link", "").strip(),
+            "destination_url": request.POST.get("destination_url", "").strip(),
+            "shortened_path": request.POST.get("shortened_path", "").strip(),
             "expires_at": request.POST.get("expires_at", "").strip(),
             "is_active": request.POST.get("is_active") == "on",
         }
 
-        if not validate([form_data["original_link"]]):
+        if not validate([form_data["destination_url"]]):
             msg = "Please enter a valid destination URL"
             raise ValidationError(msg)  # noqa: TRY301
 
         if form_data["expires_at"]:
             form_data["expires_at"] = f"{form_data['expires_at'].replace('T', ' ')}"
         if (
-            form_data["original_link"] == link.original_link
-            and form_data["shortened_link"] == link.shortened_link
+            form_data["destination_url"] == link.destination_url
+            and form_data["shortened_path"] == link.shortened_path
             and form_data["expires_at"] == str(link.expires_at)
             and form_data["is_active"] == link.is_active
         ):
@@ -143,13 +143,13 @@ def update_link(request: HttpRequest, shortened_link: str):
             return redirect(current_path)
 
         in_link_page = current_path.startswith(
-            reverse("link", args=[link.shortened_link]),
+            reverse("link", args=[link.shortened_path]),
         )
-        if link.shortened_link != form_data["shortened_link"] and in_link_page:
-            current_path = reverse("link", args=[form_data["shortened_link"]])
+        if link.shortened_path != form_data["shortened_path"] and in_link_page:
+            current_path = reverse("link", args=[form_data["shortened_path"]])
 
-        link.original_link = form_data["original_link"]
-        link.shortened_link = form_data["shortened_link"]
+        link.destination_url = form_data["destination_url"]
+        link.shortened_path = form_data["shortened_path"]
         link.expires_at = None
         if form_data["expires_at"]:
             link.expires_at = timezone.datetime.fromisoformat(
@@ -175,7 +175,7 @@ def update_link(request: HttpRequest, shortened_link: str):
 
 
 @login_required
-def handle_link_activation(request: HttpRequest, shortened_link: str):
+def handle_link_activation(request: HttpRequest, shortened_path: str):
     if request.method == "POST":
         return redirect("links")
 
@@ -184,7 +184,7 @@ def handle_link_activation(request: HttpRequest, shortened_link: str):
         current_path = reverse("links")
     try:
         link = ShortenedLink.objects.get(
-            shortened_link=shortened_link,
+            shortened_path=shortened_path,
             user=request.user,
         )
         link.is_active = not link.is_active
@@ -200,7 +200,7 @@ def handle_link_activation(request: HttpRequest, shortened_link: str):
 
 
 @login_required
-def delete_link(request: HttpRequest, shortened_link: str):
+def delete_link(request: HttpRequest, shortened_path: str):
     current_path = reverse("links")
 
     try:
@@ -208,11 +208,11 @@ def delete_link(request: HttpRequest, shortened_link: str):
         if not current_path.startswith("/"):
             current_path = reverse("links")
         link = ShortenedLink.objects.get(
-            shortened_link=shortened_link,
+            shortened_path=shortened_path,
             user=request.user,
         )
 
-        if current_path.startswith(reverse("link", args=[link.shortened_link])):
+        if current_path.startswith(reverse("link", args=[link.shortened_path])):
             current_path = reverse("links")
 
         link.delete()

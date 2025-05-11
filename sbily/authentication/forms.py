@@ -12,26 +12,26 @@ from sbily.utils.data import is_none
 from sbily.utils.data import validate_password
 
 
-class NextAndOriginalLinkForm(BaseForm):
+class NextAndDestinationURLForm(BaseForm):
     next_path = forms.CharField(
         widget=forms.HiddenInput(),
         required=False,
         initial="my_account",
     )
-    original_link = forms.CharField(
+    destination_url = forms.CharField(
         widget=forms.HiddenInput(),
         required=False,
     )
 
-    def clean_original_link(self):
-        original_link = self.cleaned_data.get("original_link")
-        if not is_none(original_link):
+    def clean_destination_url(self):
+        destination_url = self.cleaned_data.get("destination_url")
+        if not is_none(destination_url):
             url_validate = URLValidator()
             try:
-                url_validate(original_link)
+                url_validate(destination_url)
             except ValidationError:
-                original_link = None
-        return original_link
+                destination_url = None
+        return destination_url
 
     def clean_next_path(self):
         next_path = self.cleaned_data.get("next_path")
@@ -48,7 +48,7 @@ class NextAndOriginalLinkForm(BaseForm):
         return next_path
 
 
-class SignUpForm(BaseModelForm, NextAndOriginalLinkForm):
+class SignUpForm(BaseModelForm, NextAndDestinationURLForm):
     plan = forms.CharField(
         widget=forms.HiddenInput(),
         max_length=50,
@@ -79,7 +79,7 @@ class SignUpForm(BaseModelForm, NextAndOriginalLinkForm):
         return user
 
 
-class SignInForm(NextAndOriginalLinkForm):
+class SignInForm(NextAndDestinationURLForm):
     username = forms.CharField(max_length=150, required=True)
     password = forms.CharField(
         widget=forms.PasswordInput(),
@@ -91,7 +91,7 @@ class SignInForm(NextAndOriginalLinkForm):
         required=False,
         initial="my_account",
     )
-    original_link = forms.CharField(
+    destination_url = forms.CharField(
         widget=forms.HiddenInput(),
         required=False,
     )
@@ -109,15 +109,15 @@ class SignInForm(NextAndOriginalLinkForm):
         cleaned_data["user"] = user
         return cleaned_data
 
-    def clean_original_link(self):
-        original_link = self.cleaned_data.get("original_link")
-        if not is_none(original_link):
+    def clean_destination_url(self):
+        destination_url = self.cleaned_data.get("destination_url")
+        if not is_none(destination_url):
             url_validate = URLValidator()
             try:
-                url_validate(original_link)
+                url_validate(destination_url)
             except ValidationError:
-                original_link = None
-        return original_link
+                destination_url = None
+        return destination_url
 
     def clean_next_path(self):
         next_path = self.cleaned_data.get("next_path")

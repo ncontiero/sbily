@@ -80,10 +80,10 @@ def links(request: HttpRequest):
 
 
 @login_required
-def link_statistics(request: HttpRequest, shortened_link: str):
+def link_statistics(request: HttpRequest, shortened_path: str):
     link = get_object_or_404(
         ShortenedLink,
-        shortened_link=shortened_link,
+        shortened_path=shortened_path,
         user=request.user,
     )
 

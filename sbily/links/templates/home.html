@@ -20,12 +20,13 @@
           <div class="max-w-3xl mx-auto">
             <form class="flex flex-col md:flex-row gap-4 max-w-2xl mx-auto" method="post" action="{% url 'create_link' %}">
               {% csrf_token %}
-              <label for="original_link" class="sr-only">Paste your link here</label>
+              <label for="destination_url" class="sr-only">Paste your link here</label>
               <input
                 type="url"
+                id="destination_url"
+                name="destination_url"
                 placeholder="Paste your link here"
                 class="input flex-1"
-                name="original_link"
                 required
               />
               <button type="submit" class="button-primary">
