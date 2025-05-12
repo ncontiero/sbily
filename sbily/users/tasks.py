@@ -1,8 +1,10 @@
 from celery import shared_task
 from celery.utils.log import get_task_logger
+from django.template.loader import render_to_string
 from django.utils.timezone import now
 from django.utils.timezone import timedelta
 
+from sbily.notifications.models import Notification
 from sbily.utils.tasks import default_task_params
 from sbily.utils.tasks import task_response
 
@@ -197,6 +199,28 @@ def reset_user_monthly_link_limits(self) -> dict:
         monthly_limit_links_used=0,
         last_monthly_limit_reset=current_time,
     )
+
+    for user in users:
+        try:
+            user.email_user(
+                "Your monthly link limit has been reset",
+                "emails/monthly-link-limit-reset.html",
+            )
+
+            notification_content = render_to_string(
+                "notifications/monthly-link-limit-reset.md",
+                {"name": user.get_short_name()},
+            )
+            Notification.objects.create(
+                user=user,
+                title="Monthly link limit reset",
+                content=notification_content,
+            )
+        except Exception:
+            logger.exception(
+                "Failed to create notification or send monthly link limit reset email to %s",  # noqa: E501
+                user.username,
+            )
 
     return task_response(
         "COMPLETED",
