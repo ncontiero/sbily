@@ -182,19 +182,23 @@ def send_deleted_account_email(self, user_email: int, username: str):
     )
 
 
-@shared_task(**default_task_params("reset_free_user_link_limit", acks_late=True))
-def reset_free_user_link_limit(self) -> dict:
-    """Reset free user link limit."""
+@shared_task(**default_task_params("reset_monthly_link_limits", acks_late=True))
+def reset_user_monthly_link_limits(self) -> dict:
+    """Reset users monthly link limits and update last reset timestamp."""
+
+    current_time = now()
 
     users = User.objects.filter(
-        role=User.ROLE_USER,
-        date_joined__lte=now() - timedelta(days=30),
+        last_monthly_limit_reset__lte=current_time - timedelta(days=30),
         monthly_limit_links_used__gt=0,
-    ).filter(date_joined__day=now().day)
+    )
 
-    count = users.update(monthly_limit_links_used=0)
+    count = users.update(
+        monthly_limit_links_used=0,
+        last_monthly_limit_reset=current_time,
+    )
 
     return task_response(
         "COMPLETED",
-        f"Free plan users link limit successfully reset for {count} users.",
+        f"Monthly link limits successfully reset for {count} users.",
     )

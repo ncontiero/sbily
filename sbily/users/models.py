@@ -64,6 +64,11 @@ class User(AbstractUser):
         default=0,
         help_text=_("Monthly limit of links a user has used."),
     )
+    last_monthly_limit_reset = models.DateTimeField(
+        _("last monthly limit reset"),
+        default=now,
+        help_text=_("Date and time when the monthly link limit was last reset."),
+    )
     stripe_customer_id = models.CharField(
         _("Stripe customer ID"),
         max_length=100,
@@ -110,7 +115,10 @@ class User(AbstractUser):
     def reset_monthly_link_limit(self) -> None:
         """Reset the monthly link limit for the user."""
         self.monthly_limit_links_used = 0
-        self.save(update_fields=["monthly_limit_links_used"])
+        self.last_monthly_limit_reset = now()
+        self.save(
+            update_fields=["monthly_limit_links_used", "last_monthly_limit_reset"],
+        )
 
     @transaction.atomic
     def upgrade_to_premium(self):
@@ -118,8 +126,14 @@ class User(AbstractUser):
         self.role = self.ROLE_PREMIUM
         self.monthly_link_limit = self.MONTHLY_LINK_LIMIT_PER_PREMIUM
         self.monthly_limit_links_used = 0
+        self.last_monthly_limit_reset = now()
         self.save(
-            update_fields=["role", "monthly_link_limit", "monthly_limit_links_used"],
+            update_fields=[
+                "role",
+                "monthly_link_limit",
+                "monthly_limit_links_used",
+                "last_monthly_limit_reset",
+            ],
         )
         self.user_permissions.add(
             Permission.objects.get(codename="view_advanced_statistics"),

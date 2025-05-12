@@ -32,7 +32,14 @@ class UserAdmin(auth_admin.UserAdmin):
         ),
         (
             _("Role & Limits"),
-            {"fields": ("role", "monthly_link_limit", "monthly_limit_links_used")},
+            {
+                "fields": (
+                    "role",
+                    "monthly_link_limit",
+                    "monthly_limit_links_used",
+                    "last_monthly_limit_reset",
+                ),
+            },
         ),
         (
             _("Permissions"),
