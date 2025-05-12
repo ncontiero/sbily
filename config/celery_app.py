@@ -31,10 +31,16 @@ app.autodiscover_tasks()
 
 @app.on_after_finalize.connect
 def setup_periodic_tasks(sender: Celery, **kwargs):
+    from sbily.links.tasks import clean_up_analytics_data
     from sbily.users.tasks import reset_user_monthly_link_limits
 
     sender.add_periodic_task(
         crontab(minute=0, hour=0),
         reset_user_monthly_link_limits.s(),
         name="Reset Users Monthly Link Limits",
+    )
+    sender.add_periodic_task(
+        crontab(minute=0, hour=0),
+        clean_up_analytics_data.s(),
+        name="Clean Up Analytics Data",
     )
