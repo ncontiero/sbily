@@ -21,8 +21,8 @@ importers:
         specifier: ^4.3.4
         version: 4.3.4(chart.js@4.4.9)
       lucide:
-        specifier: ^0.509.0
-        version: 0.509.0
+        specifier: ^0.510.0
+        version: 0.510.0
     devDependencies:
       '@ncontiero/eslint-config':
         specifier: ^5.1.1
@@ -3003,8 +3003,8 @@ packages:
     resolution: {integrity: sha512-QIXZUBJUx+2zHUdQujWejBkcD9+cs94tLn0+YL8UrCh+D5sCXZ4c7LaEH48pNwRY3MLDgqUFyhlCyjJPf1WP0A==}
     engines: {node: 20 || >=22}
 
-  lucide@0.509.0:
-    resolution: {integrity: sha512-+PUi/uilEjgcBuaLXq4y4fh/AHLgFuFyNrMbezuhofkiqRZbbj6cf5E29VndCuFcGsGpo9WIKocmfBB2GTvS7w==}
+  lucide@0.510.0:
+    resolution: {integrity: sha512-LcJJCBTi3GTW6cGlUoLdOTz0KTtLCqvHf/aIxIjWO/OEUyduTyvUI2l1m/uPEBmp3TkQTfe2hy7aPjTNA6CLKQ==}
 
   make-error@1.3.6:
     resolution: {integrity: sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==}
@@ -7620,7 +7620,7 @@ snapshots:
 
   lru-cache@11.1.0: {}
 
-  lucide@0.509.0: {}
+  lucide@0.510.0: {}
 
   make-error@1.3.6: {}
 
