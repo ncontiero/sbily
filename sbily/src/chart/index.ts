@@ -31,7 +31,7 @@ export function initializeChart() {
     color: `hsl(${foregroundColor}/0.5)`,
   };
   Chart.defaults.scales.color.interpolate = (v) =>
-    v < 0.5 ? `hsl(${foregroundColor}/0.3)` : `hsl(${primaryColor}/0.8)`;
+    v < 1 ? `hsl(${foregroundColor}/0.3)` : `hsl(${primaryColor}/0.8)`;
 
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
