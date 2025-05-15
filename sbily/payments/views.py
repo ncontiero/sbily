@@ -16,7 +16,6 @@ from django.views.decorators.csrf import csrf_exempt
 from sbily.utils.data import validate
 from sbily.utils.errors import BadRequestError
 from sbily.utils.errors import bad_request_error
-from sbily.utils.urls import redirect_with_params
 from sbily.utils.urls import redirect_with_tab
 
 from .models import Subscription
@@ -32,34 +31,28 @@ def upgrade_plan(request: HttpRequest):
     if request.method != "GET":
         return redirect_with_tab("plan")
 
+    plan_cycle = request.GET.get("cycle", "monthly")
+
     try:
         user = request.user
         if user.is_premium:
             bad_request_error("You are already a premium user")
 
         customer = user.get_stripe_customer()
-        if default_payment_method := customer.invoice_settings.default_payment_method:
-            return redirect_with_params(
-                "finalize_upgrade",
-                {"payment_method": default_payment_method},
-            )
+        default_payment_method = customer.invoice_settings.default_payment_method
 
         setup_intent = stripe.SetupIntent.create(
             customer=customer.id,
             payment_method_types=["card"],
         )
 
-        return render(
-            request,
-            "setup_card.html",
-            {
-                "client_secret": setup_intent.client_secret,
-                "redirect_url": request.build_absolute_uri(
-                    reverse("finalize_upgrade"),
-                ),
-            },
-        )
-
+        context = {
+            "client_secret": setup_intent.client_secret,
+            "redirect_url": request.build_absolute_uri(reverse("finalize_upgrade")),
+            "plan_cycle": plan_cycle,
+            "default_payment_method": default_payment_method,
+        }
+        return render(request, "upgrade.html", context)
     except BadRequestError as e:
         messages.error(request, e.message)
         return redirect_with_tab("plan")
@@ -75,6 +68,7 @@ def finalize_upgrade(request: HttpRequest):
         return redirect_with_tab("plan")
 
     payment_method = request.GET.get("payment_method")
+    plan_cycle = request.GET.get("plan_cycle", "monthly")
 
     if not validate([payment_method]):
         messages.error(request, "Missing payment information")
@@ -85,7 +79,7 @@ def finalize_upgrade(request: HttpRequest):
         if user.is_premium:
             bad_request_error("You are already a premium user")
 
-        result = Subscription.create_subscription(user, payment_method)
+        result = Subscription.create_subscription(user, payment_method, plan_cycle)
 
         if result["status"] == "success":
             user.upgrade_to_premium()
@@ -215,9 +209,7 @@ def resume_plan(request: HttpRequest):
 def add_payment_method(request: HttpRequest):
     """Add a new payment method to the user's account"""
     try:
-        user = request.user
-
-        customer = user.get_stripe_customer()
+        customer = request.user.get_stripe_customer()
         setup_intent = stripe.SetupIntent.create(
             customer=customer.id,
             payment_method_types=["card"],

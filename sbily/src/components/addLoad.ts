@@ -1,5 +1,24 @@
 import { createElement, Loader } from "lucide";
 
+export function setLoading(
+  element: HTMLElement,
+  loader: SVGElement,
+  isLoading = true,
+  elementContent?: string,
+) {
+  if (isLoading) {
+    element.setAttribute("disabled", "true");
+    element.classList.add("cursor-not-allowed");
+    element.innerHTML = "";
+    element.append(loader);
+  } else {
+    element.removeAttribute("disabled");
+    element.classList.remove("cursor-not-allowed");
+    element.innerHTML = elementContent || element.innerHTML;
+    element.querySelector("svg")?.remove();
+  }
+}
+
 export function initAddLoad() {
   const formsToAddLoad = document.querySelectorAll<HTMLElement>(
     "form[data-jswc-add-load]",
@@ -18,20 +37,13 @@ export function initAddLoad() {
     if (!submitButton) return;
 
     form.addEventListener("submit", () => {
-      load(submitButton, loader);
+      setLoading(submitButton, loader);
     });
   });
 
   anchorsToAddLoad.forEach((a) => {
     a.addEventListener("click", () => {
-      load(a, loader);
+      setLoading(a, loader);
     });
   });
-}
-
-function load(element: HTMLElement, loader: SVGElement) {
-  element.setAttribute("disabled", "true");
-  element.classList.add("cursor-not-allowed");
-  element.textContent = "";
-  element.append(loader);
 }

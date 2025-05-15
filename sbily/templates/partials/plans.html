@@ -1,0 +1,108 @@
+<div>
+  <div class="flex justify-center mt-6 {% if is_dialog %}mb-6{% else %}mb-10{% endif %}">
+    <div class="flex items-center p-1 bg-muted rounded-lg gap-1">
+      <button
+        class="button button-sm bg-primary text-primary-foreground font-medium data-[active='false']:hover:bg-background"
+        data-active="true"
+        data-jswc-price="monthly-button"
+      >
+        Monthly
+      </button>
+      <button
+        class="button button-sm font-medium data-[active='false']:hover:bg-background"
+        data-active="false"
+        data-jswc-price="yearly-button"
+      >
+        Yearly (20% Discount)
+      </button>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+    <div class="bg-background rounded-lg border border-border p-8 shadow-lg">
+      <h3 class="text-2xl font-bold mb-2">Free</h3>
+      <p class="text-muted-foreground mb-6">Perfect for personal and casual use</p>
+      <p class="text-4xl font-bold mb-6">
+        $0 <span class="text-muted-foreground text-lg font-normal">/month</span>
+      </p>
+
+      <ul class="space-y-3 mb-8">
+        <li class="flex items-center gap-2">
+          <i data-lucide="check" class="size-4 text-primary"></i>
+          <span>Up to 5 new links per month</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <i data-lucide="check" class="size-4 text-primary"></i>
+          <span>Basic statistics</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <i data-lucide="check" class="size-4 text-primary"></i>
+          <span>30-day analytics retention</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <i data-lucide="check" class="size-4 text-primary"></i>
+          <span>Basic support</span>
+        </li>
+      </ul>
+
+      {% if request.user.is_authenticated %}
+        {% if request.user.is_premium %}
+          <a href="{% url 'my_account' %}?tab=plan" class="button-outline w-full text-center">Manage plan</a>
+        {% else %}
+          <a href="{% url 'upgrade_plan' %}" class="button-primary w-full" data-jswc-price="upgrade">
+            Upgrade to Premium
+          </a>
+        {% endif %}
+      {% else %}
+        <a href="{% url 'sign_up' %}" class="button-outline w-full text-center">Start Free</a>
+      {% endif %}
+    </div>
+
+    <div class="bg-background rounded-lg border-2 border-primary p-8 relative shadow-lg">
+      <div class="badge-default absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary">
+        Recommended
+      </div>
+      <h3 class="text-2xl font-bold mb-2">Premium</h3>
+      <p class="text-muted-foreground mb-6">Ideal for professionals and small businesses</p>
+      <p class="text-4xl font-bold mb-6">
+        $<span data-jswc-price="amount">10</span>
+        <span class="text-muted-foreground text-lg font-normal">/month</span>
+      </p>
+
+      <ul class="space-y-3 mb-8">
+        <li class="flex items-center gap-2">
+          <i data-lucide="check" class="size-4 text-primary"></i>
+          <span>Up to 25 new links per month</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <i data-lucide="check" class="size-4 text-primary"></i>
+          <span>Advanced statistics</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <i data-lucide="check" class="size-4 text-primary"></i>
+          <span>1-year analytics retention</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <i data-lucide="check" class="size-4 text-primary"></i>
+          <span>Priority support</span>
+        </li>
+      </ul>
+
+      {% if request.user.is_authenticated %}
+        {% if request.user.is_premium %}
+          <a href="{% url 'my_account' %}?tab=plan" class="button-primary w-full text-center">
+            Manage plan
+          </a>
+        {% else %}
+          <a href="{% url 'upgrade_plan' %}" class="button-primary w-full" data-jswc-price="upgrade">
+            Upgrade to Premium
+          </a>
+        {% endif %}
+      {% else %}
+        <a href="{% url 'sign_up' %}?plan=premium" class="button-primary w-full text-center" data-jswc-price="upgrade">
+          Get started
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</div>

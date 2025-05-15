@@ -3,7 +3,7 @@ import { initStripe } from "./stripe";
 declare const clientSecret: string;
 declare const redirectUrl: string;
 
-export async function initSetupCardForm() {
+export async function initSetupCard() {
   const stripe = await initStripe();
   const elements = stripe.elements();
 
@@ -42,51 +42,65 @@ export async function initSetupCardForm() {
     }
   });
 
+  return { stripe, cardElement };
+}
+
+export async function initSetupCardForm() {
+  const cardSetupElement = await initSetupCard();
+  if (!cardSetupElement) return;
+
+  const { stripe, cardElement } = cardSetupElement;
+
   // Handle form submission
   const form = document.getElementById("payment-form") as HTMLFormElement;
+  if (!form) return;
+
   const submitButton = document.getElementById(
     "submit-button",
   ) as HTMLButtonElement;
   const spinner = document.getElementById("spinner") as HTMLDivElement;
   const buttonText = document.getElementById("button-text") as HTMLSpanElement;
 
-  if (form) {
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-      // Disable the submit button to prevent repeated clicks
-      setLoading(true);
+    setLoading(true);
 
-      try {
-        const result = await stripe.confirmCardSetup(clientSecret, {
-          payment_method: {
-            card: cardElement,
-          },
-        });
+    try {
+      const result = await stripe.confirmCardSetup(clientSecret, {
+        payment_method: {
+          card: cardElement,
+        },
+      });
 
-        if (result.error) {
-          const errorElement = document.getElementById("card-errors");
-          if (errorElement) {
-            errorElement.textContent =
-              result.error.message || "An error occurred.";
-          }
-          setLoading(false);
-        } else {
-          const paymentMethodId = result.setupIntent.payment_method;
-          const setupIntentId = result.setupIntent.id;
-
-          window.location.href = `${redirectUrl}?payment_method=${paymentMethodId}&setup_intent=${setupIntentId}`;
-        }
-      } catch (error) {
-        console.error("Error:", error);
+      if (result.error) {
         const errorElement = document.getElementById("card-errors");
         if (errorElement) {
-          errorElement.textContent = "An unexpected error occurred.";
+          errorElement.textContent =
+            result.error.message || "An error occurred.";
         }
         setLoading(false);
+      } else {
+        const paymentMethodId = result.setupIntent.payment_method;
+        const setupIntentId = result.setupIntent.id;
+
+        const url = new URL(redirectUrl);
+        if (paymentMethodId && typeof paymentMethodId === "string") {
+          url.searchParams.append("payment_method", paymentMethodId);
+        }
+        url.searchParams.append("setup_intent", setupIntentId);
+
+        window.location.href = url.href;
       }
-    });
-  }
+    } catch (error) {
+      console.error("Error:", error);
+      const errorElement = document.getElementById("card-errors");
+      if (errorElement) {
+        errorElement.textContent = "An unexpected error occurred.";
+      }
+      setLoading(false);
+    }
+  });
 
   function setLoading(isLoading: boolean): void {
     if (isLoading) {

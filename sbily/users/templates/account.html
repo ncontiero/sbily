@@ -280,7 +280,7 @@
                 </button>
               {% endif %}
             {% else %}
-              <button type="button" class="button-primary button-sm" data-jswc-dialog data-jswc-target="upgrade-dialog">
+              <button type="button" class="button-primary button-sm" data-jswc-dialog data-jswc-target="choose-plan-dialog">
                 Upgrade to Premium
               </button>
             {% endif %}
@@ -322,7 +322,7 @@
                 <i data-lucide="check" class="size-4 text-primary"></i>
                 <span>
                   {% if user.is_premium %}
-                    10 new links per month (resets monthly)
+                    25 new links per month (resets monthly)
                   {% else %}
                     5 new links per month (resets monthly)
                   {% endif %}
@@ -351,7 +351,7 @@
           </div>
           {% if not user.is_premium %}
             <div class="card-footer justify-end">
-              <button type="button" class="button-primary button-sm" data-jswc-dialog data-jswc-target="upgrade-dialog">
+              <button type="button" class="button-primary button-sm" data-jswc-dialog data-jswc-target="choose-plan-dialog">
                 Upgrade Now
               </button>
             </div>
@@ -360,8 +360,8 @@
 
         <!-- Dialogs -->
         {% if not user.is_premium %}
-          <!-- Upgrade Dialog -->
-          {% include "partials/upgrade_to_premium_dialog.html" %}
+          <!-- Choose Plan Dialog -->
+          {% include "partials/choose_plan_dialog.html" %}
         {% endif %}
 
         {% if user.is_premium %}

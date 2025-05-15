@@ -4,7 +4,8 @@
 # Stripe
 # ------------------------------------------------------------------------------
 STRIPE_SECRET_KEY=""
-STRIPE_PREMIUM_PRICE_ID=""
+STRIPE_PREMIUM_MONTHLY_PRICE_ID=""
+STRIPE_PREMIUM_YEARLY_PRICE_ID=""
 STRIPE_PUBLIC_KEY=""
 STRIPE_WEBHOOK_SECRET=""
 

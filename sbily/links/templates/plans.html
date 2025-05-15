@@ -16,89 +16,9 @@
 
     <section class="py-16 bg-secondary/50">
       <div class="container">
-        <h2 class="text-3xl font-bold text-center mb-12">Core Plans</h2>
+        <h2 class="text-3xl font-bold text-center">Available plans</h2>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          <div class="bg-background rounded-lg border border-border p-8 shadow-lg">
-            <h3 class="text-2xl font-bold mb-2">Free</h3>
-            <p class="text-muted-foreground mb-6">Perfect for personal and casual use</p>
-            <p class="text-4xl font-bold mb-6">$0 <span class="text-muted-foreground text-lg font-normal">/month</span></p>
-
-            <ul class="space-y-3 mb-8">
-              <li class="flex items-center gap-2">
-                <i data-lucide="check" class="size-4 text-primary"></i>
-                <span>Up to 5 new links per month</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <i data-lucide="check" class="size-4 text-primary"></i>
-                <span>Basic statistics</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <i data-lucide="check" class="size-4 text-primary"></i>
-                <span>30-day analytics retention</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <i data-lucide="check" class="size-4 text-primary"></i>
-                <span>Basic support</span>
-              </li>
-            </ul>
-
-            {% if request.user.is_authenticated %}
-              {% if request.user.is_premium %}
-                <a href="{% url 'my_account' %}?tab=plan" class="button-outline w-full text-center">Manage plan</a>
-              {% else %}
-                <button type="button" class="button-primary w-full" data-jswc-dialog data-jswc-target="upgrade-dialog">
-                  Upgrade to Premium
-                </button>
-              {% endif %}
-            {% else %}
-              <a href="{% url 'sign_up' %}" class="button-outline w-full text-center">Start Free</a>
-            {% endif %}
-          </div>
-
-          <div class="bg-background rounded-lg border-2 border-primary p-8 relative shadow-lg">
-            <div class="badge-default absolute -top-3 left-1/2 transform -translate-x-1/2">Recommended</div>
-            <h3 class="text-2xl font-bold mb-2">Premium</h3>
-            <p class="text-muted-foreground mb-6">Ideal for professionals and small businesses</p>
-            <p class="text-4xl font-bold mb-6">$5 <span class="text-muted-foreground text-lg font-normal">/month</span></p>
-
-            <ul class="space-y-3 mb-8">
-              <li class="flex items-center gap-2">
-                <i data-lucide="check" class="size-4 text-primary"></i>
-                <span>Up to 10 new links per month</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <i data-lucide="check" class="size-4 text-primary"></i>
-                <span>Advanced statistics</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <i data-lucide="check" class="size-4 text-primary"></i>
-                <span>1-year analytics retention</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <i data-lucide="check" class="size-4 text-primary"></i>
-                <span>Priority support</span>
-              </li>
-            </ul>
-
-            {% if request.user.is_authenticated %}
-              {% if request.user.is_premium %}
-                <a href="{% url 'my_account' %}?tab=plan" class="button-primary w-full text-center">
-                  Manage plan
-                </a>
-              {% else %}
-                <button type="button" class="button-primary w-full" data-jswc-dialog data-jswc-target="upgrade-dialog">
-                  Upgrade to Premium
-                </button>
-                {% include "partials/upgrade_to_premium_dialog.html" %}
-              {% endif %}
-            {% else %}
-              <a href="{% url 'sign_up' %}?plan=premium" class="button-primary w-full text-center">
-                Subscribe Premium
-              </a>
-            {% endif %}
-          </div>
-        </div>
+        {% include "partials/plans.html" %}
       </div>
     </section>
 
@@ -121,7 +41,7 @@
                   <tr class="border-b border-dashed duration-200 hover:bg-muted/50">
                     <td class="p-4 font-medium">Links</td>
                     <td class="p-4 text-center">5 new links/mo</td>
-                    <td class="p-4 text-center">10 new links/mo</td>
+                    <td class="p-4 text-center">25 new links/mo</td>
                   </tr>
                   <tr class="border-b border-dashed duration-200 hover:bg-muted/50">
                     <td class="p-4 font-medium">Basic Statistics</td>

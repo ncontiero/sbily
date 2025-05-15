@@ -250,7 +250,7 @@
     @apply flex w-full items-center justify-center whitespace-nowrap rounded-sm px-3 py-2 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm;
   }
   .tab-item {
-    @apply flex items-center gap-2 text-sm text-nowrap px-4 md:px-2 py-3 rounded-md border-t-4 md:border-t-0 md:border-l-4 border-transparent ring-ring duration-200 outline-none hover:bg-secondary focus:bg-secondary focus:ring-2 [&:not(:hover)]:data-[state=active]:bg-secondary/60 data-[state=active]:border-primary data-[state=active]:text-foreground;
+    @apply flex items-center gap-2 text-sm text-nowrap px-4 md:px-2 py-3 rounded-md border-t-4 md:border-t-0 md:border-l-4 border-transparent ring-ring duration-200 outline-none [&:not(:disabled)]:hover:bg-secondary focus:bg-secondary focus:ring-2 [&:not(:hover)]:data-[state=active]:bg-secondary/60 data-[state=active]:border-primary data-[state=active]:text-foreground disabled:cursor-not-allowed disabled:opacity-70;
   }
 
   /* Table */

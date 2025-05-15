@@ -31,11 +31,12 @@ def get_post_auth_redirect(request, user, form):
     Determine the redirect path after authentication.
     """
     plan = form.cleaned_data.get("plan", "free")
+    cycle = form.cleaned_data.get("cycle", "monthly")
     destination_url = form.cleaned_data.get("destination_url", "")
     next_path = form.cleaned_data.get("next_path", "my_account")
 
     if plan == "premium":
-        return redirect("upgrade_plan")
+        return redirect(reverse_with_params("upgrade_plan", {"cycle": cycle}))
 
     if destination_url:
         link = ShortenedLink.objects.create(
@@ -73,6 +74,7 @@ def sign_up(request: HttpRequest):
         form = SignUpForm(
             initial={
                 "plan": request.GET.get("plan"),
+                "cycle": request.GET.get("cycle"),
                 "next_path": request.GET.get("next"),
                 "destination_url": request.GET.get("destination_url"),
             },

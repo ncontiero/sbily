@@ -8,13 +8,19 @@ import { initAddLoad } from "./components/addLoad";
 import { initBreadcrumb } from "./components/breadcrumb";
 import { dialog, initDialog } from "./components/dialog";
 import { initDropdownMenu } from "./components/dropdownMenu";
-import "./components/links/select";
+import { initPriceToggle } from "./components/priceToggle";
 import { initSwitch, Switch } from "./components/switch";
 import { initTabs } from "./components/tabs";
 import { initThemeToggle } from "./components/themeToggle";
 import { closeToast, toast } from "./components/toast";
-import { initConfirmPayment, initSetupCardForm, initStripe } from "./stripe";
+import {
+  initConfirmPayment,
+  initSetupCardForm,
+  initStripe,
+  initUpgradeCheckout,
+} from "./stripe";
 import { copy } from "./utils/copy";
+import "./components/links/select";
 
 const windowExtensions: WindowWithCustomProps = {
   copy,
@@ -34,6 +40,8 @@ const initApp = (): void => {
   }, 500);
   initConfirmPayment();
   initSetupCardForm();
+  initPriceToggle();
+  initUpgradeCheckout();
   initDialog();
   initDropdownMenu();
   initSwitch();

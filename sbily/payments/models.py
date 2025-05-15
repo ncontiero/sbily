@@ -51,7 +51,7 @@ class Subscription(models.Model):
         _("price"),
         max_digits=6,
         decimal_places=2,
-        default=5.00,
+        default=10.00,
     )
 
     def __str__(self):
@@ -105,46 +105,47 @@ class Subscription(models.Model):
         self.is_auto_renew = False
         self.save()
 
-    @transaction.atomic
-    def renew(self, transaction_id: str | None = None):
+    def renew(self):
         """Renew subscription"""
         self.status = self.STATUS_ACTIVE
         self.end_date = now() + timedelta(days=30)
         self.is_auto_renew = True
         self.save()
 
-        Payment.objects.create(
-            user=self.user,
-            amount=self.price,
-            description="Subscription Renewal (30 days)",
-            transaction_id=transaction_id,
-        )
-
     @classmethod
     @transaction.atomic
-    def create_subscription(cls, user: User, payment_method_id=None):
+    def create_subscription(
+        cls,
+        user: User,
+        payment_method_id=None,
+        plan_cycle="monthly",
+    ):
         """Create a subscription"""
 
         customer = user.get_stripe_customer()
         try:
             user.update_card_details(payment_method_id)
 
+            is_monthly = plan_cycle == "monthly"
             sub, _ = cls.objects.get_or_create(
                 user=user,
                 defaults={
-                    "price": Decimal("5.00"),
+                    "price": Decimal("10.00"),
                     "status": cls.STATUS_INCOMPLETE,
                     "start_date": now(),
-                    "end_date": now() + timedelta(days=30),
+                    "end_date": now() + timedelta(days=30 if is_monthly else 365),
                     "is_auto_renew": True,
                 },
             )
 
+            price = (
+                settings.STRIPE_PREMIUM_MONTHLY_PRICE_ID
+                if is_monthly
+                else settings.STRIPE_PREMIUM_YEARLY_PRICE_ID
+            )
             subscription = stripe.Subscription.create(
                 customer=customer.id,
-                items=[
-                    {"price": settings.STRIPE_PREMIUM_PRICE_ID},
-                ],
+                items=[{"price": price}],
                 metadata={
                     "user_id": user.id,
                     "subscription_id": sub.id,
@@ -258,7 +259,8 @@ class Subscription(models.Model):
             self.status = status_map.get(stripe_sub.status, self.status)
             self.is_auto_renew = stripe_sub.cancel_at_period_end is False
 
-            if current_period_end := stripe_sub.items.data[0].current_period_end:
+            data = stripe_sub.get("items", {}).get("data", [])[0]
+            if current_period_end := data.current_period_end:
                 self.end_date = datetime.fromtimestamp(
                     current_period_end,
                     tz=now().tzinfo,
@@ -299,7 +301,12 @@ class Payment(models.Model):
         default=STATUS_PENDING,
     )
     description = models.CharField(_("description"), max_length=255)
-    transaction_id = models.CharField(_("transaction ID"), max_length=255, blank=True)
+    transaction_id = models.CharField(
+        _("transaction ID"),
+        max_length=255,
+        blank=True,
+        unique=True,
+    )
 
     class Meta:
         ordering = ["-payment_date"]
@@ -324,9 +331,9 @@ class Payment(models.Model):
             self.transaction_id = transaction_id
         self.save()
 
-    def fail(self, error_message=None):
+    def fail(self, description=None):
         """Mark payment as failed"""
         self.status = self.STATUS_FAILED
-        if error_message:
-            self.description += f" - Error: {error_message}"
-        self.save()
+        if description:
+            self.description = description
+        self.save(update_fields=["status", "description"])

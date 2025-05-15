@@ -1,0 +1,9 @@
+<div id="choose-plan-dialog" class="hidden dialog max-w-3xl" data-jswc-dialog-animation="true">
+  <div class="flex justify-between items-center">
+    <h2 class="text-xl font-bold">Select a plan</h2>
+  </div>
+  {% include "partials/plans.html" with is_dialog=True %}
+  <button type="button" class="button-outline absolute p-2 border-0 rounded-xl right-4 top-4" aria-label="Close" data-jswc-dialog-close>
+    <i data-lucide="x" class="size-5"></i>
+  </button>
+</div>

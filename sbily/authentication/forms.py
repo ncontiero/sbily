@@ -55,6 +55,12 @@ class SignUpForm(BaseModelForm, NextAndDestinationURLForm):
         initial="free",
         required=False,
     )
+    cycle = forms.CharField(
+        widget=forms.HiddenInput(),
+        max_length=10,
+        initial="monthly",
+        required=False,
+    )
 
     class Meta:
         model = User

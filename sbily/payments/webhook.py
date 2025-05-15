@@ -30,7 +30,7 @@ def handle_stripe_webhook(event: Event):
         invoice = event["data"]["object"]
         handle_invoice_payment_action_required(invoice)
 
-    elif event_type == "invoice.payment_failed":
+    elif event_type in {"invoice.payment_failed", "invoice.voided"}:
         invoice = event["data"]["object"]
         handle_invoice_payment_failed(invoice)
 
@@ -62,9 +62,9 @@ def handle_invoice_payment_succeeded(invoice: Invoice):
                 stripe_subscription_id=stripe_subscription_id,
             )
 
-            payment_description = (
-                f"Monthly Premium Subscription - Invoice {invoice.number}"
-            )
+            payment_description = "Premium Subscription"
+            if invoice.number:
+                payment_description += f" - Invoice {invoice.number}"
 
             # Create payment record if doesn't exist
             payment, created = Payment.objects.get_or_create(
@@ -82,9 +82,8 @@ def handle_invoice_payment_succeeded(invoice: Invoice):
             if not created:
                 payment.description = payment_description
                 payment.complete()
-                subscription.renew()
+                subscription.is_auto_renew = True
 
-            # Update subscription status
             subscription.status = Subscription.STATUS_ACTIVE
             period_end = invoice.lines.data[0].period.end
             subscription.end_date = datetime.fromtimestamp(period_end, tz=now().tzinfo)
@@ -108,12 +107,13 @@ def handle_invoice_payment_failed(invoice: Invoice):
                     "user": subscription.user,
                     "amount": Decimal(invoice.get("amount_due", 0))
                     / 100,  # Convert from cents
-                    "description": "Failed Monthly Premium Subscription",
+                    "description": "Premium Subscription Failed",
                     "status": Payment.STATUS_FAILED,
+                    "transaction_id": invoice.id,
                 },
             )
 
-            payment.fail("Invoice payment failed")
+            payment.fail("Premium Subscription Failed - Payment Failed")
             subscription.cancel_stripe_subscription_immediately()
 
 
@@ -126,6 +126,10 @@ def handle_invoice_payment_action_required(invoice: Invoice):
                 stripe_subscription_id=stripe_subscription_id,
             )
 
+            payment_description = "Premium Subscription"
+            if invoice.number:
+                payment_description += f" - Invoice {invoice.number}"
+
             # Create payment record if doesn't exist
             payment, _ = Payment.objects.get_or_create(
                 transaction_id=invoice.id,
@@ -133,8 +137,9 @@ def handle_invoice_payment_action_required(invoice: Invoice):
                     "user": subscription.user,
                     "amount": Decimal(invoice.amount_due or 0)
                     / 100,  # Convert from cents
-                    "description": f"Monthly Premium Subscription - Invoice {invoice.number}",  # noqa: E501
+                    "description": payment_description,
                     "status": Payment.STATUS_PENDING,
+                    "transaction_id": invoice.id,
                 },
             )
 

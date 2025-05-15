@@ -18,56 +18,58 @@ export async function initConfirmPayment() {
     "message-text",
   ) as HTMLSpanElement;
 
-  if (confirmButton) {
-    confirmButton.addEventListener("click", async () => {
-      setLoading(true);
-
-      try {
-        // Check whether this is a payment intent or setup intent
-        if (clientSecret.startsWith("pi_")) {
-          // Payment Intent
-          const result = await stripe.confirmCardPayment(clientSecret);
-          handlePaymentResult(result);
-        } else if (clientSecret.startsWith("seti_")) {
-          // Setup Intent
-          const result = await stripe.confirmCardSetup(clientSecret);
-          handleSetupResult(result);
-        } else {
-          showMessage("Invalid client secret format");
-          setLoading(false);
-        }
-      } catch (error) {
-        console.error("Error:", error);
-        showMessage("An unexpected error occurred");
-        setLoading(false);
-      }
-    });
-  }
-
-  function handlePaymentResult(result: any) {
-    if (result.error) {
-      showMessage(result.error.message || "Payment failed");
-      setLoading(false);
-    } else {
-      // Success, redirect with the payment intent ID
-      window.location.href = `${redirectUrl}?payment_intent=${result.paymentIntent.id}`;
-    }
-  }
-
-  function handleSetupResult(result: any) {
-    if (result.error) {
-      showMessage(result.error.message || "Setup failed");
-      setLoading(false);
-    } else {
-      // Success, redirect with the payment method ID
-      window.location.href = `${redirectUrl}?payment_method=${result.setupIntent.payment_method}&setup_intent=${result.setupIntent.id}`;
-    }
-  }
+  if (!confirmButton) return;
 
   function showMessage(message: string): void {
     messageText.textContent = message;
     messageContainer.classList.remove("hidden");
   }
+
+  confirmButton.addEventListener("click", async () => {
+    setLoading(true);
+
+    const url = new URL(redirectUrl);
+
+    try {
+      // Check whether this is a payment intent or setup intent
+      if (clientSecret.startsWith("pi_")) {
+        // Payment Intent
+        const result = await stripe.confirmCardPayment(clientSecret);
+        if (result.error) {
+          showMessage(result.error.message || "Payment failed");
+          setLoading(false);
+          return;
+        }
+
+        url.searchParams.append("payment_intent", result.paymentIntent.id);
+
+        window.location.href = url.href;
+      } else if (clientSecret.startsWith("seti_")) {
+        // Setup Intent
+        const result = await stripe.confirmCardSetup(clientSecret);
+        if (result.error) {
+          showMessage(result.error.message || "Setup failed");
+          setLoading(false);
+          return;
+        }
+
+        const paymentMethodId = result.setupIntent.payment_method;
+        if (typeof paymentMethodId === "string") {
+          url.searchParams.append("payment_method", paymentMethodId);
+        }
+        url.searchParams.append("setup_intent", result.setupIntent.id);
+
+        window.location.href = url.href;
+      } else {
+        showMessage("Invalid client secret format");
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      showMessage("An unexpected error occurred");
+      setLoading(false);
+    }
+  });
 
   function setLoading(isLoading: boolean): void {
     if (isLoading) {
