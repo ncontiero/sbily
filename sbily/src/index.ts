@@ -1,9 +1,7 @@
 import "./index.css";
 
 import type { WindowWithCustomProps } from "./types";
-import { initializeChart } from "./chart";
-import { initDashboard } from "./chart/dashboard";
-import { initLinkStats } from "./chart/link-stats";
+import { initStatsPages } from "./chart";
 import { initAddLoad } from "./components/addLoad";
 import { initBreadcrumb } from "./components/breadcrumb";
 import { dialog, initDialog } from "./components/dialog";
@@ -19,8 +17,8 @@ import {
   initStripe,
   initUpgradeCheckout,
 } from "./stripe";
-import { copy } from "./utils/copy";
 import "./components/links/select";
+import { copy } from "./utils/copy";
 
 const windowExtensions: WindowWithCustomProps = {
   copy,
@@ -29,7 +27,6 @@ const windowExtensions: WindowWithCustomProps = {
   dialog,
   Switch,
   stripe: initStripe(),
-  Chart: initializeChart(),
 };
 
 Object.assign(window, windowExtensions);
@@ -50,9 +47,7 @@ const initApp = (): void => {
   initBreadcrumb();
   initAddLoad();
 
-  initializeChart();
-  initDashboard();
-  initLinkStats();
+  initStatsPages();
 };
 
 document.addEventListener("DOMContentLoaded", initApp);

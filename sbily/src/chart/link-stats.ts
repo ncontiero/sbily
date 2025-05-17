@@ -1,7 +1,9 @@
-import { topojson } from "chartjs-chart-geo";
-import { Chart } from ".";
-import countriesJson from "./countries-50m.json";
-import { getChartBarConfig, getChartPieConfig } from "./utils";
+import { Chart } from "./chart";
+import {
+  getChartBarConfig,
+  getChartGetConfig,
+  getChartPieConfig,
+} from "./utils";
 
 declare const dailyClicksData: { date: string; count: string }[];
 declare const hourlyClicksData: { hour: string; count: string }[];
@@ -14,10 +16,7 @@ declare const devicesData: { device_type: string; count: string }[];
 declare const browsersData: { browser: string; count: string }[];
 declare const osData: { operating_system: string; count: string }[];
 
-export function initLinkStats() {
-  const inLinkStatsPage = document.getElementById("links-stats");
-  if (!inLinkStatsPage) return;
-
+export async function initLinkStats() {
   const dailyClicksCtx = (
     document.getElementById("dailyClicksChart") as HTMLCanvasElement
   )?.getContext("2d");
@@ -60,46 +59,13 @@ export function initLinkStats() {
     return;
   }
 
-  const countries = (
-    topojson.feature(
-      countriesJson as any,
-      countriesJson.objects.countries as any,
-    ) as unknown as GeoJSON.FeatureCollection
-  ).features;
-
   const countryLabels = countriesAndCitiesData.map((data) => data.country);
   const countryData = countriesAndCitiesData.map((data) => data.count);
 
-  new Chart(countriesAndCitiesChartCtx, {
-    type: "choropleth",
-    data: {
-      labels: countries.map((d) => d.properties?.name),
-      datasets: [
-        {
-          label: "Countries",
-          data: countries.map((d) => ({
-            feature: d,
-            value: countryData[countryLabels.indexOf(d.properties?.name)] || 0,
-          })),
-        },
-      ],
-    },
-    options: {
-      showOutline: true,
-      showGraticule: true,
-      plugins: {
-        legend: {
-          display: false,
-        },
-      },
-      scales: {
-        projection: {
-          axis: "x",
-          projection: "equalEarth",
-        },
-      },
-    },
-  });
+  new Chart(
+    countriesAndCitiesChartCtx,
+    await getChartGetConfig({ countryLabels, countryData }),
+  );
 
   const devicesChartCtx = (
     document.getElementById("devicesChart") as HTMLCanvasElement

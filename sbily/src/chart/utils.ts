@@ -1,4 +1,5 @@
 import type { ChartConfiguration, ChartType } from "chart.js";
+import { type IChoroplethDataPoint, topojson } from "chartjs-chart-geo";
 
 type Config<T extends ChartType> = ChartConfiguration<T>;
 type CustomConfig<T extends ChartType> = {
@@ -8,10 +9,21 @@ type CustomConfig<T extends ChartType> = {
   config?: ChartConfiguration<T>;
 };
 
+export function getThemeColors() {
+  const styles = getComputedStyle(document.documentElement);
+  const primaryColor = styles.getPropertyValue("--primary").trim();
+  const foregroundColor = styles.getPropertyValue("--foreground").trim();
+  const backgroundColor = styles.getPropertyValue("--background").trim();
+
+  return {
+    primaryColor,
+    foregroundColor,
+    backgroundColor,
+  };
+}
+
 export function getChartColors(count: number) {
-  const primaryColor = getComputedStyle(document.documentElement)
-    .getPropertyValue("--primary")
-    .trim();
+  const { primaryColor } = getThemeColors();
 
   const colors = [];
   const opacity = 0.8;
@@ -31,9 +43,7 @@ export function getChartBarConfig({
   dataLabel,
   config,
 }: CustomConfig<"bar">): Config<"bar"> {
-  const styles = getComputedStyle(document.documentElement);
-  const primaryColor = styles.getPropertyValue("--primary").trim();
-  const foregroundColor = styles.getPropertyValue("--foreground").trim();
+  const { primaryColor, foregroundColor } = getThemeColors();
 
   return {
     type: "bar",
@@ -116,6 +126,78 @@ export function getChartPieConfig({
               size: 14,
             },
           },
+        },
+      },
+    },
+  };
+}
+
+interface GetGeoCountries {
+  countryLabels: string[];
+  countryData: string[];
+}
+
+export async function getGeoCountries({
+  countryData,
+  countryLabels,
+}: GetGeoCountries) {
+  const countriesJson = await import("./countries-50m.json");
+
+  const countries = (
+    topojson.feature(
+      countriesJson as any,
+      countriesJson.objects.countries as any,
+    ) as unknown as GeoJSON.FeatureCollection
+  ).features;
+
+  const labels = countries.map((d) => d.properties?.name);
+  const data = countries.map((d) => ({
+    feature: d,
+    value: countryData[countryLabels.indexOf(d.properties?.name)] || 0,
+  }));
+
+  return { labels, data };
+}
+
+interface GetChartGetConfig
+  extends Partial<CustomConfig<"choropleth">>,
+    GetGeoCountries {}
+
+export async function getChartGetConfig({
+  countryLabels,
+  countryData,
+  dataLabel = "Countries",
+  config,
+}: GetChartGetConfig): Promise<Config<"choropleth">> {
+  const { labels, data } = await getGeoCountries({
+    countryLabels,
+    countryData,
+  });
+
+  return {
+    type: "choropleth",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: dataLabel,
+          data: data as unknown as IChoroplethDataPoint[],
+        },
+      ],
+    },
+    options: {
+      ...config?.options,
+      showOutline: true,
+      showGraticule: true,
+      plugins: {
+        legend: {
+          display: false,
+        },
+      },
+      scales: {
+        projection: {
+          axis: "x",
+          projection: "equalEarth",
         },
       },
     },
