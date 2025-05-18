@@ -40,7 +40,7 @@ export default function MonthlyLinkLimitResetEmail() {
           {features.map((feature, index) => (
             <Text
               key={index}
-              className="inline-flex items-start w-full my-[6px]"
+              className="my-[6px] inline-flex w-full items-start"
             >
               <span className="mr-[12px] flex size-[18px] shrink-0 items-center justify-center rounded-[6px] border border-solid border-primary pl-[2px] text-[18px] font-semibold leading-none text-primary">
                 ✓
@@ -59,7 +59,7 @@ export default function MonthlyLinkLimitResetEmail() {
         </Text>
       </Section>
 
-      <Section className="text-center my-[20px]">
+      <Section className="my-[20px] text-center">
         <Button href={`{{ BASE_URL }}{% url "dashboard" %}`}>
           Go to Dashboard
         </Button>
