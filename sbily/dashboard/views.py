@@ -12,15 +12,18 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.utils import timezone
 
-from sbily.links.models import LinkClick
 from sbily.links.models import ShortenedLink
+
+from .utils import filter_clicks_by_plan
+from .utils import get_user_clicks
 
 
 @login_required
 def dashboard(request: HttpRequest):
-    links = ShortenedLink.objects.filter(user=request.user)
+    user = request.user
+    links = ShortenedLink.objects.filter(user=user)
 
-    clicks = LinkClick.objects.filter(link__user=request.user)
+    clicks = get_user_clicks(user)
     total_clicks = clicks.count()
     unique_visitors = clicks.values("ip_address").distinct().count()
     active_links = links.filter(is_active=True).count()
@@ -131,6 +134,7 @@ def filter_clicks(request: HttpRequest, link: ShortenedLink):
     to_date = request.GET.get("to-date", None)
 
     clicks = link.clicks.all()
+    clicks = filter_clicks_by_plan(clicks, request.user)
 
     if from_date:
         with contextlib.suppress(ValueError):
