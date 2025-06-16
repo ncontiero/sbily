@@ -49,6 +49,7 @@ def upgrade_plan(request: HttpRequest):
         context = {
             "client_secret": setup_intent.client_secret,
             "redirect_url": request.build_absolute_uri(reverse("finalize_upgrade")),
+            "plan": "premium",
             "plan_cycle": plan_cycle,
             "default_payment_method": default_payment_method,
         }
