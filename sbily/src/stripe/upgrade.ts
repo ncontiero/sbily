@@ -1,12 +1,12 @@
+import type { Cycle, Plan } from "./prices";
 import { createElement, Loader } from "lucide";
 import { setLoading } from "@/components/addLoad";
 import { initSetupCard, prices } from ".";
 
 declare const clientSecret: string;
 declare const redirectUrl: string;
+declare const plan: Plan;
 declare const defaultPaymentMethod: string;
-
-type Cycle = "monthly" | "yearly";
 
 function handlePlanCycle(selectedCycle: Cycle) {
   const discountElement = document.querySelector(
@@ -30,8 +30,8 @@ function handlePlanCycle(selectedCycle: Cycle) {
 
   if (
     !discountElement ||
-    !monthlyAmount ||
     !monthsCycle ||
+    !monthlyAmount ||
     !nextBilling ||
     billingCycleElements.length === 0 ||
     totalAmount.length === 0
@@ -44,9 +44,9 @@ function handlePlanCycle(selectedCycle: Cycle) {
     element.textContent = selectedCycle;
   });
 
-  monthlyAmount.textContent = prices[selectedCycle].premium.toFixed(2);
+  monthlyAmount.textContent = prices[selectedCycle][plan].toFixed(2);
   totalAmount.forEach((element) => {
-    const amount = prices[selectedCycle].premium;
+    const amount = prices[selectedCycle][plan];
     element.textContent = (amount * cycles).toFixed(2);
   });
 
@@ -84,6 +84,35 @@ export async function initUpgradeCheckout() {
 
   handlePlanCycle(currentCycle);
 
+  const fixedMonthlyAmounts = document.querySelectorAll(
+    "[data-jswc-upgrade='fixed-monthly-amount']",
+  );
+  const fixedYearlyMonthAmount = document.querySelector(
+    "[data-jswc-upgrade='fixed-yearly-month-amount']",
+  );
+  const fixedYearlyTotalAmount = document.querySelector(
+    "[data-jswc-upgrade='fixed-yearly-total-amount']",
+  );
+  const fixedYearlyDiscount = document.querySelector(
+    "[data-jswc-upgrade='fixed-yearly-discount']",
+  );
+  if (
+    !fixedYearlyMonthAmount ||
+    !fixedYearlyTotalAmount ||
+    !fixedYearlyDiscount
+  )
+    return;
+
+  const yearlyPrice = prices.yearly[plan];
+  const discount = prices.monthly[plan] * 12 - yearlyPrice * 12;
+
+  fixedYearlyMonthAmount.textContent = yearlyPrice.toFixed(2);
+  fixedYearlyTotalAmount.textContent = (yearlyPrice * 12).toFixed(2);
+  fixedYearlyDiscount.textContent = discount.toFixed(2);
+  fixedMonthlyAmounts.forEach((element) => {
+    element.textContent = prices.monthly[plan].toFixed(2);
+  });
+
   upgradeCheckoutForm.addEventListener("change", (e) => {
     if (
       !(e.target instanceof HTMLInputElement) ||
@@ -115,7 +144,7 @@ export async function initUpgradeCheckout() {
         },
       });
 
-      if (result.error && result.error.code !== "incomplete_number") {
+      if (result.error && defaultPaymentMethod === "None") {
         const errorElement = document.getElementById("card-errors");
         if (errorElement) {
           errorElement.textContent =
@@ -132,6 +161,7 @@ export async function initUpgradeCheckout() {
       if (typeof paymentMethodId === "string") {
         url.searchParams.append("payment_method", paymentMethodId);
       }
+      url.searchParams.append("plan", plan);
       url.searchParams.append("plan_cycle", currentCycle);
 
       window.location.href = url.href;

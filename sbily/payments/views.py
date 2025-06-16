@@ -57,7 +57,8 @@ def upgrade_plan(request: HttpRequest):
         messages.error(request, e.message)
         return redirect_with_tab("plan")
     except stripe.error.StripeError as e:
-        messages.error(request, f"Payment error: {e!s}")
+        messages.error(request, "Payment error")
+        logger.exception("Stripe error", exc_info=e)
         return redirect_with_tab("plan")
 
 
@@ -103,7 +104,8 @@ def finalize_upgrade(request: HttpRequest):
         return redirect_with_tab("plan")
 
     except Exception as e:
-        messages.error(request, f"Error processing upgrade: {e!s}")
+        messages.error(request, "Error processing upgrade")
+        logger.exception("Error processing upgrade", exc_info=e)
         return redirect_with_tab("plan")
 
 
@@ -131,7 +133,8 @@ def subscription_complete(request: HttpRequest):
 
         return redirect_with_tab("plan")
     except stripe.error.StripeError as e:
-        messages.error(request, f"Payment verification error: {e!s}")
+        messages.error(request, "Payment verification error")
+        logger.exception("Stripe error", exc_info=e)
         return redirect_with_tab("plan")
 
 
@@ -153,10 +156,8 @@ def cancel_plan(request: HttpRequest):
         if subscription and subscription.stripe_subscription_id:
             result = subscription.cancel_stripe_subscription()
             if result["status"] != "success":
-                messages.warning(
-                    request,
-                    f"Warning: Stripe cancellation issue - {result.get('error')}",
-                )
+                messages.warning(request, "Warning: Cancellation issue")
+                logger.warning("Warning: Cancellation issue - %s", result.get("error"))
             else:
                 messages.success(request, "Successfully canceled subscription!")
 
@@ -165,7 +166,8 @@ def cancel_plan(request: HttpRequest):
         messages.error(request, e.message)
         return redirect_with_tab("plan")
     except Exception as e:
-        messages.error(request, f"Error downgrading to free: {e}")
+        messages.error(request, "Error canceling subscription")
+        logger.exception("Error canceling subscription", exc_info=e)
         return redirect_with_tab("plan")
 
 
@@ -189,10 +191,8 @@ def resume_plan(request: HttpRequest):
         if subscription and subscription.stripe_subscription_id:
             result = subscription.resume_stripe_subscription()
             if result["status"] != "success":
-                messages.warning(
-                    request,
-                    f"Warning: Stripe resume issue - {result.get('error')}",
-                )
+                messages.warning(request, "Warning: Stripe resume issue")
+                logger.warning("Warning: Stripe resume issue - %s", result.get("error"))
             else:
                 messages.success(request, "Successfully resumed subscription!")
 
@@ -201,7 +201,8 @@ def resume_plan(request: HttpRequest):
         messages.error(request, e.message)
         return redirect_with_tab("plan")
     except Exception as e:
-        messages.error(request, f"Error resuming subscription: {e}")
+        messages.error(request, "Error resuming subscription")
+        logger.exception("Error resuming subscription", exc_info=e)
         return redirect_with_tab("plan")
 
 
@@ -226,7 +227,8 @@ def add_payment_method(request: HttpRequest):
             },
         )
     except Exception as e:
-        messages.error(request, f"Error setting up payment method: {e!s}")
+        messages.error(request, "Error setting up payment method")
+        logger.exception("Error setting up payment method", exc_info=e)
         return redirect_with_tab("billing")
 
 
@@ -239,7 +241,8 @@ def payment_method_added(request: HttpRequest):
             user.update_card_details(payment_method)
             messages.success(request, "Payment method successfully added!")
         except Exception as e:
-            messages.error(request, f"Error adding payment method: {e!s}")
+            messages.error(request, "Error adding payment method")
+            logger.exception("Error adding payment method", exc_info=e)
 
     return redirect_with_tab("billing")
 
@@ -256,9 +259,11 @@ def stripe_webhook(request):
             sig_header,
             settings.STRIPE_WEBHOOK_SECRET,
         )
-    except ValueError:
+    except ValueError as e:
+        logger.exception("Invalid Stripe webhook payload", exc_info=e)
         return HttpResponse(status=400)
-    except stripe.error.SignatureVerificationError:
+    except stripe.error.SignatureVerificationError as e:
+        logger.exception("Invalid Stripe webhook signature", exc_info=e)
         return HttpResponse(status=400)
 
     try:

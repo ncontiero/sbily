@@ -8,12 +8,10 @@ export function setLoading(
 ) {
   if (isLoading) {
     element.setAttribute("disabled", "true");
-    element.classList.add("cursor-not-allowed");
     element.innerHTML = "";
     element.append(loader);
   } else {
     element.removeAttribute("disabled");
-    element.classList.remove("cursor-not-allowed");
     element.innerHTML = elementContent || element.innerHTML;
     element.querySelector("svg")?.remove();
   }

@@ -50,6 +50,10 @@ def handle_stripe_webhook(event: Event):
         customer = event["data"]["object"]
         handle_customer_updated(customer)
 
+    elif event_type == "customer.deleted":
+        customer = event["data"]["object"]
+        handle_customer_deleted(customer)
+
     return {"status": "success", "event_type": event_type}
 
 
@@ -160,6 +164,8 @@ def handle_subscription_created(subscription_obj: StripeSubscription):
             current_period_end = datetime.fromtimestamp(period_end, tz=now().tzinfo)
             is_auto_renew = not subscription_obj.cancel_at_period_end
 
+            price = Decimal(data.plan.amount or 0) / 100  # Convert from cents
+
             # Create subscription if it doesn't exist
             subscription, created = Subscription.objects.get_or_create(
                 user=user,
@@ -169,15 +175,16 @@ def handle_subscription_created(subscription_obj: StripeSubscription):
                     "start_date": now(),
                     "end_date": current_period_end,
                     "is_auto_renew": is_auto_renew,
-                    "price": Decimal(data.plan.amount or 0) / 100,  # Convert from cents
+                    "price": price,
                 },
             )
 
             if not created:
                 subscription.stripe_subscription_id = subscription_obj.id
+                subscription.status = Subscription.STATUS_ACTIVE
                 subscription.end_date = current_period_end
                 subscription.is_auto_renew = is_auto_renew
-                subscription.status = Subscription.STATUS_ACTIVE
+                subscription.price = price
                 subscription.save()
 
             user.upgrade_to_premium()
@@ -203,6 +210,7 @@ def handle_subscription_deleted(subscription_obj: Subscription):
         )
         subscription.cancel()
         subscription.user.downgrade_to_free()
+        subscription.delete()
 
 
 def handle_customer_updated(customer: Customer):
@@ -216,6 +224,22 @@ def handle_customer_updated(customer: Customer):
         except User.DoesNotExist:
             logger.warning(
                 "Customer updated event received for non-existent user: %s",
+                customer_id,
+                exc_info=True,
+            )
+
+
+def handle_customer_deleted(customer: Customer):
+    """Handle customer deleted event"""
+    if customer_id := customer.id:
+        try:
+            user = User.objects.get(stripe_customer_id=customer_id)
+            user.stripe_customer_id = ""
+            user.card_last_four_digits = ""
+            user.save(update_fields=["stripe_customer_id", "card_last_four_digits"])
+        except User.DoesNotExist:
+            logger.warning(
+                "Customer deleted event received for non-existent user: %s",
                 customer_id,
                 exc_info=True,
             )

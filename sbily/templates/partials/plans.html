@@ -46,19 +46,15 @@
       </ul>
 
       {% if request.user.is_authenticated %}
-        {% if request.user.is_premium %}
-          <a href="{% url 'my_account' %}?tab=plan" class="button-outline w-full text-center">Manage plan</a>
-        {% else %}
-          <a href="{% url 'upgrade_plan' %}" class="button-primary w-full" data-jswc-price="upgrade">
-            Upgrade to Premium
-          </a>
+        {% if not request.user.is_premium %}
+          <button type="button" class="button-secondary w-full text-center" disabled>Current plan</button>
         {% endif %}
       {% else %}
         <a href="{% url 'sign_up' %}" class="button-outline w-full text-center">Start Free</a>
       {% endif %}
     </div>
 
-    <div class="bg-background rounded-lg border-2 border-primary p-8 relative shadow-lg">
+    <div class="bg-background rounded-lg border-2 border-primary p-8 relative shadow-lg" data-jswc-price="premium">
       <div class="badge-default absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary">
         Recommended
       </div>
@@ -90,11 +86,11 @@
 
       {% if request.user.is_authenticated %}
         {% if request.user.is_premium %}
-          <a href="{% url 'my_account' %}?tab=plan" class="button-primary w-full text-center">
-            Manage plan
-          </a>
+          <button type="button" class="button-secondary w-full text-center" disabled>
+            Current plan
+          </button>
         {% else %}
-          <a href="{% url 'upgrade_plan' %}" class="button-primary w-full" data-jswc-price="upgrade">
+          <a href="{% url 'upgrade_plan' %}?plan=premium" class="button-primary w-full" data-jswc-price="upgrade" data-jswc-add-load>
             Upgrade to Premium
           </a>
         {% endif %}

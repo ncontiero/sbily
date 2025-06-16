@@ -10,3 +10,6 @@ export const prices = {
     premium: applyYearlyDiscount(10 * 12) / 12,
   },
 };
+
+export type Cycle = keyof typeof prices;
+export type Plan = keyof typeof prices.monthly;
