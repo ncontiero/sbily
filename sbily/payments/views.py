@@ -1,5 +1,3 @@
-# ruff: noqa: BLE001
-
 import logging
 from typing import TYPE_CHECKING
 
@@ -77,8 +75,8 @@ def finalize_upgrade(request: HttpRequest):
         return redirect_with_tab("plan")
 
     payment_method = request.GET.get("payment_method")
-    plan = request.GET.get("plan", PlanType.PREMIUM)
-    plan_cycle = request.GET.get("plan_cycle", PlanCycle.MONTHLY)
+    plan = request.GET.get("plan", PlanType.PREMIUM.value)
+    plan_cycle = request.GET.get("plan_cycle", PlanCycle.MONTHLY.value)
 
     if not validate([payment_method]):
         messages.error(request, "Missing payment information")
@@ -128,7 +126,7 @@ def subscription_complete(request: HttpRequest):
     if request.method != "GET":
         return redirect_with_tab("plan")
 
-    plan = request.GET.get("plan", PlanType.PREMIUM)
+    plan = request.GET.get("plan", PlanType.PREMIUM.value)
     payment_intent = request.GET.get("payment_intent")
 
     if not payment_intent:

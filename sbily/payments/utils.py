@@ -62,24 +62,3 @@ def get_stripe_price(plan: str, plan_cycle: str) -> str | None:
         return stripe_prices[plan_type][cycle_type]
     except KeyError:
         return None
-
-
-# def is_upgrade_plan(plan: str, user: User) -> bool:
-#     """
-#     Check if the selected plan is an upgrade for the user.
-#     Order: Premium -> Business -> Advanced
-
-#     Returns: True if the plan is an upgrade, False otherwise.
-#     """
-#     try:
-#         plan_type = PlanType(plan)
-#     except ValueError:
-#         return False
-
-#     plan_order = {
-#         PlanType.PREMIUM: 0,
-#         PlanType.BUSINESS: 1,
-#         PlanType.ADVANCED: 2,
-#     }
-
-#     return plan_order[plan_type] > plan_order.get(user.role, -1)

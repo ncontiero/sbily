@@ -130,7 +130,7 @@ class User(AbstractUser):
     @transaction.atomic
     def choose_plan(self, plan: str) -> None:
         """Choose a plan for the user"""
-        from sbily.payments.utils import PlanType
+        from sbily.payments.utils import PlanType  # noqa: PLC0415
 
         plan_config = {
             PlanType.PREMIUM: self.MONTHLY_LINK_LIMIT_PER_PREMIUM,
@@ -198,7 +198,7 @@ class User(AbstractUser):
             template: Path to the email template
             **kwargs: Additional context data for the email template
         """
-        from .utils.emails import send_email_to_user
+        from .utils.emails import send_email_to_user  # noqa: PLC0415
 
         send_email_to_user(
             self,
