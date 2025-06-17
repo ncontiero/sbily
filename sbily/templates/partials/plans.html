@@ -46,7 +46,7 @@
       </ul>
 
       {% if request.user.is_authenticated %}
-        {% if not request.user.is_premium %}
+        {% if request.user.is_free %}
           <button type="button" class="button-secondary w-full text-center" disabled>Current plan</button>
         {% endif %}
       {% else %}
@@ -90,8 +90,13 @@
             Current plan
           </button>
         {% else %}
-          <a href="{% url 'upgrade_plan' %}?plan=premium" class="button-primary w-full" data-jswc-price="upgrade" data-jswc-add-load>
-            Upgrade to Premium
+          <a
+            href="{% url 'upgrade_plan' %}?plan=premium"
+            class="button-primary w-full"
+            data-jswc-price="upgrade"
+            data-jswc-add-load
+          >
+            Select Premium
           </a>
         {% endif %}
       {% else %}

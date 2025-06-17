@@ -125,7 +125,7 @@
         <h2 class="text-xl font-bold">Resume</h2>
         <div class="flex flex-col mt-6">
           <div class="flex items-center gap-2 font-bold">
-            <h3>Premium</h3>
+            <h3>{{ plan|capfirst }}</h3>
             <span class="badge-default" data-jswc-upgrade="discount">-20%</span>
           </div>
           <span class="mt-1 text-xs text-muted-foreground">
@@ -134,7 +134,7 @@
         </div>
         <div class="flex flex-col gap-2 mt-8">
           <div class="flex justify-between">
-            <span>Premium Plan</span>
+            <span>{{ plan|capfirst }} Plan</span>
             <div class="flex flex-col">
               <span>$<span data-jswc-upgrade="monthly-amount">8.00</span></span>
               <span class="text-xs text-muted-foreground text-end">/month</span>

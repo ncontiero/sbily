@@ -13,6 +13,7 @@ from sbily.users.models import User
 
 from .models import Payment
 from .models import Subscription
+from .utils import PlanType
 
 logger = logging.getLogger("payments.webhook")
 
@@ -66,7 +67,7 @@ def handle_invoice_payment_succeeded(invoice: Invoice):
                 stripe_subscription_id=stripe_subscription_id,
             )
 
-            payment_description = "Premium Subscription"
+            payment_description = f"{subscription.get_level_display()} Subscription"
             if invoice.number:
                 payment_description += f" - Invoice {invoice.number}"
 
@@ -104,6 +105,7 @@ def handle_invoice_payment_failed(invoice: Invoice):
                 stripe_subscription_id=stripe_subscription_id,
             )
 
+            subscription_level = subscription.get_level_display()
             # Create payment record if doesn't exist
             payment, _ = Payment.objects.get_or_create(
                 transaction_id=invoice.id,
@@ -111,13 +113,13 @@ def handle_invoice_payment_failed(invoice: Invoice):
                     "user": subscription.user,
                     "amount": Decimal(invoice.get("amount_due", 0))
                     / 100,  # Convert from cents
-                    "description": "Premium Subscription Failed",
+                    "description": f"{subscription_level} Subscription Failed",
                     "status": Payment.STATUS_FAILED,
                     "transaction_id": invoice.id,
                 },
             )
 
-            payment.fail("Premium Subscription Failed - Payment Failed")
+            payment.fail(f"{subscription_level} Subscription Failed - Payment Failed")
             subscription.cancel_stripe_subscription_immediately()
 
 
@@ -130,7 +132,7 @@ def handle_invoice_payment_action_required(invoice: Invoice):
                 stripe_subscription_id=stripe_subscription_id,
             )
 
-            payment_description = "Premium Subscription"
+            payment_description = f"{subscription.get_level_display()} Subscription"
             if invoice.number:
                 payment_description += f" - Invoice {invoice.number}"
 
@@ -165,11 +167,13 @@ def handle_subscription_created(subscription_obj: StripeSubscription):
             is_auto_renew = not subscription_obj.cancel_at_period_end
 
             price = Decimal(data.plan.amount or 0) / 100  # Convert from cents
+            level = subscription_obj.metadata.get("plan", PlanType.PREMIUM.value)
 
             # Create subscription if it doesn't exist
             subscription, created = Subscription.objects.get_or_create(
                 user=user,
                 defaults={
+                    "level": level,
                     "stripe_subscription_id": subscription_obj.id,
                     "status": Subscription.STATUS_ACTIVE,
                     "start_date": now(),
@@ -180,6 +184,7 @@ def handle_subscription_created(subscription_obj: StripeSubscription):
             )
 
             if not created:
+                subscription.level = level
                 subscription.stripe_subscription_id = subscription_obj.id
                 subscription.status = Subscription.STATUS_ACTIVE
                 subscription.end_date = current_period_end
@@ -187,7 +192,7 @@ def handle_subscription_created(subscription_obj: StripeSubscription):
                 subscription.price = price
                 subscription.save()
 
-            user.upgrade_to_premium()
+            user.choose_plan(subscription.level)
 
 
 def handle_subscription_updated(subscription_obj: Subscription):

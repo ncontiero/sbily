@@ -85,17 +85,24 @@ class User(AbstractUser):
         return self.role == self.ROLE_ADMIN
 
     @property
-    def is_user(self) -> bool:
+    def is_free(self) -> bool:
+        """Check if the user is on a free plan"""
         return self.role == self.ROLE_USER
+
+    @property
+    def subscription_active(self) -> bool:
+        """Check if the user has an active subscription"""
+        return self.subscription.is_active if hasattr(self, "subscription") else False
+
+    @property
+    def is_premium(self) -> bool:
+        """Check if the user has a premium subscription"""
+        return self.subscription_active and self.subscription.level == self.ROLE_PREMIUM
 
     @property
     def premium_expiry(self) -> datetime | None:
         """Returns the premium expires at date"""
         return self.subscription.end_date or None
-
-    @property
-    def is_premium(self) -> bool:
-        return self.role == self.ROLE_PREMIUM and self.subscription.is_active
 
     @property
     def remaining_monthly_link_limit(self) -> int:
@@ -121,10 +128,22 @@ class User(AbstractUser):
         )
 
     @transaction.atomic
-    def upgrade_to_premium(self):
-        """Upgrade user to premium"""
-        self.role = self.ROLE_PREMIUM
-        self.monthly_link_limit = self.MONTHLY_LINK_LIMIT_PER_PREMIUM
+    def choose_plan(self, plan: str) -> None:
+        """Choose a plan for the user"""
+        from sbily.payments.utils import PlanType
+
+        plan_config = {
+            PlanType.PREMIUM: self.MONTHLY_LINK_LIMIT_PER_PREMIUM,
+        }
+
+        if plan not in plan_config:
+            valid_plans = ", ".join(plan_config.keys())
+            msg = f"Invalid plan: {plan}, valid plans are: {valid_plans}"
+            logger.error(msg)
+            raise ValueError(msg)
+
+        self.role = plan
+        self.monthly_link_limit = plan_config[plan]
         self.monthly_limit_links_used = 0
         self.last_monthly_limit_reset = now()
         self.save(
@@ -140,36 +159,22 @@ class User(AbstractUser):
         )
 
     @transaction.atomic
-    def downgrade_to_free(self) -> None | str:
-        """Downgrade user from premium to free"""
-        exceeded_links = self.monthly_limit_links_used - self.monthly_link_limit
-        total_deleted = 0
-
-        if exceeded_links > 0:
-            if links_to_delete := (
-                self.shortened_links.all()
-                .order_by("-updated_at")[:exceeded_links]
-                .values_list("id", flat=True)
-            ):
-                deleted = self.shortened_links.filter(
-                    id__in=list(links_to_delete),
-                ).delete()
-                total_deleted += deleted[0]
-
+    def downgrade_to_free(self) -> None:
+        """Downgrade user to free"""
         self.role = self.ROLE_USER
         self.monthly_link_limit = self.MONTHLY_LINK_LIMIT_PER_USER
         self.monthly_limit_links_used = 0
+        self.last_monthly_limit_reset = now()
         self.save(
-            update_fields=["role", "monthly_link_limit", "monthly_limit_links_used"],
+            update_fields=[
+                "role",
+                "monthly_link_limit",
+                "monthly_limit_links_used",
+                "last_monthly_limit_reset",
+            ],
         )
         self.user_permissions.remove(
             Permission.objects.get(codename="view_advanced_statistics"),
-        )
-
-        return (
-            f"Deleted {total_deleted} excess links due to downgrading to free plan."
-            if total_deleted > 0
-            else None
         )
 
     def get_full_name(self) -> str:

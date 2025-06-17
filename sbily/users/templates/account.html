@@ -244,15 +244,15 @@
           <div class="card-content">
             <div class="flex items-center gap-2">
               <h3 class="card-title">Current Plan:</h3>
-              {% if user.is_premium %}
-                <span class="badge-default">Premium</span>
+              {% if user.subscription_active %}
+                <span class="badge-default">{{ user.subscription.level }}</span>
               {% else %}
                 <span class="badge-secondary">Free</span>
               {% endif %}
             </div>
             <p class="card-description">
-              {% if user.is_premium %}
-                Your Premium subscription {% if not user.subscription.is_auto_renew %}ends{% else %}renews{% endif %} on {{ user.premium_expiry|date:"F j, Y" }}
+              {% if user.subscription_active %}
+                Your subscription {% if not user.subscription.is_auto_renew %}ends{% else %}renews{% endif %} on {{ user.subscription.end_date|date:"F j, Y" }}
               {% else %}
                 You are currently using the Free plan with limited features.
               {% endif %}
@@ -321,14 +321,14 @@
               <li class="flex items-center gap-2">
                 <i data-lucide="check" class="size-4 text-primary"></i>
                 <span>
-                  {% if user.is_premium %}
-                    25 new links per month (resets monthly)
+                  {% if user.subscription_active %}
+                    {{ user.monthly_link_limit }} new links per month (resets monthly)
                   {% else %}
                     5 new links per month (resets monthly)
                   {% endif %}
                 </span>
               </li>
-              {% if user.is_premium %}
+              {% if user.subscription_active %}
                 <li class="flex items-center gap-2">
                   <i data-lucide="check" class="size-4 text-primary"></i>
                   <span>Advanced statistics</span>
@@ -349,7 +349,7 @@
               {% endif %}
             </ul>
           </div>
-          {% if not user.is_premium %}
+          {% if not user.subscription_active %}
             <div class="card-footer justify-end">
               <button type="button" class="button-primary button-sm" data-jswc-dialog data-jswc-target="choose-plan-dialog">
                 Upgrade Now
@@ -359,23 +359,23 @@
         </div>
 
         <!-- Dialogs -->
-        {% if not user.is_premium %}
+        {% if not user.subscription_active %}
           <!-- Choose Plan Dialog -->
           {% include "partials/choose_plan_dialog.html" %}
         {% endif %}
 
-        {% if user.is_premium %}
+        {% if user.subscription.is_auto_renew %}
           <!-- Cancel Plan Dialog -->
           <div id="cancel-subscription-dialog" class="hidden dialog" data-jswc-dialog-animation="true">
             <div class="flex flex-col">
               <div class="flex justify-between items-center">
-                <h2 class="text-xl font-bold">Cancel Premium Subscription</h2>
+                <h2 class="text-xl font-bold">Cancel {{ user.subscription.get_level_display }} Subscription</h2>
               </div>
               <div class="mt-4">
                 <div class="bg-secondary/40 p-4 rounded-lg mb-6 border">
                   <p class="text-foreground/80">
                     <i data-lucide="info" class="size-4 inline-block mr-1 text-primary"></i>
-                    You'll continue to have access to all Premium features until the end of your current billing period on {{ user.premium_expiry|date:"F j, Y" }}.
+                    You'll continue to have access to all {{ user.subscription.level }} features until the end of your current billing period on {{ user.subscription.end_date|date:"F j, Y" }}.
                   </p>
                 </div>
 
@@ -387,7 +387,7 @@
                   </li>
                   <li class="flex items-center gap-2">
                     <i data-lucide="minus" class="size-4 text-destructive"></i>
-                    <span>You will lose access to premium features;</span>
+                    <span>You will lose access to {{ user.subscription.level }} features;</span>
                   </li>
                 </ul>
 
@@ -416,7 +416,7 @@
                   <div class="bg-secondary/40 p-4 rounded-lg mb-6 border">
                     <p class="text-foreground/80">
                       <i data-lucide="info" class="size-4 inline-block mr-1 text-primary"></i>
-                      Your Premium subscription currently ends on {{ user.premium_expiry|date:"F j, Y" }}. By resuming, your subscription will automatically renew after this date.
+                      Your Premium subscription currently ends on {{ user.subscription.end_date|date:"F j, Y" }}. By resuming, your subscription will automatically renew after this date.
                     </p>
                   </div>
 

@@ -2,7 +2,6 @@ from datetime import datetime
 from decimal import Decimal
 
 import stripe
-from django.conf import settings
 from django.db import models
 from django.db import transaction
 from django.utils.timezone import now
@@ -11,13 +10,23 @@ from django.utils.translation import gettext_lazy as _
 
 from sbily.users.models import User
 
+from .utils import PlanCycle
+from .utils import PlanType
+from .utils import get_stripe_price
+
 
 class Subscription(models.Model):
+    LEVEL_PREMIUM = PlanType.PREMIUM.value
+
     STATUS_ACTIVE = "active"
     STATUS_CANCELED = "canceled"
     STATUS_EXPIRED = "expired"
     STATUS_INCOMPLETE = "incomplete"
     STATUS_PASTDUE = "past_due"
+
+    LEVEL_CHOICES = [
+        (LEVEL_PREMIUM, _("Premium")),
+    ]
 
     STATUS_CHOICES = [
         (STATUS_ACTIVE, _("Active")),
@@ -27,6 +36,12 @@ class Subscription(models.Model):
         (STATUS_PASTDUE, _("Past Due")),
     ]
 
+    level = models.CharField(
+        _("level"),
+        max_length=10,
+        choices=LEVEL_CHOICES,
+        default=LEVEL_PREMIUM,
+    )
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
@@ -69,7 +84,7 @@ class Subscription(models.Model):
         if self.status == self.STATUS_ACTIVE and (
             not self.pk or self._state.adding or self._status_changed()
         ):
-            self.user.upgrade_to_premium()
+            self.user.choose_plan(self.level)
 
         if (
             self.status in [self.STATUS_CANCELED, self.STATUS_EXPIRED]
@@ -118,7 +133,8 @@ class Subscription(models.Model):
         cls,
         user: User,
         payment_method_id=None,
-        plan_cycle="monthly",
+        plan: str = PlanType.PREMIUM,
+        plan_cycle: str = PlanCycle.MONTHLY,
     ):
         """Create a subscription"""
 
@@ -126,10 +142,11 @@ class Subscription(models.Model):
         try:
             user.update_card_details(payment_method_id)
 
-            is_monthly = plan_cycle == "monthly"
+            is_monthly = plan_cycle == PlanCycle.MONTHLY
             sub, _ = cls.objects.get_or_create(
                 user=user,
                 defaults={
+                    "level": plan,
                     "price": Decimal("10.00"),
                     "status": cls.STATUS_INCOMPLETE,
                     "start_date": now(),
@@ -138,23 +155,19 @@ class Subscription(models.Model):
                 },
             )
 
-            price = (
-                settings.STRIPE_PREMIUM_MONTHLY_PRICE_ID
-                if is_monthly
-                else settings.STRIPE_PREMIUM_YEARLY_PRICE_ID
-            )
+            price = get_stripe_price(plan, plan_cycle)
+            if not price:
+                return {"status": "error", "error": "Invalid plan or cycle"}
+
             subscription = stripe.Subscription.create(
                 customer=customer.id,
                 items=[{"price": price}],
-                metadata={
-                    "user_id": user.id,
-                    "subscription_id": sub.id,
-                },
+                metadata={"user_id": user.id, "plan": plan},
                 expand=["latest_invoice.payments"],
             )
 
             sub.stripe_subscription_id = subscription.id
-            sub.save(update_fields=["stripe_subscription_id"])
+            sub.level = plan
 
             payments = subscription.latest_invoice.payments.data
             payment_intent = stripe.PaymentIntent.retrieve(

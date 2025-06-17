@@ -1,6 +1,7 @@
 # ruff: noqa: BLE001
 
 import logging
+from typing import TYPE_CHECKING
 
 import stripe
 from django.conf import settings
@@ -18,7 +19,13 @@ from sbily.utils.errors import BadRequestError
 from sbily.utils.errors import bad_request_error
 from sbily.utils.urls import redirect_with_tab
 
+if TYPE_CHECKING:
+    from sbily.users.models import User
+
 from .models import Subscription
+from .utils import PlanCycle
+from .utils import PlanType
+from .utils import validate_plan_selection
 from .webhook import handle_stripe_webhook
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -31,12 +38,12 @@ def upgrade_plan(request: HttpRequest):
     if request.method != "GET":
         return redirect_with_tab("plan")
 
-    plan_cycle = request.GET.get("cycle", "monthly")
+    plan = request.GET.get("plan", PlanType.PREMIUM.value)
+    plan_cycle = request.GET.get("cycle", PlanCycle.MONTHLY.value)
 
     try:
-        user = request.user
-        if user.is_premium:
-            bad_request_error("You are already a premium user")
+        user: User = request.user
+        validate_plan_selection(plan, plan_cycle, user)
 
         customer = user.get_stripe_customer()
         default_payment_method = customer.invoice_settings.default_payment_method
@@ -49,7 +56,7 @@ def upgrade_plan(request: HttpRequest):
         context = {
             "client_secret": setup_intent.client_secret,
             "redirect_url": request.build_absolute_uri(reverse("finalize_upgrade")),
-            "plan": "premium",
+            "plan": plan,
             "plan_cycle": plan_cycle,
             "default_payment_method": default_payment_method,
         }
@@ -70,22 +77,27 @@ def finalize_upgrade(request: HttpRequest):
         return redirect_with_tab("plan")
 
     payment_method = request.GET.get("payment_method")
-    plan_cycle = request.GET.get("plan_cycle", "monthly")
+    plan = request.GET.get("plan", PlanType.PREMIUM)
+    plan_cycle = request.GET.get("plan_cycle", PlanCycle.MONTHLY)
 
     if not validate([payment_method]):
         messages.error(request, "Missing payment information")
         return redirect_with_tab("plan")
 
     try:
-        user = request.user
-        if user.is_premium:
-            bad_request_error("You are already a premium user")
+        user: User = request.user
+        validate_plan_selection(plan, plan_cycle, user)
 
-        result = Subscription.create_subscription(user, payment_method, plan_cycle)
+        result = Subscription.create_subscription(
+            user,
+            payment_method,
+            plan,
+            plan_cycle,
+        )
 
         if result["status"] == "success":
-            user.upgrade_to_premium()
-            messages.success(request, "Successfully upgraded to premium!")
+            user.choose_plan(plan)
+            messages.success(request, f"Successfully upgraded to {plan}!")
             return redirect_with_tab("plan")
         if result["status"] == "action_required":
             return render(
@@ -116,6 +128,7 @@ def subscription_complete(request: HttpRequest):
     if request.method != "GET":
         return redirect_with_tab("plan")
 
+    plan = request.GET.get("plan", PlanType.PREMIUM)
     payment_intent = request.GET.get("payment_intent")
 
     if not payment_intent:
@@ -126,8 +139,7 @@ def subscription_complete(request: HttpRequest):
         intent = stripe.PaymentIntent.retrieve(payment_intent)
 
         if intent.status == "succeeded":
-            user = request.user
-            user.upgrade_to_premium()
+            request.user.choose_plan(plan)
             messages.success(request, "Successfully upgraded to premium!")
         else:
             messages.error(request, f"Payment not completed: {intent.status}")
@@ -145,9 +157,9 @@ def cancel_plan(request: HttpRequest):
         return redirect_with_tab("plan")
 
     try:
-        user = request.user
-        if not user.is_premium:
-            bad_request_error("You are not a premium user")
+        user: User = request.user
+        if not user.subscription_active:
+            bad_request_error("Your subscription is not active")
 
         subscription = Subscription.objects.filter(
             user=user,
@@ -178,11 +190,11 @@ def resume_plan(request: HttpRequest):
         return redirect_with_tab("plan")
 
     try:
-        user = request.user
-        if user.is_premium and user.subscription.is_auto_renew:
-            bad_request_error("Your subscription is already active")
-        if not user.subscription.is_active:
+        user: User = request.user
+        if not user.subscription_active:
             bad_request_error("Your subscription is not active")
+        if user.subscription_active and user.subscription.is_auto_renew:
+            bad_request_error("Your subscription is already active")
 
         subscription = Subscription.objects.filter(
             user=user,

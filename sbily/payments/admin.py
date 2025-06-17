@@ -22,6 +22,7 @@ class PaymentInline(admin.TabularInline):
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display = (
         "user",
+        "level",
         "status",
         "start_date",
         "end_date",
@@ -29,7 +30,7 @@ class SubscriptionAdmin(admin.ModelAdmin):
         "price",
         "is_active",
     )
-    list_filter = ("status", "is_auto_renew")
+    list_filter = ("level", "status", "is_auto_renew")
     search_fields = ("user__username", "user__email")
     date_hierarchy = "start_date"
     actions = ["cancel_subscriptions", "renew_subscriptions"]
