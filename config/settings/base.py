@@ -237,9 +237,11 @@ MESSAGE_TAGS = {
 # STRIPE
 # ------------------------------------------------------------------------------
 STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY")
+STRIPE_WEBHOOK_SECRET = config("STRIPE_WEBHOOK_SECRET")
+# PRICES
+# ------------------------------------------------------------------------------
 STRIPE_PREMIUM_MONTHLY_PRICE_ID = config("STRIPE_PREMIUM_MONTHLY_PRICE_ID")
 STRIPE_PREMIUM_YEARLY_PRICE_ID = config("STRIPE_PREMIUM_YEARLY_PRICE_ID")
-STRIPE_WEBHOOK_SECRET = config("STRIPE_WEBHOOK_SECRET")
 
 # Celery
 # ------------------------------------------------------------------------------

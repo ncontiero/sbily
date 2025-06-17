@@ -16,11 +16,13 @@ DJANGO_SECURE_SSL_REDIRECT=False
 
 # Stripe
 # ------------------------------------------------------------------------------
+STRIPE_PUBLIC_KEY=""
 STRIPE_SECRET_KEY=""
+STRIPE_WEBHOOK_SECRET=""
+# Prices IDs
+# ------------------------------------------------------------------------------
 STRIPE_PREMIUM_MONTHLY_PRICE_ID=""
 STRIPE_PREMIUM_YEARLY_PRICE_ID=""
-STRIPE_PUBLIC_KEY=""
-STRIPE_WEBHOOK_SECRET=""
 
 # Email
 # ------------------------------------------------------------------------------
