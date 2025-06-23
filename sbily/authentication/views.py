@@ -6,6 +6,7 @@ from django.db import transaction
 from django.http import HttpRequest
 from django.shortcuts import redirect
 from django.shortcuts import render
+from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.timezone import timedelta
 
@@ -16,7 +17,6 @@ from sbily.users.tasks import send_password_reset_email
 from sbily.users.tasks import send_welcome_email
 from sbily.utils.errors import BadRequestError
 from sbily.utils.errors import bad_request_error
-from sbily.utils.urls import reverse_with_params
 
 from .forms import ForgotPasswordForm
 from .forms import ResetPasswordForm
@@ -36,7 +36,7 @@ def get_post_auth_redirect(request, user, form):
     next_path = form.cleaned_data.get("next_path", "my_account")
 
     if plan == "premium":
-        return redirect(reverse_with_params("upgrade_plan", {"cycle": cycle}))
+        return redirect(reverse("upgrade_plan", query={"cycle": cycle}))
 
     if destination_url:
         link = ShortenedLink.objects.create(
@@ -80,9 +80,9 @@ def sign_up(request: HttpRequest):
             },
         )
 
-    sign_in_url = reverse_with_params(
+    sign_in_url = reverse(
         "sign_in",
-        {
+        query={
             "next": request.GET.get("next"),
             "destination_url": request.GET.get("destination_url"),
         },
@@ -115,9 +115,9 @@ def sign_in(request: HttpRequest):
             },
         )
 
-    sign_up_url = reverse_with_params(
+    sign_up_url = reverse(
         "sign_up",
-        {
+        query={
             "next": request.GET.get("next", "my_account"),
             "destination_url": request.GET.get("destination_url"),
         },
@@ -198,9 +198,7 @@ def verify_email(request: HttpRequest, token: str):
     user = request.user
     is_authenticated = user.is_authenticated
     redirect_url_name = (
-        reverse_with_params("my_account", {"tab": "email"})
-        if is_authenticated
-        else "sign_in"
+        reverse("my_account", query={"tab": "email"}) if is_authenticated else "sign_in"
     )
 
     try:

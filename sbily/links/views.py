@@ -13,7 +13,6 @@ from django.urls import reverse
 from django.utils import timezone
 
 from sbily.utils.data import validate
-from sbily.utils.urls import redirect_with_params
 
 from .models import LinkClick
 from .models import ShortenedLink
@@ -69,7 +68,9 @@ def create_link(request: HttpRequest):
             return redirect("create_link")
 
         if not request.user.is_authenticated:
-            return redirect_with_params("sign_in", {"destination_url": destination_url})
+            return redirect(
+                reverse("sign_in", query={"destination_url": destination_url}),
+            )
 
         link_data = {
             "destination_url": destination_url,
