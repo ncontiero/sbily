@@ -17,6 +17,6 @@ geoip2==5.1.0  # https://github.com/maxmind/GeoIP2-python
 # ------------------------------------------------------------------------------
 django==5.2.4  # https://www.djangoproject.com/
 django-cleanup==9.0.0  # https://github.com/un1t/django-cleanup
-dj-database-url==3.0.0  # https://github.com/jazzband/dj-database-url
+dj-database-url==3.0.1  # https://github.com/jazzband/dj-database-url
 django-redis==6.0.0  # https://github.com/jazzband/django-redis
 django-webpack-loader==3.2.1  # https://github.com/django-webpack/django-webpack-loader
