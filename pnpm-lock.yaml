@@ -12,8 +12,8 @@ importers:
         specifier: ^5.2.6
         version: 5.2.6
       '@stripe/stripe-js':
-        specifier: ^7.6.1
-        version: 7.6.1
+        specifier: ^7.8.0
+        version: 7.8.0
       chart.js:
         specifier: ^4.5.0
         version: 4.5.0
@@ -989,8 +989,8 @@ packages:
   '@socket.io/component-emitter@3.1.2':
     resolution: {integrity: sha512-9BCxFwvbGg/RsZK9tjXd8s4UcwR0MWeFQ1XEKIQVVvAGJyINdrqKMcTRyLoK8Rse1GjzLV9cwjWV1olXRWEXVA==}
 
-  '@stripe/stripe-js@7.6.1':
-    resolution: {integrity: sha512-BUDj5gujbtx53/Cexws0+aPrEBsKAN8ExPf9UfuTCivVU6ug2PjqI0zUeL1jon3795eOLlyqvCDjp6VNknjE0A==}
+  '@stripe/stripe-js@7.8.0':
+    resolution: {integrity: sha512-DNXRfYUgkZlrniQORbA/wH8CdFRhiBSE0R56gYU0V5vvpJ9WZwvGrz9tBAZmfq2aTgw6SK7mNpmTizGzLWVezw==}
     engines: {node: '>=12.16'}
 
   '@swc/helpers@0.5.15':
@@ -5140,7 +5140,7 @@ snapshots:
 
   '@socket.io/component-emitter@3.1.2': {}
 
-  '@stripe/stripe-js@7.6.1': {}
+  '@stripe/stripe-js@7.8.0': {}
 
   '@swc/helpers@0.5.15':
     dependencies:
