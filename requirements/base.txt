@@ -8,7 +8,7 @@ celery==5.5.3  # https://github.com/celery/celery
 django-celery-beat==2.8.1  # https://github.com/celery/django-celery-beat
 flower==2.0.1  # https://github.com/mher/flower
 markdown==3.8.2  # https://github.com/Python-Markdown/markdown
-stripe==12.3.0  # https://github.com/stripe/stripe-python
+stripe==12.4.0  # https://github.com/stripe/stripe-python
 ua-parser[regex]==1.0.1  # https://github.com/ua-parser/uap-python
 user-agents==2.2.0  # https://github.com/selwin/python-user-agents
 geoip2==5.1.0  # https://github.com/maxmind/GeoIP2-python
