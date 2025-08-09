@@ -101,8 +101,8 @@ importers:
         specifier: 19.1.7
         version: 19.1.7(@types/react@19.1.9)
       react-email:
-        specifier: ^4.2.7
-        version: 4.2.7
+        specifier: ^4.2.8
+        version: 4.2.8
 
 packages:
 
@@ -3546,8 +3546,8 @@ packages:
     peerDependencies:
       react: ^19.1.1
 
-  react-email@4.2.7:
-    resolution: {integrity: sha512-zF1dIGTnG10Xls+6ViJydYEYbqqGTq0BWYwTqsp70sPG2eRME79MSq82akFBfdaM/XhLwh6PuNjeohso3aJowA==}
+  react-email@4.2.8:
+    resolution: {integrity: sha512-Eqzs/xZnS881oghPO/4CQ1cULyESuUhEjfYboXmYNOokXnJ6QP5GKKJZ6zjkg9SnKXxSrIxSo5PxzCI5jReJMA==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -8104,7 +8104,7 @@ snapshots:
       react: 19.1.1
       scheduler: 0.26.0
 
-  react-email@4.2.7:
+  react-email@4.2.8:
     dependencies:
       '@babel/parser': 7.28.0
       '@babel/traverse': 7.28.0
