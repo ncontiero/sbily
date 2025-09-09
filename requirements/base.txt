@@ -7,15 +7,15 @@ hiredis==3.2.1  # https://github.com/redis/hiredis-py
 celery==5.5.3  # https://github.com/celery/celery
 django-celery-beat==2.8.1  # https://github.com/celery/django-celery-beat
 flower==2.0.1  # https://github.com/mher/flower
-markdown==3.8.2  # https://github.com/Python-Markdown/markdown
-stripe==12.5.0  # https://github.com/stripe/stripe-python
+markdown==3.9  # https://github.com/Python-Markdown/markdown
+stripe==12.5.1  # https://github.com/stripe/stripe-python
 ua-parser[regex]==1.0.1  # https://github.com/ua-parser/uap-python
 user-agents==2.2.0  # https://github.com/selwin/python-user-agents
 geoip2==5.1.0  # https://github.com/maxmind/GeoIP2-python
 
 # Django
 # ------------------------------------------------------------------------------
-django==5.2.5  # https://www.djangoproject.com/
+django==5.2.6  # https://www.djangoproject.com/
 django-cleanup==9.0.0  # https://github.com/un1t/django-cleanup
 dj-database-url==3.0.1  # https://github.com/jazzband/dj-database-url
 django-redis==6.0.0  # https://github.com/jazzband/django-redis
