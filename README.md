@@ -26,7 +26,7 @@ Once the repository is cloned and the global dependencies are installed, you can
 Python dependencies:
 
 ```bash
-pip install -r requirements/local.txt
+uv sync
 ```
 
 Node dependencies:
@@ -46,13 +46,13 @@ cp -r .envs.example .envs
 #### 3. Make the migrations
 
 ```bash
-python manage.py migrate
+uv run python manage.py migrate
 ```
 
 #### 4. Create a super user
 
 ```bash
-python manage.py createsuperuser
+uv run python manage.py createsuperuser
 ```
 
 #### 5. Running application in development mode
@@ -60,7 +60,7 @@ python manage.py createsuperuser
 Django application:
 
 ```bash
-python manage.py runserver
+uv run python manage.py runserver
 ```
 
 Rspack:
@@ -97,13 +97,13 @@ docker compose -f docker-compose.local.yml up exec django zsh
 You will need to make the migrations:
 
 ```bash
-python manage.py migrate
+uv run python manage.py migrate
 ```
 
 Creating a super user:
 
 ```bash
-python manage.py createsuperuser
+uv run python manage.py createsuperuser
 ```
 
 The Python command will start the Django application at <http://localhost:8000> and Node will start Rspack and a proxy server for automatic loading at <http://localhost:3000>.
