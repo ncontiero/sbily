@@ -38,6 +38,7 @@ FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim AS python-build-stage
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy UV_PYTHON_DOWNLOADS=0
 
 ARG APP_HOME=/app
+ARG DJANGO_AWS_S3_CUSTOM_DOMAIN
 
 WORKDIR ${APP_HOME}
 
@@ -56,17 +57,20 @@ RUN wget -nv -t 3 -P ./config/geoip \
   https://${DJANGO_AWS_S3_CUSTOM_DOMAIN}/geoip/GeoLite2-City.mmdb
 
 # Requirements are installed here to ensure they will be cached.
-RUN --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=bind,source=uv.lock,target=uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --locked --no-install-project --no-dev
+COPY pyproject.toml uv.lock ./
+# RUN --mount=type=cache,id=s/1f3a83f7-4b84-4c12-9846-655c759ecbe7-/root/.cache/uv,target=/root/.cache/uv \
+#     --mount=type=cache,id=s/7c2232d3-9bcc-4fdc-9328-e5c76f039369-/root/.cache/uv,target=/root/.cache/uv \
+#     --mount=type=cache,id=s/70de0546-f921-450d-a7d1-8f9c7877bbc3-/root/.cache/uv,target=/root/.cache/uv \
+#     uv sync --locked --no-install-project --no-dev
+# Railway does not accept the same image for multiple cached services
+RUN uv sync --locked --no-install-project --no-dev
 
 COPY --from=client-builder ${APP_HOME} ${APP_HOME}
 
-RUN --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=bind,source=uv.lock,target=uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --locked --no-dev
+# RUN --mount=type=cache,target=/root/.cache/uv \
+#     uv sync --locked --no-dev
+# Railway does not accept the same image for multiple cached services
+RUN uv sync --locked --no-dev
 
 # Python 'run' stage
 FROM python:3.13-slim-bookworm AS python-run-stage
