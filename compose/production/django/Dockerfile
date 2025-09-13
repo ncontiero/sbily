@@ -33,13 +33,13 @@ RUN pnpm run build
 RUN pnpm run build:email
 
 # define an alias for the specific python version used in this file.
-FROM python:3.13.7-slim-bookworm AS python
+FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim AS python-build-stage
 
-# Python build stage
-FROM python AS python-build-stage
+ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy UV_PYTHON_DOWNLOADS=0
 
-ARG DJANGO_AWS_S3_CUSTOM_DOMAIN
-ARG BUILD_ENVIRONMENT=production
+ARG APP_HOME=/app
+
+WORKDIR ${APP_HOME}
 
 # Install apt packages
 RUN apt-get update && apt-get install --no-install-recommends -y \
@@ -56,23 +56,23 @@ RUN wget -nv -t 3 -P ./config/geoip \
   https://${DJANGO_AWS_S3_CUSTOM_DOMAIN}/geoip/GeoLite2-City.mmdb
 
 # Requirements are installed here to ensure they will be cached.
-COPY ./requirements .
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --locked --no-install-project --no-dev
 
-# Create Python Dependency and Sub-Dependency Wheels.
-RUN pip wheel --wheel-dir /usr/src/app/wheels  \
-  -r ${BUILD_ENVIRONMENT}.txt
+COPY --from=client-builder ${APP_HOME} ${APP_HOME}
 
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --locked --no-dev
 
 # Python 'run' stage
-FROM python AS python-run-stage
+FROM python:3.13-slim-bookworm AS python-run-stage
 
-ARG BUILD_ENVIRONMENT=production
 ARG APP_HOME=/app
 ARG PORT=5000
-
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV BUILD_ENV=${BUILD_ENVIRONMENT}
 
 WORKDIR ${APP_HOME}
 
@@ -83,9 +83,9 @@ RUN addgroup --system django \
 # Install required system dependencies
 RUN apt-get update && apt-get install --no-install-recommends -y \
   # psycopg dependencies
-  libpq-dev \
+  libpq5 \
   # geoip2 dependencies
-  libmaxminddb0 libmaxminddb-dev mmdb-bin \
+  libmaxminddb0 \
   # entrypoint
   wait-for-it \
   # Translations dependencies
@@ -93,17 +93,6 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   # cleaning up unused files
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
-
-# All absolute dir copies ignore workdir instruction. All relative dir copies are wrt to the workdir instruction
-# copy GeoIP database
-COPY --from=python-build-stage ./config/geoip ./config/geoip
-# copy python dependency wheels from python-build-stage
-COPY --from=python-build-stage /usr/src/app/wheels /wheels/
-
-# use wheels to install python dependencies
-RUN pip install --no-cache-dir --no-index --find-links=/wheels/ /wheels/* \
-  && rm -rf /wheels/
-
 
 COPY --chown=django:django ./compose/production/django/entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint
@@ -125,11 +114,14 @@ COPY --chown=django:django ./compose/production/django/celery/flower/start /star
 RUN sed -i 's/\r$//g' /start-flower
 RUN chmod +x /start-flower
 
-# copy application code to WORKDIR
-COPY --from=client-builder --chown=django:django ${APP_HOME} ${APP_HOME}
+# Copy the application from the builder
+COPY --from=python-build-stage --chown=django:django ${APP_HOME} ${APP_HOME}
 
 # make django owner of the WORKDIR directory as well.
-RUN chown -R django:django ${APP_HOME}
+RUN chown django:django ${APP_HOME}
+
+# Place executables in the environment at the front of the path
+ENV PATH="/app/.venv/bin:$PATH"
 
 USER django
 
