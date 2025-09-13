@@ -52,11 +52,11 @@ RUN groupadd --gid 1000 dev-user \
 
 ENV PATH="/${APP_HOME}/.venv/bin:$PATH"
 
-COPY --chown=dev-user:dev-user ./compose/production/django/entrypoint /entrypoint
+COPY ./compose/production/django/entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint
 RUN chmod +x /entrypoint
 
-COPY --chown=dev-user:dev-user ./compose/local/django/start /start
+COPY ./compose/local/django/start /start
 RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start
 
