@@ -2,7 +2,7 @@
   "name": "sbily",
   "version": "1.0.0",
   "private": true,
-  "packageManager": "pnpm@10.15.1",
+  "packageManager": "pnpm@10.16.1",
   "description": "A Django project for a link shortener.",
   "author": "Nicolas Contiero <https://github.com/ncontiero>",
   "license": "MIT",
@@ -20,14 +20,14 @@
     "@stripe/stripe-js": "^7.9.0",
     "chart.js": "^4.5.0",
     "chartjs-chart-geo": "^4.3.4",
-    "lucide": "^0.542.0"
+    "lucide": "^0.544.0"
   },
   "devDependencies": {
     "@ncontiero/eslint-config": "^6.1.0",
-    "@rspack/cli": "^1.5.2",
-    "@rspack/core": "^1.5.2",
+    "@rspack/cli": "^1.5.3",
+    "@rspack/core": "^1.5.3",
     "@tailwindcss/typography": "^0.5.16",
-    "@types/node": "^24.3.1",
+    "@types/node": "^24.3.3",
     "autoprefixer": "^10.4.21",
     "cross-env": "^10.0.0",
     "eslint": "^9.35.0",
