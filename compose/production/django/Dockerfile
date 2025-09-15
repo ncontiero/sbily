@@ -17,9 +17,6 @@ RUN pnpm install --frozen-lockfile
 # RUN --mount=type=cache,id=s/<service id>-/pnpm/store,target=/pnpm/store pnpm install --frozen-lockfile
 
 FROM client-base AS client-builder
-COPY --from=client-deps /app/node_modules /app/node_modules
-COPY --from=client-deps /app/emails/node_modules /app/emails/node_modules
-COPY . /app
 
 ARG DJANGO_AWS_STORAGE_BUCKET_NAME
 ARG DJANGO_AWS_S3_CUSTOM_DOMAIN
@@ -29,8 +26,19 @@ ENV DJANGO_AWS_STORAGE_BUCKET_NAME=${DJANGO_AWS_STORAGE_BUCKET_NAME}
 ENV DJANGO_AWS_S3_CUSTOM_DOMAIN=${DJANGO_AWS_S3_CUSTOM_DOMAIN}
 ENV STRIPE_PUBLIC_KEY=${STRIPE_PUBLIC_KEY}
 
+COPY --from=client-deps /app/node_modules /app/node_modules
+COPY --from=client-deps /app/emails/node_modules /app/emails/node_modules
+COPY . /app
+
 RUN pnpm run build
 RUN pnpm run build:email
+
+FROM client-base AS client-build
+
+COPY . /app
+COPY --from=client-builder /app/webpack-stats.json /app/webpack-stats.json
+COPY --from=client-builder /app/sbily/static/rspack_bundles /app/sbily/static/rspack_bundles
+COPY --from=client-builder /app/sbily/templates/emails /app/sbily/templates/emails
 
 # define an alias for the specific python version used in this file.
 FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim AS python-build-stage
@@ -58,14 +66,12 @@ RUN wget -nv -t 3 -P ./config/geoip \
 
 # Requirements are installed here to ensure they will be cached.
 COPY pyproject.toml uv.lock ./
-# RUN --mount=type=cache,id=s/1f3a83f7-4b84-4c12-9846-655c759ecbe7-/root/.cache/uv,target=/root/.cache/uv \
-#     --mount=type=cache,id=s/7c2232d3-9bcc-4fdc-9328-e5c76f039369-/root/.cache/uv,target=/root/.cache/uv \
-#     --mount=type=cache,id=s/70de0546-f921-450d-a7d1-8f9c7877bbc3-/root/.cache/uv,target=/root/.cache/uv \
+# RUN --mount=type=cache,target=/root/.cache/uv \
 #     uv sync --locked --no-install-project --no-dev
 # Railway does not accept the same image for multiple cached services
 RUN uv sync --locked --no-install-project --no-dev
 
-COPY --from=client-builder ${APP_HOME} ${APP_HOME}
+COPY --from=client-build ${APP_HOME} ${APP_HOME}
 
 # RUN --mount=type=cache,target=/root/.cache/uv \
 #     uv sync --locked --no-dev
