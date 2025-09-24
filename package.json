@@ -27,7 +27,7 @@
     "@rspack/cli": "^1.5.5",
     "@rspack/core": "^1.5.5",
     "@tailwindcss/typography": "^0.5.18",
-    "@types/node": "^24.4.0",
+    "@types/node": "^24.5.2",
     "autoprefixer": "^10.4.21",
     "cross-env": "^10.0.0",
     "eslint": "^9.36.0",
