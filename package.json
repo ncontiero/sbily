@@ -16,7 +16,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@fontsource/inter": "^5.2.7",
+    "@fontsource/inter": "^5.2.8",
     "@stripe/stripe-js": "^7.9.0",
     "chart.js": "^4.5.0",
     "chartjs-chart-geo": "^4.3.4",
