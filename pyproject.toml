@@ -1,7 +1,7 @@
 [project]
 name = "sbily"
 version = "0.1.0"
-requires-python = ">=3.13,<3.14"
+requires-python = "==3.13.*"
 description = "A Django project for a link shortener."
 readme = "README.md"
 authors = [ { name = "Nicolas Contiero", email = "contact@ncontiero.com" }, ]
