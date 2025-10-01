@@ -1306,7 +1306,7 @@ requires-dist = [
     { name = "python-decouple", specifier = "==3.8" },
     { name = "python-slugify", specifier = "==8.0.4" },
     { name = "redis", specifier = "==6.4.0" },
-    { name = "stripe", specifier = "==12.5.1" },
+    { name = "stripe", specifier = "==13.0.0" },
     { name = "ua-parser", extras = ["regex"], specifier = "==1.0.1" },
     { name = "user-agents", specifier = "==2.2.0" },
 ]
@@ -1354,15 +1354,15 @@ wheels = [
 
 [[package]]
 name = "stripe"
-version = "12.5.1"
+version = "13.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "requests" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/bd/92/f1b72783e13662026efc7d3f0fc201230edab55edd1604326a97162d8ce4/stripe-12.5.1.tar.gz", hash = "sha256:5407d092c355c31393e767d2dcb2d5a8c3980caa9a073acb32d0ccb3c01b04b5", size = 1432826, upload-time = "2025-09-05T13:27:07.976Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/58/a9/6e98bf86df12283b314bb967e7430d712c087a15b119c337bf8d61eccc7f/stripe-13.0.0.tar.gz", hash = "sha256:2caf0e2e035dc8be38c5c601cad0c16c0be7ed9bf538ae8e2bb70d9b42d5fe6b", size = 1119333, upload-time = "2025-09-30T23:11:11.715Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1d/8d/f4c2f047eedc943aea573cb56af2c9481b2d97ee8de9819f8c5d87e9ba34/stripe-12.5.1-py2.py3-none-any.whl", hash = "sha256:39b47b331dfe933ce6cf6bd654e0ae9ba082caa9d1dd8d0ae9ae48293975f115", size = 1664067, upload-time = "2025-09-05T13:27:05.559Z" },
+    { url = "https://files.pythonhosted.org/packages/6e/3a/e2d001038c9acf7570426a58b7669de532f0aff798a36194598ed9779762/stripe-13.0.0-py3-none-any.whl", hash = "sha256:045ba733f414e77de36b4086ffad774542750983692b261f85e3389c4cdaa09b", size = 1821946, upload-time = "2025-09-30T23:11:09.507Z" },
 ]
 
 [[package]]

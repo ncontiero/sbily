@@ -222,7 +222,7 @@ class User(AbstractUser):
                 type="card",
             )
             return len(payment_methods.data) > 0
-        except stripe.error.StripeError as e:
+        except stripe.StripeError as e:
             logger.exception(
                 "Stripe error checking payment methods: %s",
                 self.stripe_customer_id,
@@ -233,7 +233,7 @@ class User(AbstractUser):
     def get_stripe_customer(self):
         """Get or create Stripe customer for user"""
         if self.stripe_customer_id:
-            with contextlib.suppress(stripe.error.StripeError):
+            with contextlib.suppress(stripe.StripeError):
                 return stripe.Customer.retrieve(self.stripe_customer_id)
 
         # Create new customer
@@ -276,7 +276,7 @@ class User(AbstractUser):
 
             self.card_last_four_digits = pm.card.last4
             self.save(update_fields=["card_last_four_digits"])
-        except stripe.error.StripeError as e:
+        except stripe.StripeError as e:
             logger.exception(
                 "Stripe error updating card details: %s",
                 self.stripe_customer_id,

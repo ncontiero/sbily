@@ -62,7 +62,7 @@ def upgrade_plan(request: HttpRequest):
     except BadRequestError as e:
         messages.error(request, e.message)
         return redirect_with_tab("plan")
-    except stripe.error.StripeError as e:
+    except stripe.StripeError as e:
         messages.error(request, "Payment error")
         logger.exception("Stripe error", exc_info=e)
         return redirect_with_tab("plan")
@@ -143,7 +143,7 @@ def subscription_complete(request: HttpRequest):
             messages.error(request, f"Payment not completed: {intent.status}")
 
         return redirect_with_tab("plan")
-    except stripe.error.StripeError as e:
+    except stripe.StripeError as e:
         messages.error(request, "Payment verification error")
         logger.exception("Stripe error", exc_info=e)
         return redirect_with_tab("plan")
@@ -273,7 +273,7 @@ def stripe_webhook(request):
     except ValueError as e:
         logger.exception("Invalid Stripe webhook payload", exc_info=e)
         return HttpResponse(status=400)
-    except stripe.error.SignatureVerificationError as e:
+    except stripe.SignatureVerificationError as e:
         logger.exception("Invalid Stripe webhook signature", exc_info=e)
         return HttpResponse(status=400)
 

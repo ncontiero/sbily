@@ -190,7 +190,7 @@ class Subscription(models.Model):
                     "client_secret": payment_intent.client_secret,
                     "subscription": sub,
                 }
-        except stripe.error.StripeError as e:
+        except stripe.StripeError as e:
             if hasattr(sub, "pk") and sub.pk:
                 sub.status = cls.STATUS_INCOMPLETE
                 sub.save()
@@ -212,7 +212,7 @@ class Subscription(models.Model):
 
             self.is_auto_renew = False
             self.save(update_fields=["is_auto_renew"])
-        except stripe.error.StripeError as e:
+        except stripe.StripeError as e:
             return {"status": "error", "error": str(e)}
         else:
             return {"status": "success", "subscription": stripe_sub}
@@ -226,7 +226,7 @@ class Subscription(models.Model):
             stripe_sub = stripe.Subscription.delete(self.stripe_subscription_id)
 
             self.cancel()
-        except stripe.error.StripeError as e:
+        except stripe.StripeError as e:
             return {"status": "error", "error": str(e)}
         else:
             return {"status": "success", "subscription": stripe_sub}
@@ -244,7 +244,7 @@ class Subscription(models.Model):
 
             self.is_auto_renew = True
             self.save(update_fields=["is_auto_renew"])
-        except stripe.error.StripeError as e:
+        except stripe.StripeError as e:
             return {"status": "error", "error": str(e)}
         else:
             return {"status": "success", "subscription": stripe_sub}
@@ -280,7 +280,7 @@ class Subscription(models.Model):
                 )
 
             self.save()
-        except stripe.error.StripeError as e:
+        except stripe.StripeError as e:
             return {"status": "error", "error": str(e)}
         else:
             return {"status": "success", "subscription": stripe_sub}

@@ -49,7 +49,7 @@ def my_account(request: HttpRequest):
         if form.has_changed():
             form.save()
             if customer := user.get_stripe_customer():
-                with contextlib.suppress(stripe.error.StripeError):
+                with contextlib.suppress(stripe.StripeError):
                     customer.modify(
                         customer.id,
                         name=user.get_full_name(),
@@ -119,7 +119,7 @@ def change_email(request: HttpRequest, token: str):
             token_obj.mark_as_used()
 
         if customer := user.get_stripe_customer():
-            with contextlib.suppress(stripe.error.StripeError):
+            with contextlib.suppress(stripe.StripeError):
                 customer.modify(customer.id, email=new_email)
 
         token, _ = Token.get_or_create_for_user(user, Token.TYPE_EMAIL_VERIFICATION)
@@ -251,7 +251,7 @@ def delete_account(request: HttpRequest):
         if customer:
             try:
                 customer.delete()
-            except stripe.error.StripeError as e:
+            except stripe.StripeError as e:
                 logger.warning(
                     "StripeError encountered while deleting customer's account for user %s: %s",  # noqa: E501
                     user.email,
