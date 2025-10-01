@@ -17,17 +17,17 @@
   },
   "dependencies": {
     "@fontsource/inter": "^5.2.8",
-    "@stripe/stripe-js": "^7.9.0",
+    "@stripe/stripe-js": "^8.0.0",
     "chart.js": "^4.5.0",
     "chartjs-chart-geo": "^4.3.4",
     "lucide": "^0.544.0"
   },
   "devDependencies": {
-    "@ncontiero/eslint-config": "^6.2.0",
+    "@ncontiero/eslint-config": "^6.2.1",
     "@rspack/cli": "^1.5.8",
     "@rspack/core": "^1.5.8",
     "@tailwindcss/typography": "^0.5.19",
-    "@types/node": "^24.6.0",
+    "@types/node": "^24.6.1",
     "autoprefixer": "^10.4.21",
     "cross-env": "^10.1.0",
     "eslint": "^9.36.0",
@@ -37,7 +37,7 @@
     "tailwindcss": "3.4.17",
     "tailwindcss-animate": "^1.0.7",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.2",
+    "typescript": "^5.9.3",
     "webpack-bundle-tracker": "^3.2.1",
     "webpack-merge": "^6.0.1"
   },
