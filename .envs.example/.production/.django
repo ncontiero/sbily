@@ -23,6 +23,10 @@ STRIPE_WEBHOOK_SECRET=""
 # ------------------------------------------------------------------------------
 STRIPE_PREMIUM_MONTHLY_PRICE_ID=""
 STRIPE_PREMIUM_YEARLY_PRICE_ID=""
+STRIPE_BUSINESS_MONTHLY_PRICE_ID=""
+STRIPE_BUSINESS_YEARLY_PRICE_ID=""
+STRIPE_ADVANCED_MONTHLY_PRICE_ID=""
+STRIPE_ADVANCED_YEARLY_PRICE_ID=""
 
 # Email
 # ------------------------------------------------------------------------------
