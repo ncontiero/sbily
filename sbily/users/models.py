@@ -10,7 +10,6 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db import transaction
 from django.urls import reverse
-from django.utils.timezone import datetime
 from django.utils.timezone import now
 from django.utils.timezone import timedelta
 from django.utils.translation import gettext_lazy as _
@@ -26,14 +25,20 @@ class User(AbstractUser):
     ROLE_ADMIN = "admin"
     ROLE_USER = "user"
     ROLE_PREMIUM = "premium"
+    ROLE_BUSINESS = "business"
+    ROLE_ADVANCED = "advanced"
 
     MONTHLY_LINK_LIMIT_PER_USER = 5
     MONTHLY_LINK_LIMIT_PER_PREMIUM = 10
+    MONTHLY_LINK_LIMIT_PER_BUSINESS = 50
+    MONTHLY_LINK_LIMIT_PER_ADVANCED = 100
 
     ROLE_CHOICES = [
         (ROLE_ADMIN, _("Admin")),
         (ROLE_USER, _("User")),
         (ROLE_PREMIUM, _("Premium")),
+        (ROLE_BUSINESS, _("Business")),
+        (ROLE_ADVANCED, _("Advanced")),
     ]
 
     role = models.CharField(
@@ -100,9 +105,18 @@ class User(AbstractUser):
         return self.subscription_active and self.subscription.level == self.ROLE_PREMIUM
 
     @property
-    def premium_expiry(self) -> datetime | None:
-        """Returns the premium expires at date"""
-        return self.subscription.end_date or None
+    def is_business(self) -> bool:
+        """Check if the user has a business subscription"""
+        return (
+            self.subscription_active and self.subscription.level == self.ROLE_BUSINESS
+        )
+
+    @property
+    def is_advanced(self) -> bool:
+        """Check if the user has an advanced subscription"""
+        return (
+            self.subscription_active and self.subscription.level == self.ROLE_ADVANCED
+        )
 
     @property
     def remaining_monthly_link_limit(self) -> int:
@@ -134,6 +148,8 @@ class User(AbstractUser):
 
         plan_config = {
             PlanType.PREMIUM: self.MONTHLY_LINK_LIMIT_PER_PREMIUM,
+            PlanType.BUSINESS: self.MONTHLY_LINK_LIMIT_PER_BUSINESS,
+            PlanType.ADVANCED: self.MONTHLY_LINK_LIMIT_PER_ADVANCED,
         }
 
         if plan not in plan_config:

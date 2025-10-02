@@ -18,7 +18,48 @@
       <div class="container">
         <h2 class="text-3xl font-bold text-center">Available plans</h2>
 
-        {% include "partials/plans.html" %}
+        <div class="max-w-4xl mx-auto">
+          {% include "partials/plans.html" %}
+
+          <div class="mt-8 bg-background rounded-lg border border-border p-8 shadow-lg">
+            <div class="flex items-center justify-between border-b pb-6">
+              <div>
+                <h3 class="text-2xl font-bold mb-2">Free</h3>
+                <p class="text-muted-foreground">
+                  <span class="font-bold">$0</span>
+                  free forever - Perfect for personal and casual use
+                </p>
+              </div>
+
+              {% if request.user.is_authenticated %}
+                {% if request.user.is_free %}
+                  <button type="button" class="button-secondary text-center" disabled>Current plan</button>
+                {% endif %}
+              {% else %}
+                <a href="{% url 'sign_up' %}" class="button-outline text-center">Start Free</a>
+              {% endif %}
+            </div>
+
+            <ul class="space-y-3 mb-8 mt-6">
+              <li class="flex items-center gap-2">
+                <i data-lucide="check" class="size-4 text-primary"></i>
+                <span>5 new links/mo</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i data-lucide="check" class="size-4 text-primary"></i>
+                <span>Basic statistics</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i data-lucide="check" class="size-4 text-primary"></i>
+                <span>30-day analytics retention</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i data-lucide="check" class="size-4 text-primary"></i>
+                <span>Basic support</span>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -26,7 +67,7 @@
       <div class="container">
         <h2 class="text-3xl font-bold text-center mb-12">Plans Comparison</h2>
 
-        <div class="mx-auto max-w-2xl">
+        <div class="mx-auto max-w-3xl">
           <div class="border rounded-md mt-2">
             <div class="size-full overflow-auto overscroll-contain">
               <table class="size-full">
@@ -35,6 +76,8 @@
                     <th class="p-4">Feature</th>
                     <th class="p-4 text-center">Free</th>
                     <th class="p-4 text-center">Premium</th>
+                    <th class="p-4 text-center">Business</th>
+                    <th class="p-4 text-center">Advanced</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -42,9 +85,13 @@
                     <td class="p-4 font-medium">Links</td>
                     <td class="p-4 text-center">5 new links/mo</td>
                     <td class="p-4 text-center">25 new links/mo</td>
+                    <td class="p-4 text-center">50 new links/mo</td>
+                    <td class="p-4 text-center">100 new links/mo</td>
                   </tr>
                   <tr class="border-b border-dashed duration-200 hover:bg-muted/50">
                     <td class="p-4 font-medium">Basic Statistics</td>
+                    <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
+                    <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
                     <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
                     <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
                   </tr>
@@ -52,15 +99,21 @@
                     <td class="p-4 font-medium">Advanced Statistics</td>
                     <td class="p-4 text-center"><i data-lucide="x" class="size-4 text-muted-foreground mx-auto"></i></td>
                     <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
+                    <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
+                    <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
                   </tr>
                   <tr class="border-b border-dashed duration-200 hover:bg-muted/50">
                     <td class="p-4 font-medium">Analytics Retention</td>
                     <td class="p-4 text-center">30-day</td>
                     <td class="p-4 text-center">1-year</td>
+                    <td class="p-4 text-center">3-year</td>
+                    <td class="p-4 text-center">5-year</td>
                   </tr>
                   <tr class="duration-200 hover:bg-muted/50">
                     <td class="p-4 font-medium">Priority Support</td>
                     <td class="p-4 text-center"><i data-lucide="x" class="size-4 text-muted-foreground mx-auto"></i></td>
+                    <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
+                    <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
                     <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
                   </tr>
                 </tbody>

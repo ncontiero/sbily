@@ -14,6 +14,8 @@ class PlanType(str, Enum):
     """Enum for available plan types."""
 
     PREMIUM = User.ROLE_PREMIUM
+    BUSINESS = User.ROLE_BUSINESS
+    ADVANCED = User.ROLE_ADVANCED
 
 
 class PlanCycle(str, Enum):
@@ -36,6 +38,8 @@ def validate_plan_selection(plan: str, plan_cycle: str, user: User):
 
     plan_check_map: dict[PlanType, Callable[[User], bool]] = {
         PlanType.PREMIUM: lambda user: user.is_premium,
+        PlanType.BUSINESS: lambda user: user.is_business,
+        PlanType.ADVANCED: lambda user: user.is_advanced,
     }
 
     check_method = plan_check_map.get(plan_type)
@@ -55,6 +59,14 @@ def get_stripe_price(plan: str, plan_cycle: str) -> str | None:
         PlanType.PREMIUM: {
             PlanCycle.MONTHLY: settings.STRIPE_PREMIUM_MONTHLY_PRICE_ID,
             PlanCycle.YEARLY: settings.STRIPE_PREMIUM_YEARLY_PRICE_ID,
+        },
+        PlanType.BUSINESS: {
+            PlanCycle.MONTHLY: settings.STRIPE_BUSINESS_MONTHLY_PRICE_ID,
+            PlanCycle.YEARLY: settings.STRIPE_BUSINESS_YEARLY_PRICE_ID,
+        },
+        PlanType.ADVANCED: {
+            PlanCycle.MONTHLY: settings.STRIPE_ADVANCED_MONTHLY_PRICE_ID,
+            PlanCycle.YEARLY: settings.STRIPE_ADVANCED_YEARLY_PRICE_ID,
         },
     }
 

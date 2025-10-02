@@ -259,7 +259,7 @@
             </p>
           </div>
           <div class="card-footer justify-end">
-            {% if user.is_premium %}
+            {% if user.subscription_active %}
               {% if user.subscription.is_auto_renew %}
                 <button
                   type="button"
@@ -279,11 +279,10 @@
                   Resume Subscription
                 </button>
               {% endif %}
-            {% else %}
-              <button type="button" class="button-primary button-sm" data-jswc-dialog data-jswc-target="choose-plan-dialog">
-                Upgrade to Premium
-              </button>
             {% endif %}
+            <button type="button" class="button-primary button-sm" data-jswc-dialog data-jswc-target="choose-plan-dialog">
+              Select plan
+            </button>
           </div>
         </div>
 
@@ -322,9 +321,9 @@
                 <i data-lucide="check" class="size-4 text-primary"></i>
                 <span>
                   {% if user.subscription_active %}
-                    {{ user.monthly_link_limit }} new links per month (resets monthly)
+                    {{ user.monthly_link_limit }} new links/mo (resets monthly)
                   {% else %}
-                    5 new links per month (resets monthly)
+                    5 new links/mo (resets monthly)
                   {% endif %}
                 </span>
               </li>
@@ -349,20 +348,11 @@
               {% endif %}
             </ul>
           </div>
-          {% if not user.subscription_active %}
-            <div class="card-footer justify-end">
-              <button type="button" class="button-primary button-sm" data-jswc-dialog data-jswc-target="choose-plan-dialog">
-                Upgrade Now
-              </button>
-            </div>
-          {% endif %}
         </div>
 
         <!-- Dialogs -->
-        {% if not user.subscription_active %}
-          <!-- Choose Plan Dialog -->
-          {% include "partials/choose_plan_dialog.html" %}
-        {% endif %}
+        <!-- Choose Plan Dialog -->
+        {% include "partials/choose_plan_dialog.html" %}
 
         {% if user.subscription.is_auto_renew %}
           <!-- Cancel Plan Dialog -->

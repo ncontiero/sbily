@@ -17,6 +17,8 @@ from .utils import get_stripe_price
 
 class Subscription(models.Model):
     LEVEL_PREMIUM = PlanType.PREMIUM.value
+    LEVEL_BUSINESS = PlanType.BUSINESS.value
+    LEVEL_ADVANCED = PlanType.ADVANCED.value
 
     STATUS_ACTIVE = "active"
     STATUS_CANCELED = "canceled"
@@ -26,6 +28,8 @@ class Subscription(models.Model):
 
     LEVEL_CHOICES = [
         (LEVEL_PREMIUM, _("Premium")),
+        (LEVEL_BUSINESS, _("Business")),
+        (LEVEL_ADVANCED, _("Advanced")),
     ]
 
     STATUS_CHOICES = [
