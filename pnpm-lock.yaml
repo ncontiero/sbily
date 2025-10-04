@@ -18,8 +18,8 @@ importers:
         specifier: ^4.5.0
         version: 4.5.0
       chartjs-chart-geo:
-        specifier: ^4.3.4
-        version: 4.3.4(chart.js@4.5.0)
+        specifier: ^4.3.6
+        version: 4.3.6(chart.js@4.5.0)
       lucide:
         specifier: ^0.544.0
         version: 0.544.0
@@ -1541,8 +1541,8 @@ packages:
     resolution: {integrity: sha512-aYeC/jDgSEx8SHWZvANYMioYMZ2KX02W6f6uVfyteuCGcadDLcYVHdfdygsTQkQ4TKn5lghoojAsPj5pu0SnvQ==}
     engines: {pnpm: '>=8'}
 
-  chartjs-chart-geo@4.3.4:
-    resolution: {integrity: sha512-55aU289XAbbJZXaiOv4bJpSdqP8f/wISpL1bKb0chKEzD9/+Z+dhafHm3Js5/yafVI8GYNP4Vw4keIwPfEf10A==}
+  chartjs-chart-geo@4.3.6:
+    resolution: {integrity: sha512-mWMh0GpBS/Gf7DqojwDuSF2zzv1gwkqgLw1oPqhuwORjyfgKO8jbutYy3tPtOzIidCMwU5e1e4cZplM+UDD7MQ==}
     peerDependencies:
       chart.js: ^4.1.0
 
@@ -5780,7 +5780,7 @@ snapshots:
     dependencies:
       '@kurkle/color': 0.3.4
 
-  chartjs-chart-geo@4.3.4(chart.js@4.5.0):
+  chartjs-chart-geo@4.3.6(chart.js@4.5.0):
     dependencies:
       '@types/d3-geo': 3.1.0
       '@types/d3-scale-chromatic': 3.1.0
