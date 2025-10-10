@@ -17,7 +17,7 @@ def clean_up_analytics_data(self) -> dict:
 
     # Delete LinkClick objects older than 5 years
     count, _ = LinkClick.objects.filter(
-        created_at__lt=current_time - five_year_ago,
+        clicked_at__lt=current_time - five_year_ago,
     ).delete()
 
     return task_response(
