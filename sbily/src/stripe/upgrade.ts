@@ -6,6 +6,8 @@ import { initSetupCard, prices } from ".";
 declare const clientSecret: string;
 declare const redirectUrl: string;
 declare const plan: Plan;
+declare const discountAmount: string;
+declare const invoiceCredit: string;
 declare const defaultPaymentMethod: string;
 
 function handlePlanCycle(selectedCycle: Cycle) {
@@ -32,7 +34,6 @@ function handlePlanCycle(selectedCycle: Cycle) {
     !discountElement ||
     !monthsCycle ||
     !monthlyAmount ||
-    !nextBilling ||
     billingCycleElements.length === 0 ||
     totalAmount.length === 0
   )
@@ -46,8 +47,14 @@ function handlePlanCycle(selectedCycle: Cycle) {
 
   monthlyAmount.textContent = prices[selectedCycle][plan].toFixed(2);
   totalAmount.forEach((element) => {
-    const amount = prices[selectedCycle][plan];
-    element.textContent = (amount * cycles).toFixed(2);
+    const monthlyPrice = prices[selectedCycle][plan];
+    const discount =
+      discountAmount !== "False" ? Number.parseFloat(discountAmount) : 0;
+    const invoiceCreditAmount =
+      invoiceCredit !== "0" ? Number.parseFloat(invoiceCredit) : 0;
+    const total = monthlyPrice * cycles - discount - invoiceCreditAmount;
+
+    element.textContent = total > 0 ? total.toFixed(2) : "0";
   });
 
   if (selectedCycle === "monthly") {
@@ -57,13 +64,15 @@ function handlePlanCycle(selectedCycle: Cycle) {
   }
 
   monthsCycle.textContent = cycles === 1 ? "month" : "12 months";
-  nextBilling.textContent = new Date(
-    new Date().setMonth(new Date().getMonth() + cycles),
-  ).toLocaleDateString("en-US", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+  if (nextBilling) {
+    nextBilling.textContent = new Date(
+      new Date().setMonth(new Date().getMonth() + cycles),
+    ).toLocaleDateString("en-US", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  }
 }
 
 export async function initUpgradeCheckout() {

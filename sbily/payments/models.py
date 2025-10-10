@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 from decimal import Decimal
 
@@ -12,7 +13,12 @@ from sbily.users.models import User
 
 from .utils import PlanCycle
 from .utils import PlanType
+from .utils import current_cycle_is_yearly
 from .utils import get_stripe_price
+from .utils import is_upgrade
+from .utils import one_month_left_until_plan_end
+
+logger = logging.getLogger("payments.models")
 
 
 class Subscription(models.Model):
@@ -54,6 +60,11 @@ class Subscription(models.Model):
     )
     stripe_subscription_id = models.CharField(
         _("Stripe subscription ID"),
+        max_length=100,
+        blank=True,
+    )
+    stripe_subscription_schedule_id = models.CharField(
+        _("Stripe subscription schedule ID"),
         max_length=100,
         blank=True,
     )
@@ -171,7 +182,11 @@ class Subscription(models.Model):
             )
 
             sub.stripe_subscription_id = subscription.id
+            sub.stripe_subscription_schedule_id = subscription.schedule or ""
+            stripe_sub_data = subscription.get("items", {}).data[0]
+            sub.price = Decimal(stripe_sub_data.plan.amount or 0) / 100
             sub.level = plan
+            sub.is_auto_renew = subscription.cancel_at_period_end is False
 
             payments = subscription.latest_invoice.payments.data
             payment_intent = stripe.PaymentIntent.retrieve(
@@ -203,6 +218,130 @@ class Subscription(models.Model):
         else:
             return {"status": "success", "subscription": sub}
 
+    def downgrade_to(
+        self,
+        price: str,
+        current_period_end: int,
+        new_plan: str = PlanType.PREMIUM.value,
+        new_plan_cycle: str = PlanCycle.MONTHLY.value,
+    ):
+        if self.stripe_subscription_schedule_id:
+            stripe.SubscriptionSchedule.release(
+                self.stripe_subscription_schedule_id,
+            )
+
+        stripe.Subscription.modify(
+            self.stripe_subscription_id,
+            cancel_at_period_end=True,
+        )
+        stripe_sub_sched = stripe.SubscriptionSchedule.create(
+            customer=self.user.stripe_customer_id,
+            start_date=current_period_end,
+            end_behavior="release",
+            phases=[
+                {
+                    "items": [{"price": price, "quantity": 1}],
+                    "proration_behavior": "always_invoice",
+                    "metadata": {"plan": new_plan},
+                    "duration": {
+                        "interval": "month"
+                        if new_plan_cycle == PlanCycle.MONTHLY
+                        else "year",
+                        "interval_count": 1,
+                    },
+                },
+            ],
+        )
+
+        self.stripe_subscription_schedule_id = stripe_sub_sched.id
+        self.save(update_fields=["stripe_subscription_schedule_id"])
+        return {"status": "success", "subscription": self}
+
+    @classmethod
+    @transaction.atomic
+    def change_subscription(
+        cls,
+        user: User,
+        payment_method_id=None,
+        new_plan: str = PlanType.PREMIUM,
+        new_plan_cycle: str = PlanCycle.MONTHLY,
+    ):
+        """Change a subscription"""
+        try:
+            sub = cls.objects.get(user=user, status=cls.STATUS_ACTIVE)
+        except cls.DoesNotExist:
+            return {"status": "error", "error": "No active subscription"}
+
+        try:
+            user.update_card_details(payment_method_id)
+
+            price = get_stripe_price(new_plan, new_plan_cycle)
+            if not price:
+                return {"status": "error", "error": "Invalid plan or cycle"}
+
+            stripe_sub = stripe.Subscription.retrieve(sub.stripe_subscription_id)
+            stripe_sub_data = stripe_sub.get("items", {}).data[0]
+
+            if not is_upgrade(sub.level, new_plan):
+                return sub.downgrade_to(
+                    price,
+                    stripe_sub_data.current_period_end,
+                    new_plan,
+                    new_plan_cycle,
+                )
+
+            stripe_sub_to_modify = {"proration_behavior": "always_invoice"}
+            if not current_cycle_is_yearly(user) or one_month_left_until_plan_end(user):
+                stripe_sub_to_modify["proration_behavior"] = "none"
+                stripe_sub_to_modify["billing_cycle_anchor"] = "now"
+
+            stripe_sub = stripe.Subscription.modify(
+                sub.stripe_subscription_id,
+                cancel_at_period_end=False,
+                items=[{"price": price, "id": stripe_sub_data.id}],
+                metadata={"plan": new_plan},
+                expand=["latest_invoice.payments"],
+                **stripe_sub_to_modify,
+            )
+
+            stripe_sub_data = stripe_sub.get("items", {}).data[0]
+            sub.level = new_plan
+            sub.end_date = datetime.fromtimestamp(
+                stripe_sub_data.current_period_end,
+                tz=now().tzinfo,
+            )
+            sub.price = Decimal(stripe_sub_data.plan.amount or 0) / 100
+
+            payments = stripe_sub.latest_invoice.payments.data
+            payment_intent = (
+                stripe.PaymentIntent.retrieve(
+                    payments[0].payment.payment_intent,
+                )
+                if len(payments) > 0
+                else None
+            )
+
+            if stripe_sub.status == "active":
+                sub.status = cls.STATUS_ACTIVE
+            elif stripe_sub.status == "incomplete":
+                sub.status = cls.STATUS_INCOMPLETE
+            elif stripe_sub.status == "past_due":
+                sub.status = cls.STATUS_PASTDUE
+                sub.is_auto_renew = False
+
+            sub.save()
+
+            if payment_intent and payment_intent.status == "requires_action":
+                return {
+                    "status": "action_required",
+                    "client_secret": payment_intent.client_secret,
+                    "subscription": sub,
+                }
+        except stripe.StripeError as e:
+            return {"status": "error", "error": str(e)}
+        else:
+            return {"status": "success", "subscription": sub}
+
     def cancel_stripe_subscription(self):
         """Cancel a Stripe subscription"""
         if not self.stripe_subscription_id:
@@ -227,9 +366,12 @@ class Subscription(models.Model):
             return {"status": "error", "error": "No Stripe subscription ID"}
 
         try:
-            stripe_sub = stripe.Subscription.delete(self.stripe_subscription_id)
+            if self.stripe_subscription_schedule_id:
+                stripe.SubscriptionSchedule.release(
+                    self.stripe_subscription_schedule_id,
+                )
 
-            self.cancel()
+            stripe_sub = stripe.Subscription.delete(self.stripe_subscription_id)
         except stripe.StripeError as e:
             return {"status": "error", "error": str(e)}
         else:
@@ -283,6 +425,8 @@ class Subscription(models.Model):
                     tz=now().tzinfo,
                 )
 
+            price = Decimal(data.plan.amount or 0) / 100  # Convert from cents
+            self.price = price if price > 0 else self.price
             self.save()
         except stripe.StripeError as e:
             return {"status": "error", "error": str(e)}
@@ -324,6 +468,7 @@ class Payment(models.Model):
         blank=True,
         unique=True,
     )
+    invoice_url = models.URLField(_("invoice URL"), blank=True)
 
     class Meta:
         ordering = ["-payment_date"]

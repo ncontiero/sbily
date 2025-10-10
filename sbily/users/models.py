@@ -79,6 +79,11 @@ class User(AbstractUser):
         max_length=100,
         blank=True,
     )
+    customer_balance = models.IntegerField(
+        _("customer balance"),
+        default=0,
+        help_text=_("Customer balance in cents."),
+    )
     card_last_four_digits = models.CharField(
         _("card last four digits"),
         max_length=4,
@@ -119,9 +124,20 @@ class User(AbstractUser):
         )
 
     @property
+    def user_level(self) -> str:
+        """Returns the user's level"""
+        return (self.subscription_active and self.subscription.level) or self.role
+
+    @property
     def remaining_monthly_link_limit(self) -> int:
         """Returns the number of remaining links limit for the user."""
         return max(0, self.monthly_link_limit - self.monthly_limit_links_used)
+
+    @property
+    def customer_balance_format(self):
+        """Returns the customer balance in dollars."""
+        positive_multiplier = -1 if self.customer_balance < 0 else 1
+        return (self.customer_balance / 100) * positive_multiplier
 
     def save(self, *args, **kwargs):
         if self.pk is None and self.is_superuser:

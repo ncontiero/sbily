@@ -60,6 +60,7 @@ class UserAdmin(auth_admin.UserAdmin):
             {
                 "fields": (
                     "stripe_customer_id",
+                    "customer_balance",
                     "card_last_four_digits",
                 ),
                 "classes": ("collapse",),

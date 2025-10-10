@@ -388,52 +388,52 @@
               </button>
             </div>
           </div>
-
-          {% if not user.subscription.is_auto_renew %}
-            <!-- Resume Subscription Dialog -->
-            <div id="resume-subscription-dialog" class="hidden dialog" data-jswc-dialog-animation="true">
-              <div class="flex flex-col">
-                <div class="flex justify-between items-center">
-                  <h2 class="text-xl font-bold">Resume Premium Subscription</h2>
-                </div>
-                <div class="mt-4">
-                  <div class="bg-secondary/40 p-4 rounded-lg mb-6 border">
-                    <p class="text-foreground/80">
-                      <i data-lucide="info" class="size-4 inline-block mr-1 text-primary"></i>
-                      Your Premium subscription currently ends on {{ user.subscription.end_date|date:"F j, Y" }}. By resuming, your subscription will automatically renew after this date.
-                    </p>
-                  </div>
-
-                  <p class="mb-4">By resuming your subscription:</p>
-                  <ul class="space-y-2 mb-6">
-                    <li class="flex items-center gap-2">
-                      <i data-lucide="check" class="size-4 text-primary"></i>
-                      <span>You'll continue to enjoy all Premium features without interruption;</span>
-                    </li>
-                    <li class="flex items-center gap-2">
-                      <i data-lucide="check" class="size-4 text-primary"></i>
-                      <span>Your subscription will automatically renew at the regular price;</span>
-                    </li>
-                    <li class="flex items-center gap-2">
-                      <i data-lucide="check" class="size-4 text-primary"></i>
-                      <span>You can cancel again at any time.</span>
-                    </li>
-                  </ul>
-
-                  <form method="post" action="{% url 'resume_plan' %}" class="w-full" data-jswc-add-load>
-                    {% csrf_token %}
-                    <div class="flex items-center gap-2">
-                      <button type="submit" class="button-primary">Resume Subscription</button>
-                      <button type="button" class="button-outline" data-jswc-dialog-close>Not Now</button>
-                    </div>
-                  </form>
-                </div>
-                <button type="button" class="button-outline absolute p-2 border-0 rounded-xl right-4 top-4" aria-label="Close" data-jswc-dialog-close>
-                  <i data-lucide="x" class="size-5"></i>
-                </button>
+        {% else %}
+          <!-- Resume Subscription Dialog -->
+          <div id="resume-subscription-dialog" class="hidden dialog" data-jswc-dialog-animation="true">
+            <div class="flex flex-col">
+              <div class="flex justify-between items-center">
+                <h2 class="text-xl font-bold">Resume {{ user.subscription.get_level_display }} Subscription</h2>
               </div>
+              <div class="mt-4">
+                <div class="bg-secondary/40 p-4 rounded-lg mb-6 border">
+                  <p class="text-foreground/80">
+                    <i data-lucide="info" class="size-4 inline-block mr-1 text-primary"></i>
+                    Your {{ user.subscription.get_level_display }} subscription currently ends
+                    on {{ user.subscription.end_date|date:"F j, Y" }}. By resuming, your subscription
+                    will automatically renew after this date.
+                  </p>
+                </div>
+
+                <p class="mb-4">By resuming your subscription:</p>
+                <ul class="space-y-2 mb-6">
+                  <li class="flex items-center gap-2">
+                    <i data-lucide="check" class="size-4 text-primary"></i>
+                    <span>You'll continue to enjoy all {{ user.subscription.get_level_display }} features without interruption;</span>
+                  </li>
+                  <li class="flex items-center gap-2">
+                    <i data-lucide="check" class="size-4 text-primary"></i>
+                    <span>Your subscription will automatically renew at the regular price;</span>
+                  </li>
+                  <li class="flex items-center gap-2">
+                    <i data-lucide="check" class="size-4 text-primary"></i>
+                    <span>You can cancel again at any time.</span>
+                  </li>
+                </ul>
+
+                <form method="post" action="{% url 'resume_plan' %}" class="w-full" data-jswc-add-load>
+                  {% csrf_token %}
+                  <div class="flex items-center gap-2">
+                    <button type="submit" class="button-primary">Resume Subscription</button>
+                    <button type="button" class="button-outline" data-jswc-dialog-close>Not Now</button>
+                  </div>
+                </form>
+              </div>
+              <button type="button" class="button-outline absolute p-2 border-0 rounded-xl right-4 top-4" aria-label="Close" data-jswc-dialog-close>
+                <i data-lucide="x" class="size-5"></i>
+              </button>
             </div>
-          {% endif %}
+          </div>
         {% endif %}
       </div>
       <div data-jwsc-tab-panel="billing" class="hidden flex-col size-full data-[state=active]:flex">
@@ -481,6 +481,21 @@
         </div>
 
         <div class="card mt-7">
+          <div class="card-content pb-5">
+            <h3 class="card-title">Invoice Balance</h3>
+            <p class="card-description">
+              These are the credits on your account:
+              <span class="font-bold text-lg">$ {{ user.customer_balance_format }}</span>
+            </p>
+          </div>
+          <div class="card-footer">
+            <p class="card-footer-description">
+              Any available credit will be automatically applied towards invoices generated for this account.
+            </p>
+          </div>
+        </div>
+
+        <div class="card mt-7">
           <div class="card-content">
             <h3 class="card-title">Payments History</h3>
 
@@ -503,7 +518,15 @@
                       {% for payment in user.payments.all %}
                       <tr class="border-b duration-200 hover:bg-muted/50">
                         <td class="p-4 align-middle">{{ payment.payment_date|date:"M d, Y" }}</td>
-                        <td class="p-4 align-middle">{{ payment.description }}</td>
+                        <td class="p-4 align-middle">
+                          {% if payment.invoice_url %}
+                            <a href="{{ payment.invoice_url }}" target="_blank" rel="noopener noreferrer" class="link-primary">
+                              {{ payment.description }}
+                            </a>
+                          {% else %}
+                            {{ payment.description }}
+                          {% endif %}
+                        </td>
                         <td class="p-4 align-middle">${{ payment.amount }}</td>
                         <td class="p-4 align-middle text-center">
                           <span class="badge-{{ payment.status_badge }}">{{ payment.status }}</span>

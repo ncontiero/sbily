@@ -17,14 +17,16 @@ from sbily.utils.errors import BadRequestError
 from sbily.utils.errors import bad_request_error
 from sbily.utils.urls import redirect_with_tab
 
-if TYPE_CHECKING:
-    from sbily.users.models import User
-
 from .models import Subscription
 from .utils import PlanCycle
 from .utils import PlanType
+from .utils import calculate_unused_time_discount
+from .utils import is_upgrade
 from .utils import validate_plan_selection
 from .webhook import handle_stripe_webhook
+
+if TYPE_CHECKING:
+    from sbily.users.models import User
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 stripe.api_version = settings.STRIPE_API_VERSION
@@ -52,11 +54,19 @@ def upgrade_plan(request: HttpRequest):
             payment_method_types=["card"],
         )
 
+        limit_left_to_show_message = 5
+        show_limit_warning = (
+            user.monthly_link_limit - user.monthly_limit_links_used
+        ) >= limit_left_to_show_message
+
         context = {
             "client_secret": setup_intent.client_secret,
             "redirect_url": request.build_absolute_uri(reverse("finalize_upgrade")),
             "plan": plan,
             "plan_cycle": plan_cycle,
+            "is_upgrade": is_upgrade(user.user_level, plan),
+            "show_limit_warning": show_limit_warning,
+            "discount_amount": calculate_unused_time_discount(user, plan),
             "default_payment_method": default_payment_method,
         }
         return render(request, "upgrade.html", context)
@@ -86,17 +96,33 @@ def finalize_upgrade(request: HttpRequest):
     try:
         user: User = request.user
         validate_plan_selection(plan, plan_cycle, user)
+        plan_is_upgrade = is_upgrade(user.role, plan) or not user.subscription_active
 
-        result = Subscription.create_subscription(
-            user,
-            payment_method,
-            plan,
-            plan_cycle,
-        )
+        if user.subscription_active:
+            result = Subscription.change_subscription(
+                user,
+                payment_method,
+                plan,
+                plan_cycle,
+            )
+        else:
+            result = Subscription.create_subscription(
+                user,
+                payment_method,
+                plan,
+                plan_cycle,
+            )
 
         if result["status"] == "success":
-            user.choose_plan(plan)
-            messages.success(request, f"Successfully upgraded to {plan}!")
+            if plan_is_upgrade:
+                user.choose_plan(plan)
+
+            message = (
+                f"Successfully upgraded to {plan}!"
+                if plan_is_upgrade
+                else f"Your account will be downgraded to the {plan} plan at the end of the current billing cycle."  # noqa: E501
+            )
+            messages.success(request, message)
             return redirect_with_tab("plan")
         if result["status"] == "action_required":
             return render(
