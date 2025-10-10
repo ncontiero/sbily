@@ -319,13 +319,7 @@
             <ul class="space-y-3 mt-4">
               <li class="flex items-center gap-2">
                 <i data-lucide="check" class="size-4 text-primary"></i>
-                <span>
-                  {% if user.subscription_active %}
-                    {{ user.monthly_link_limit }} new links/mo (resets monthly)
-                  {% else %}
-                    5 new links/mo (resets monthly)
-                  {% endif %}
-                </span>
+                <span>{{ user.monthly_link_limit }} new links/mo (resets monthly)</span>
               </li>
               {% if user.subscription_active %}
                 <li class="flex items-center gap-2">
