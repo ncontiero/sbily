@@ -238,6 +238,7 @@ MESSAGE_TAGS = {
 # ------------------------------------------------------------------------------
 STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY")
 STRIPE_WEBHOOK_SECRET = config("STRIPE_WEBHOOK_SECRET")
+STRIPE_API_VERSION = config("STRIPE_API_VERSION", default="2025-05-28.basil")
 # PRICES
 # ------------------------------------------------------------------------------
 STRIPE_PREMIUM_MONTHLY_PRICE_ID = config("STRIPE_PREMIUM_MONTHLY_PRICE_ID")

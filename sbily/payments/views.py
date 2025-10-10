@@ -27,6 +27,7 @@ from .utils import validate_plan_selection
 from .webhook import handle_stripe_webhook
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
+stripe.api_version = settings.STRIPE_API_VERSION
 
 logger = logging.getLogger("users.views")
 

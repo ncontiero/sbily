@@ -19,6 +19,7 @@ DJANGO_SECURE_SSL_REDIRECT=False
 STRIPE_PUBLIC_KEY=""
 STRIPE_SECRET_KEY=""
 STRIPE_WEBHOOK_SECRET=""
+STRIPE_API_VERSION="2025-05-28.basil"
 # Prices IDs
 # ------------------------------------------------------------------------------
 STRIPE_PREMIUM_MONTHLY_PRICE_ID=""
