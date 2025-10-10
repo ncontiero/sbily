@@ -39,7 +39,7 @@ dev = [
     "psycopg[binary]==3.2.10",
     "watchfiles==1.1.0",
     "mypy==1.18.2",
-    "django-stubs[compatible-mypy]==5.2.5",
+    "django-stubs[compatible-mypy]==5.2.7",
     "ruff==0.14.0",
     "djlint==1.36.4",
     "pre-commit==4.3.0",
