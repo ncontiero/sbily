@@ -10,14 +10,18 @@ function getPlanElement(plan: Plan) {
 
 function getAmountElements() {
   const premiumBox = getPlanElement("premium");
+  const businessBox = getPlanElement("business");
+  const advancedBox = getPlanElement("advanced");
 
   const amountData = "[data-jswc-price='amount']";
   const getElements = (box: HTMLElement) =>
     box.querySelectorAll<HTMLElement>(amountData);
 
   const premiumAmounts = premiumBox ? getElements(premiumBox) : [];
+  const businessAmounts = businessBox ? getElements(businessBox) : [];
+  const advancedAmounts = advancedBox ? getElements(advancedBox) : [];
 
-  return { premiumAmounts };
+  return { premiumAmounts, businessAmounts, advancedAmounts };
 }
 
 function setAmount(element: HTMLElement, currentCycle: Cycle, plan: Plan) {
@@ -34,7 +38,8 @@ function selectCyclePlan(
   unselected: HTMLElement,
   upgradeElements: NodeListOf<HTMLElement>,
 ) {
-  const { premiumAmounts } = getAmountElements();
+  const { premiumAmounts, businessAmounts, advancedAmounts } =
+    getAmountElements();
 
   selected.dataset.active = "true";
   unselected.dataset.active = "false";
@@ -47,6 +52,12 @@ function selectCyclePlan(
 
   premiumAmounts.forEach((element) => {
     setAmount(element, currentCycle, "premium");
+  });
+  businessAmounts.forEach((element) => {
+    setAmount(element, currentCycle, "business");
+  });
+  advancedAmounts.forEach((element) => {
+    setAmount(element, currentCycle, "advanced");
   });
 
   upgradeElements.forEach((element) => {
