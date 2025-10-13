@@ -42,6 +42,8 @@ def checkout_page(request: HttpRequest):
 
     plan = request.GET.get("plan", PlanType.PREMIUM.value)
     plan_cycle = request.GET.get("cycle", PlanCycle.MONTHLY.value)
+    if plan_cycle == "":
+        plan_cycle = PlanCycle.MONTHLY.value
 
     try:
         user: User = request.user
