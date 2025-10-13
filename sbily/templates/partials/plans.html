@@ -47,20 +47,14 @@
       </ul>
 
       {% if request.user.is_authenticated %}
-        {% if request.user.is_premium %}
-          <button type="button" class="button-secondary w-full text-center" disabled>
-            Current plan
-          </button>
-        {% else %}
-          <a
-            href="{% url 'upgrade_plan' %}?plan=premium"
-            class="button-primary w-full"
-            data-jswc-price="upgrade"
-            data-jswc-add-load
-          >
-            Select Premium
-          </a>
-        {% endif %}
+        <a
+          href="{% url 'upgrade_plan' %}?plan=premium"
+          class="button-primary w-full"
+          data-jswc-price="upgrade"
+          data-jswc-add-load
+        >
+          Select Premium
+        </a>
       {% else %}
         <a href="{% url 'sign_up' %}?plan=premium" class="button-primary w-full text-center" data-jswc-price="upgrade">
           Get started
@@ -96,20 +90,14 @@
       </ul>
 
       {% if request.user.is_authenticated %}
-        {% if request.user.is_business %}
-          <button type="button" class="button-secondary w-full text-center" disabled>
-            Current plan
-          </button>
-        {% else %}
-          <a
-            href="{% url 'upgrade_plan' %}?plan=business"
-            class="button-primary w-full"
-            data-jswc-price="upgrade"
-            data-jswc-add-load
-          >
-            Select Business
-          </a>
-        {% endif %}
+        <a
+          href="{% url 'upgrade_plan' %}?plan=business"
+          class="button-primary w-full"
+          data-jswc-price="upgrade"
+          data-jswc-add-load
+        >
+          Select Business
+        </a>
       {% else %}
         <a href="{% url 'sign_up' %}?plan=business" class="button-primary w-full text-center" data-jswc-price="upgrade">
           Get started
@@ -145,20 +133,14 @@
       </ul>
 
       {% if request.user.is_authenticated %}
-        {% if request.user.is_advanced %}
-          <button type="button" class="button-secondary w-full text-center" disabled>
-            Current plan
-          </button>
-        {% else %}
-          <a
-            href="{% url 'upgrade_plan' %}?plan=advanced"
-            class="button-primary w-full"
-            data-jswc-price="upgrade"
-            data-jswc-add-load
-          >
-            Select Advanced
-          </a>
-        {% endif %}
+        <a
+          href="{% url 'upgrade_plan' %}?plan=advanced"
+          class="button-primary w-full"
+          data-jswc-price="upgrade"
+          data-jswc-add-load
+        >
+          Select Advanced
+        </a>
       {% else %}
         <a href="{% url 'sign_up' %}?plan=advanced" class="button-primary w-full text-center" data-jswc-price="upgrade">
           Get started
@@ -167,3 +149,10 @@
     </div>
   </div>
 </div>
+
+{% block js %}
+<script>
+  const currentPlan = "{{ user.user_level }}";
+  const currentCycle = "{{ user.subscription.cycle|default:'None' }}";
+</script>
+{% endblock js %}

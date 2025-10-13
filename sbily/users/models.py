@@ -102,31 +102,27 @@ class User(AbstractUser):
     @property
     def subscription_active(self) -> bool:
         """Check if the user has an active subscription"""
-        return self.subscription.is_active if hasattr(self, "subscription") else False
-
-    @property
-    def is_premium(self) -> bool:
-        """Check if the user has a premium subscription"""
-        return self.subscription_active and self.subscription.level == self.ROLE_PREMIUM
-
-    @property
-    def is_business(self) -> bool:
-        """Check if the user has a business subscription"""
-        return (
-            self.subscription_active and self.subscription.level == self.ROLE_BUSINESS
-        )
-
-    @property
-    def is_advanced(self) -> bool:
-        """Check if the user has an advanced subscription"""
-        return (
-            self.subscription_active and self.subscription.level == self.ROLE_ADVANCED
-        )
+        return self.subscription.is_active() if hasattr(self, "subscription") else False
 
     @property
     def user_level(self) -> str:
         """Returns the user's level"""
         return (self.subscription_active and self.subscription.level) or self.role
+
+    @property
+    def is_premium(self) -> bool:
+        """Check if the user has a premium subscription"""
+        return self.user_level == self.ROLE_PREMIUM
+
+    @property
+    def is_business(self) -> bool:
+        """Check if the user has a business subscription"""
+        return self.user_level == self.ROLE_BUSINESS
+
+    @property
+    def is_advanced(self) -> bool:
+        """Check if the user has an advanced subscription"""
+        return self.user_level == self.ROLE_ADVANCED
 
     @property
     def remaining_monthly_link_limit(self) -> int:

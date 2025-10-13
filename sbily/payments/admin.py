@@ -23,6 +23,7 @@ class SubscriptionAdmin(admin.ModelAdmin):
     list_display = (
         "user",
         "level",
+        "cycle",
         "status",
         "start_date",
         "end_date",

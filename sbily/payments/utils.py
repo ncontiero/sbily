@@ -51,7 +51,7 @@ def current_cycle_is_yearly(user: User) -> bool:
         return False
 
     sub: Subscription = user.subscription
-    return (sub.end_date - sub.start_date) > timedelta(days=40)
+    return sub.cycle == PlanCycle.YEARLY.value
 
 
 def one_month_left_until_plan_end(user: User) -> bool:
@@ -97,8 +97,9 @@ def validate_plan_selection(plan: str, plan_cycle: str, user: User):
     }
 
     check_method = plan_check_map.get(plan_type)
-    if check_method and check_method(user):
-        bad_request_error("You already have this plan")
+    user_cycle = (user.subscription_active and user.subscription.cycle) or None
+    if check_method and check_method(user) and plan_cycle == user_cycle:
+        bad_request_error("You already have this plan with this cycle")
 
 
 def get_stripe_price(plan: str, plan_cycle: str) -> str | None:

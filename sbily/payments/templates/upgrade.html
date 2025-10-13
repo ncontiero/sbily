@@ -12,14 +12,16 @@
         <div>
           <h2 class="text-xl font-bold">Subscription Options</h2>
           <div class="flex flex-col mt-4 gap-4">
-            <label for="yearly" class="flex items-center gap-2 p-4 border rounded-md cursor-pointer duration-200 hover:border-border/80 has-[:checked]:border-primary">
+            <label for="yearly" class="flex items-center gap-2 p-4 border rounded-md cursor-pointer duration-200 hover:border-border/80 has-[:checked]:border-primary has-[:disabled]:opacity-80 has-[:disabled]:cursor-not-allowed">
               <div class="h-full self-start">
                 <input
                   id="yearly"
                   type="radio"
                   name="plan_cycle"
                   class="ring-primary rounded-full ring-offset-2 ring-offset-background duration-200 focus-visible:outline-none focus-visible:ring-2"
-                  {% if plan_cycle == "yearly" %}checked{% endif %}
+                  {% if plan_cycle == "yearly" and current_cycle != "yearly" %}checked{% endif %}
+                  {% if current_cycle == "yearly" %}disabled{% endif %}
+                  {% if current_cycle == "yearly" %}title="Current cycle active"{% endif %}
                 />
               </div>
               <div class="flex justify-between gap-2 w-full">
@@ -39,14 +41,16 @@
                 </div>
               </div>
             </label>
-            <label for="monthly" class="flex items-center gap-2 p-4 border rounded-md cursor-pointer duration-200 hover:border-border/80 has-[:checked]:border-primary">
+            <label for="monthly" class="flex items-center gap-2 p-4 border rounded-md cursor-pointer duration-200 hover:border-border/80 has-[:checked]:border-primary has-[:disabled]:opacity-80 has-[:disabled]:cursor-not-allowed">
               <div class="h-full self-start">
                 <input
                   id="monthly"
                   type="radio"
                   name="plan_cycle"
                   class="ring-primary rounded-full ring-offset-2 ring-offset-background duration-200 focus-visible:outline-none focus-visible:ring-2"
-                  {% if not plan_cycle or plan_cycle == "monthly" %}checked{% endif %}
+                  {% if not plan_cycle or plan_cycle == "monthly" and current_cycle != "monthly" %}checked{% endif %}
+                  {% if current_cycle == "monthly" %}disabled{% endif %}
+                  {% if current_cycle == "monthly" %}title="Current cycle active"{% endif %}
                 />
               </div>
               <div class="flex justify-between gap-2 w-full">

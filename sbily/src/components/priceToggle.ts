@@ -1,11 +1,44 @@
 import type { Cycle, Plan } from "@/stripe/prices";
 import { prices } from "@/stripe";
 
+declare const currentPlan: Plan;
+declare const currentCycle: Cycle | "None";
+
+let currentPlanButton: HTMLElement | null = null;
+const selectedPlanButton = `
+  <button type="button" class="button-secondary w-full text-center" data-jswc-price="upgrade" disabled>
+    Current plan
+  </button>
+`;
+
 function getElement(key: string) {
   return document.querySelector<HTMLElement>(`[data-jswc-price='${key}']`);
 }
 function getPlanElement(plan: Plan) {
   return getElement(plan);
+}
+
+function setCurrentPlanButton(selectedCycle: Cycle) {
+  const currentPlanBox = getPlanElement(currentPlan);
+  if (!currentPlanBox) return;
+
+  const _currentPlanButton = currentPlanBox.querySelector<HTMLElement>(
+    "[data-jswc-price='upgrade']",
+  );
+  if (!_currentPlanButton) return;
+
+  if (!currentPlanButton) {
+    currentPlanButton = _currentPlanButton;
+  }
+
+  if (selectedCycle === currentCycle) {
+    _currentPlanButton.remove();
+    currentPlanBox.insertAdjacentHTML("beforeend", selectedPlanButton);
+  } else {
+    _currentPlanButton.remove();
+    currentPlanBox.append(currentPlanButton);
+    currentPlanButton = null;
+  }
 }
 
 function getAmountElements() {
@@ -24,11 +57,11 @@ function getAmountElements() {
   return { premiumAmounts, businessAmounts, advancedAmounts };
 }
 
-function setAmount(element: HTMLElement, currentCycle: Cycle, plan: Plan) {
+function setAmount(element: HTMLElement, selectedCycle: Cycle, plan: Plan) {
   const amount = element.textContent;
   if (!amount || amount === "0") return;
 
-  const price = prices[currentCycle][plan];
+  const price = prices[selectedCycle][plan];
   if (!price) return;
   element.textContent = price.toString();
 }
@@ -47,24 +80,26 @@ function selectCyclePlan(
   selected.classList.add("bg-primary", "text-primary-foreground");
   unselected.classList.remove("bg-primary", "text-primary-foreground");
 
-  const currentCycle =
+  const selectedCycle =
     selected.dataset.jswcPrice === "monthly-button" ? "monthly" : "yearly";
 
+  setCurrentPlanButton(selectedCycle);
+
   premiumAmounts.forEach((element) => {
-    setAmount(element, currentCycle, "premium");
+    setAmount(element, selectedCycle, "premium");
   });
   businessAmounts.forEach((element) => {
-    setAmount(element, currentCycle, "business");
+    setAmount(element, selectedCycle, "business");
   });
   advancedAmounts.forEach((element) => {
-    setAmount(element, currentCycle, "advanced");
+    setAmount(element, selectedCycle, "advanced");
   });
 
   upgradeElements.forEach((element) => {
     const currentHref = element.getAttribute("href");
     const url = new URL(currentHref || "", origin);
 
-    if (currentCycle === "yearly") {
+    if (selectedCycle === "yearly") {
       url.searchParams.append("cycle", "yearly");
     } else {
       url.searchParams.delete("cycle");
@@ -83,6 +118,8 @@ export function initPriceToggle() {
   );
 
   if (!monthlyButton || !yearlyButton) return;
+
+  setCurrentPlanButton("monthly");
 
   monthlyButton.addEventListener("click", () => {
     selectCyclePlan(monthlyButton, yearlyButton, upgradeElements);

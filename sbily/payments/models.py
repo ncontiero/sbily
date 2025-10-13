@@ -109,6 +109,12 @@ class Subscription(models.Model):
 
         super().save(*args, **kwargs)
 
+    @property
+    def cycle(self):
+        """Return the cycle of the subscription"""
+        is_yearly_cycle = (self.end_date - self.start_date) > timedelta(days=35)
+        return PlanCycle.YEARLY.value if is_yearly_cycle else PlanCycle.MONTHLY.value
+
     def _status_changed(self):
         """Check if the status has changed"""
         if not self.pk:
@@ -157,6 +163,10 @@ class Subscription(models.Model):
         try:
             user.update_card_details(payment_method_id)
 
+            price = get_stripe_price(plan, plan_cycle)
+            if not price:
+                return {"status": "error", "error": "Invalid plan or cycle"}
+
             is_monthly = plan_cycle == PlanCycle.MONTHLY
             sub, _ = cls.objects.get_or_create(
                 user=user,
@@ -169,10 +179,6 @@ class Subscription(models.Model):
                     "is_auto_renew": True,
                 },
             )
-
-            price = get_stripe_price(plan, plan_cycle)
-            if not price:
-                return {"status": "error", "error": "Invalid plan or cycle"}
 
             subscription = stripe.Subscription.create(
                 customer=customer.id,
@@ -218,7 +224,7 @@ class Subscription(models.Model):
         else:
             return {"status": "success", "subscription": sub}
 
-    def downgrade_to(
+    def downgrade_or_change_cycle(
         self,
         price: str,
         current_period_end: int,
@@ -259,7 +265,7 @@ class Subscription(models.Model):
 
     @classmethod
     @transaction.atomic
-    def change_subscription(
+    def change_subscription(  # noqa: C901
         cls,
         user: User,
         payment_method_id=None,
@@ -282,8 +288,11 @@ class Subscription(models.Model):
             stripe_sub = stripe.Subscription.retrieve(sub.stripe_subscription_id)
             stripe_sub_data = stripe_sub.get("items", {}).data[0]
 
-            if not is_upgrade(sub.level, new_plan):
-                return sub.downgrade_to(
+            cycle_changed_only = (
+                new_plan == user.user_level and sub.cycle != new_plan_cycle
+            )
+            if not is_upgrade(sub.level, new_plan) or cycle_changed_only:
+                return sub.downgrade_or_change_cycle(
                     price,
                     stripe_sub_data.current_period_end,
                     new_plan,
