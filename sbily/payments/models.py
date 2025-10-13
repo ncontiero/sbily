@@ -357,6 +357,11 @@ class Subscription(models.Model):
             return {"status": "error", "error": "No Stripe subscription ID"}
 
         try:
+            if self.stripe_subscription_schedule_id:
+                stripe.SubscriptionSchedule.release(
+                    self.stripe_subscription_schedule_id,
+                )
+
             stripe_sub = stripe.Subscription.modify(
                 self.stripe_subscription_id,
                 cancel_at_period_end=True,
@@ -392,6 +397,11 @@ class Subscription(models.Model):
             return {"status": "error", "error": "No Stripe subscription ID"}
 
         try:
+            if self.stripe_subscription_schedule_id:
+                stripe.SubscriptionSchedule.release(
+                    self.stripe_subscription_schedule_id,
+                )
+
             stripe_sub = stripe.Subscription.modify(
                 self.stripe_subscription_id,
                 cancel_at_period_end=False,

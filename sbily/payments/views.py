@@ -271,7 +271,7 @@ def resume_plan(request: HttpRequest):
                 messages.warning(request, "Warning: Stripe resume issue")
                 logger.warning("Warning: Stripe resume issue - %s", result.get("error"))
             else:
-                messages.success(request, "Successfully resumed subscription!")
+                messages.success(request, "Your subscription has been resumed!")
 
         return redirect_with_tab("plan")
     except BadRequestError as e:
