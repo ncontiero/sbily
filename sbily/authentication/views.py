@@ -36,7 +36,7 @@ def get_post_auth_redirect(request, user, form):
     next_path = form.cleaned_data.get("next_path", "my_account")
 
     if plan != "free":
-        return redirect(reverse("upgrade_plan", query={"plan": plan, "cycle": cycle}))
+        return redirect(reverse("checkout_page", query={"plan": plan, "cycle": cycle}))
 
     if destination_url:
         link = ShortenedLink.objects.create(

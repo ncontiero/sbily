@@ -4,14 +4,14 @@ from django.urls import path
 from . import views
 
 plan_management_urlpatterns = [
-    path("upgrade/", views.upgrade_plan, name="upgrade_plan"),
+    path("checkout/", views.checkout_page, name="checkout_page"),
     path("cancel/", views.cancel_plan, name="cancel_plan"),
     path("resume/", views.resume_plan, name="resume_plan"),
 ]
 
 # Payment processing
 payment_urlpatterns = [
-    path("finalize_upgrade/", views.finalize_upgrade, name="finalize_upgrade"),
+    path("finalize_checkout/", views.finalize_checkout, name="finalize_checkout"),
     path(
         "subscription_complete/",
         views.subscription_complete,

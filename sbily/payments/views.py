@@ -36,7 +36,7 @@ logger = logging.getLogger("users.views")
 
 
 @login_required
-def upgrade_plan(request: HttpRequest):
+def checkout_page(request: HttpRequest):
     if request.method != "GET":
         return redirect_with_tab("plan")
 
@@ -69,7 +69,7 @@ def upgrade_plan(request: HttpRequest):
 
         context = {
             "client_secret": setup_intent.client_secret,
-            "redirect_url": request.build_absolute_uri(reverse("finalize_upgrade")),
+            "redirect_url": request.build_absolute_uri(reverse("finalize_checkout")),
             "plan": plan,
             "plan_cycle": plan_cycle,
             "current_cycle": current_cycle,
@@ -78,7 +78,7 @@ def upgrade_plan(request: HttpRequest):
             "discount_amount": calculate_unused_time_discount(user, plan),
             "default_payment_method": default_payment_method,
         }
-        return render(request, "upgrade.html", context)
+        return render(request, "checkout.html", context)
     except BadRequestError as e:
         messages.error(request, e.message)
         return redirect_with_tab("plan")
@@ -89,8 +89,8 @@ def upgrade_plan(request: HttpRequest):
 
 
 @login_required
-def finalize_upgrade(request: HttpRequest):
-    """Handle the redirect after card setup for upgrade"""
+def finalize_checkout(request: HttpRequest):
+    """Handle the redirect after card setup for checkout"""
     if request.method != "GET":
         return redirect_with_tab("plan")
 
