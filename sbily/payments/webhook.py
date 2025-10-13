@@ -71,26 +71,32 @@ def handle_invoice_payment_succeeded(invoice: Invoice):
             if invoice.number:
                 payment_description += f" - Invoice {invoice.number}"
 
+            amount = Decimal(invoice.get("amount_paid", 0)) / 100  # Convert from cents
             # Create payment record if doesn't exist
             payment, created = Payment.objects.get_or_create(
                 transaction_id=invoice.id,
                 defaults={
                     "user": subscription.user,
-                    "amount": Decimal(invoice.get("amount_paid", 0))
-                    / 100,  # Convert from cents
+                    "amount": amount,
                     "description": payment_description,
                     "status": Payment.STATUS_COMPLETED,
                     "transaction_id": invoice.id,
+                    "invoice_url": invoice.hosted_invoice_url or "",
                 },
             )
 
             if not created:
                 payment.description = payment_description
+                payment.invoice_url = invoice.hosted_invoice_url or ""
                 payment.complete()
                 subscription.is_auto_renew = True
 
+            invoice_lines = invoice.lines.data
+            period_end = (
+                invoice_lines[1] if len(invoice_lines) > 1 else invoice_lines[0]
+            ).period.end
+
             subscription.status = Subscription.STATUS_ACTIVE
-            period_end = invoice.lines.data[0].period.end
             subscription.end_date = datetime.fromtimestamp(period_end, tz=now().tzinfo)
             subscription.save()
             subscription.user.reset_monthly_link_limit()
@@ -116,6 +122,7 @@ def handle_invoice_payment_failed(invoice: Invoice):
                     "description": f"{subscription_level} Subscription Failed",
                     "status": Payment.STATUS_FAILED,
                     "transaction_id": invoice.id,
+                    "invoice_url": invoice.hosted_invoice_url or "",
                 },
             )
 
@@ -146,6 +153,7 @@ def handle_invoice_payment_action_required(invoice: Invoice):
                     "description": payment_description,
                     "status": Payment.STATUS_PENDING,
                     "transaction_id": invoice.id,
+                    "invoice_url": invoice.hosted_invoice_url or "",
                 },
             )
 
@@ -166,7 +174,8 @@ def handle_subscription_created(subscription_obj: StripeSubscription):
             current_period_end = datetime.fromtimestamp(period_end, tz=now().tzinfo)
             is_auto_renew = not subscription_obj.cancel_at_period_end
 
-            price = Decimal(data.plan.amount or 0) / 100  # Convert from cents
+            plan_amount = data.plan.amount or data.price.unit_amount
+            price = Decimal(plan_amount or 0) / 100  # Convert from cents
             level = subscription_obj.metadata.get("plan", PlanType.PREMIUM.value)
 
             # Create subscription if it doesn't exist
@@ -175,6 +184,7 @@ def handle_subscription_created(subscription_obj: StripeSubscription):
                 defaults={
                     "level": level,
                     "stripe_subscription_id": subscription_obj.id,
+                    "stripe_subscription_schedule_id": subscription_obj.schedule or "",
                     "status": Subscription.STATUS_ACTIVE,
                     "start_date": now(),
                     "end_date": current_period_end,
@@ -186,6 +196,9 @@ def handle_subscription_created(subscription_obj: StripeSubscription):
             if not created:
                 subscription.level = level
                 subscription.stripe_subscription_id = subscription_obj.id
+                subscription.stripe_subscription_schedule_id = (
+                    subscription_obj.schedule or ""
+                )
                 subscription.status = Subscription.STATUS_ACTIVE
                 subscription.end_date = current_period_end
                 subscription.is_auto_renew = is_auto_renew
@@ -202,6 +215,15 @@ def handle_subscription_updated(subscription_obj: Subscription):
             stripe_subscription_id=subscription_obj.id,
         )
         subscription.update_from_stripe(stripe_sub=subscription_obj)
+
+        level = subscription_obj.metadata.get(
+            "plan",
+            subscription.level or PlanType.PREMIUM.value,
+        )
+        if subscription.level != level:
+            subscription.level = level
+            subscription.user.choose_plan(level)
+            subscription.save(update_fields=["level"])
     except Subscription.DoesNotExist:
         # Handle new subscription that was created directly in Stripe
         handle_subscription_created(subscription_obj)
@@ -213,7 +235,6 @@ def handle_subscription_deleted(subscription_obj: Subscription):
         subscription = Subscription.objects.get(
             stripe_subscription_id=subscription_obj.id,
         )
-        subscription.cancel()
         subscription.user.downgrade_to_free()
         subscription.delete()
 
@@ -226,6 +247,8 @@ def handle_customer_updated(customer: Customer):
             user.update_card_details(
                 customer.invoice_settings.default_payment_method or None,
             )
+            user.customer_balance = customer.balance or 0
+            user.save(update_fields=["customer_balance"])
         except User.DoesNotExist:
             logger.warning(
                 "Customer updated event received for non-existent user: %s",
@@ -241,7 +264,14 @@ def handle_customer_deleted(customer: Customer):
             user = User.objects.get(stripe_customer_id=customer_id)
             user.stripe_customer_id = ""
             user.card_last_four_digits = ""
-            user.save(update_fields=["stripe_customer_id", "card_last_four_digits"])
+            user.customer_balance = 0
+            user.save(
+                update_fields=[
+                    "stripe_customer_id",
+                    "card_last_four_digits",
+                    "customer_balance",
+                ],
+            )
         except User.DoesNotExist:
             logger.warning(
                 "Customer deleted event received for non-existent user: %s",

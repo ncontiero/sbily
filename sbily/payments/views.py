@@ -17,16 +17,20 @@ from sbily.utils.errors import BadRequestError
 from sbily.utils.errors import bad_request_error
 from sbily.utils.urls import redirect_with_tab
 
-if TYPE_CHECKING:
-    from sbily.users.models import User
-
 from .models import Subscription
 from .utils import PlanCycle
 from .utils import PlanType
+from .utils import calculate_unused_time_discount
+from .utils import current_cycle_is_yearly
+from .utils import is_upgrade
 from .utils import validate_plan_selection
 from .webhook import handle_stripe_webhook
 
+if TYPE_CHECKING:
+    from sbily.users.models import User
+
 stripe.api_key = settings.STRIPE_SECRET_KEY
+stripe.api_version = settings.STRIPE_API_VERSION
 
 logger = logging.getLogger("users.views")
 
@@ -51,11 +55,27 @@ def upgrade_plan(request: HttpRequest):
             payment_method_types=["card"],
         )
 
+        limit_left_to_show_message = 5
+        show_limit_warning = (
+            user.monthly_link_limit - user.monthly_limit_links_used
+        ) >= limit_left_to_show_message
+
+        current_cycle = None
+        if current_cycle_is_yearly(user):
+            current_cycle = PlanCycle.YEARLY.value
+        else:
+            current_cycle = PlanCycle.MONTHLY.value
+        current_cycle = current_cycle if plan == user.user_level else None
+
         context = {
             "client_secret": setup_intent.client_secret,
             "redirect_url": request.build_absolute_uri(reverse("finalize_upgrade")),
             "plan": plan,
             "plan_cycle": plan_cycle,
+            "current_cycle": current_cycle,
+            "is_upgrade": is_upgrade(user.user_level, plan),
+            "show_limit_warning": show_limit_warning,
+            "discount_amount": calculate_unused_time_discount(user, plan),
             "default_payment_method": default_payment_method,
         }
         return render(request, "upgrade.html", context)
@@ -85,26 +105,55 @@ def finalize_upgrade(request: HttpRequest):
     try:
         user: User = request.user
         validate_plan_selection(plan, plan_cycle, user)
-
-        result = Subscription.create_subscription(
-            user,
-            payment_method,
-            plan,
-            plan_cycle,
+        plan_is_upgrade = (
+            is_upgrade(user.user_level, plan) or not user.subscription_active
+        )
+        cycle_changed = (
+            plan == user.user_level
+            and user.subscription_active
+            and plan_cycle != user.subscription.cycle
         )
 
+        if user.subscription_active:
+            result = Subscription.change_subscription(
+                user,
+                payment_method,
+                plan,
+                plan_cycle,
+            )
+        else:
+            result = Subscription.create_subscription(
+                user,
+                payment_method,
+                plan,
+                plan_cycle,
+            )
+
         if result["status"] == "success":
-            user.choose_plan(plan)
-            messages.success(request, f"Successfully upgraded to {plan}!")
+            if plan_is_upgrade:
+                user.choose_plan(plan)
+
+            message = (
+                f"Successfully upgraded to {plan}!"
+                if plan_is_upgrade
+                else f"Your account will be downgraded to the {plan} plan at the end of the current billing cycle."  # noqa: E501
+            )
+            if cycle_changed:
+                message = f"Your {plan.capitalize()} subscription will now be billed {plan_cycle}."  # noqa: E501
+            messages.success(request, message)
             return redirect_with_tab("plan")
         if result["status"] == "action_required":
+            subscription_complete_url = reverse(
+                "subscription_complete",
+                query={"plan": plan, "plan_cycle": plan_cycle},
+            )
             return render(
                 request,
                 "confirm_payment.html",
                 {
                     "client_secret": result["client_secret"],
                     "redirect_url": request.build_absolute_uri(
-                        reverse("subscription_complete"),
+                        subscription_complete_url,
                     ),
                 },
             )
@@ -127,6 +176,7 @@ def subscription_complete(request: HttpRequest):
         return redirect_with_tab("plan")
 
     plan = request.GET.get("plan", PlanType.PREMIUM.value)
+    plan_cycle = request.GET.get("plan_cycle", PlanCycle.MONTHLY.value)
     payment_intent = request.GET.get("payment_intent")
 
     if not payment_intent:
@@ -137,8 +187,24 @@ def subscription_complete(request: HttpRequest):
         intent = stripe.PaymentIntent.retrieve(payment_intent)
 
         if intent.status == "succeeded":
-            request.user.choose_plan(plan)
-            messages.success(request, "Successfully upgraded to premium!")
+            user: User = request.user
+            plan_is_upgrade = (
+                is_upgrade(user.user_level, plan) or not user.subscription_active
+            )
+            cycle_changed = (
+                plan == user.user_level and plan_cycle != user.subscription.cycle
+            )
+            if plan_is_upgrade:
+                user.choose_plan(plan)
+
+            message = (
+                f"Successfully upgraded to {plan}!"
+                if plan_is_upgrade
+                else f"Your account will be downgraded to the {plan} plan at the end of the current billing cycle."  # noqa: E501
+            )
+            if cycle_changed:
+                message = f"Your {plan.capitalize()} subscription will now be billed {plan_cycle}."  # noqa: E501
+            messages.success(request, message)
         else:
             messages.error(request, f"Payment not completed: {intent.status}")
 
@@ -205,7 +271,7 @@ def resume_plan(request: HttpRequest):
                 messages.warning(request, "Warning: Stripe resume issue")
                 logger.warning("Warning: Stripe resume issue - %s", result.get("error"))
             else:
-                messages.success(request, "Successfully resumed subscription!")
+                messages.success(request, "Your subscription has been resumed!")
 
         return redirect_with_tab("plan")
     except BadRequestError as e:

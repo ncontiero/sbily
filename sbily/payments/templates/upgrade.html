@@ -3,23 +3,25 @@
 {% block title %}Review subscription{% endblock title %}
 
 {% block content %}
-<div class="container mx-auto mt-12" id="checkout-page">
+<div class="container mx-auto my-12" id="checkout-page">
   <div class="max-w-4xl mx-auto px-6 py-8 border rounded-md">
     <h1 class="text-2xl font-bold">Review subscription and pay</h1>
 
-    <form id="upgrade-checkout-form" class="grid gap-4 sm:grid-cols-2">
+    <form id="upgrade-checkout-form" class="grid gap-4 md:grid-cols-2">
       <div class="flex flex-col pt-8">
         <div>
           <h2 class="text-xl font-bold">Subscription Options</h2>
           <div class="flex flex-col mt-4 gap-4">
-            <label for="yearly" class="flex items-center gap-2 p-4 border rounded-md cursor-pointer duration-200 hover:border-border/80 has-[:checked]:border-primary">
+            <label for="yearly" class="flex items-center gap-2 p-4 border rounded-md cursor-pointer duration-200 hover:border-border/80 has-[:checked]:border-primary has-[:disabled]:opacity-80 has-[:disabled]:cursor-not-allowed">
               <div class="h-full self-start">
                 <input
                   id="yearly"
                   type="radio"
                   name="plan_cycle"
                   class="ring-primary rounded-full ring-offset-2 ring-offset-background duration-200 focus-visible:outline-none focus-visible:ring-2"
-                  {% if plan_cycle == "yearly" %}checked{% endif %}
+                  {% if plan_cycle == "yearly" and current_cycle != "yearly" %}checked{% endif %}
+                  {% if current_cycle == "yearly" %}disabled{% endif %}
+                  {% if current_cycle == "yearly" %}title="Current cycle active"{% endif %}
                 />
               </div>
               <div class="flex justify-between gap-2 w-full">
@@ -39,14 +41,16 @@
                 </div>
               </div>
             </label>
-            <label for="monthly" class="flex items-center gap-2 p-4 border rounded-md cursor-pointer duration-200 hover:border-border/80 has-[:checked]:border-primary">
+            <label for="monthly" class="flex items-center gap-2 p-4 border rounded-md cursor-pointer duration-200 hover:border-border/80 has-[:checked]:border-primary has-[:disabled]:opacity-80 has-[:disabled]:cursor-not-allowed">
               <div class="h-full self-start">
                 <input
                   id="monthly"
                   type="radio"
                   name="plan_cycle"
                   class="ring-primary rounded-full ring-offset-2 ring-offset-background duration-200 focus-visible:outline-none focus-visible:ring-2"
-                  {% if not plan_cycle or plan_cycle == "monthly" %}checked{% endif %}
+                  {% if not plan_cycle or plan_cycle == "monthly" and current_cycle != "monthly" %}checked{% endif %}
+                  {% if current_cycle == "monthly" %}disabled{% endif %}
+                  {% if current_cycle == "monthly" %}title="Current cycle active"{% endif %}
                 />
               </div>
               <div class="flex justify-between gap-2 w-full">
@@ -133,31 +137,80 @@
           </span>
         </div>
         <div class="flex flex-col gap-2 mt-8">
-          <div class="flex justify-between">
+          <div class="flex justify-between items-center">
             <span>{{ plan|capfirst }} Plan</span>
             <div class="flex flex-col">
               <span>$<span data-jswc-upgrade="monthly-amount">8.00</span></span>
               <span class="text-xs text-muted-foreground text-end">/month</span>
             </div>
           </div>
-          <div class="separator bg-background mb-2"></div>
+          <div class="separator bg-background/60 mb-2"></div>
+          {% if discount_amount %}
+            <div class="flex justify-between">
+              <span>Unused time on {{ user.user_level|capfirst }}</span>
+              <div class="flex flex-col">
+                <span>- $<span>{{ discount_amount }}</span></span>
+              </div>
+            </div>
+            <div class="separator bg-background/60"></div>
+          {% endif %}
+          {% if user.customer_balance_format != 0 %}
+            <div class="flex justify-between">
+              <span>Invoice Credit</span>
+              <div class="flex flex-col">
+                <span>- $<span>{{ user.customer_balance_format }}</span></span>
+              </div>
+            </div>
+            <div class="separator bg-background/60"></div>
+          {% endif %}
           <div class="flex justify-between font-bold">
             <span>Total (billed <span data-jswc-upgrade="billing-cycle">yearly</span>)</span>
             <span>$<span data-jswc-upgrade="total-amount">96.00</span></span>
           </div>
         </div>
-        <div class="separator bg-background mt-3 mb-6"></div>
+        <div class="separator bg-background mt-2 mb-6"></div>
         <div class="flex flex-col">
           <button type="submit" class="button-primary button-sm gap-1">
-            Pay US$ <span data-jswc-upgrade="total-amount"></span> now
+            Pay US$ <span data-jswc-upgrade="total-amount"></span>
+            {% if not is_upgrade and user.subscription_active %}
+              on {{ user.subscription.end_date|date:"F j, Y" }}
+            {% else %}
+              now
+            {% endif %}
           </button>
-          <div class="flex items-center gap-2 mt-6 text-muted-foreground">
-            <span class="h-full self-start mt-0.5">
-              <i data-lucide="circle-help"></i>
-            </span>
-            <span class="text-sm">
-              Your subscription automatically renews every <span data-jswc-upgrade="months-cycle"></span>. Your next billing date is <span data-jswc-upgrade="next-billing"></span>.
-            </span>
+          <div class="flex flex-col gap-2 mt-6">
+            {% if is_upgrade or not user.subscription_active %}
+              <div class="flex items-center gap-2 text-muted-foreground">
+                <span class="h-full self-start mt-0.5">
+                  <i data-lucide="circle-help"></i>
+                </span>
+                <span class="text-sm">
+                  Your subscription automatically renews every <span data-jswc-upgrade="months-cycle"></span>. Your next billing date is <span data-jswc-upgrade="next-billing"></span>.
+                </span>
+              </div>
+              {% if show_limit_warning %}
+                <div class="flex items-center gap-2 text-muted-foreground">
+                  <span class="h-full self-start mt-0.5">
+                    <i data-lucide="circle-help"></i>
+                  </span>
+                  <span class="text-sm">
+                    We recommend using your remaining links before you upgrade. This ensures you get the full value from your current plan and that none go to waste.
+                  </span>
+                </div>
+              {% endif %}
+            {% else %}
+              <div class="flex items-center gap-2 text-muted-foreground">
+                <span class="h-full self-start mt-0.5">
+                  <i data-lucide="circle-help"></i>
+                </span>
+                <span class="text-sm">
+                  You will continue on your current plan until {{ user.subscription.end_date|date:"F j, Y" }}.
+                  On that date, your subscription will be changed to the {{ plan|capfirst }} plan
+                  for $<span data-jswc-upgrade="total-amount">96.00</span>
+                  per <span data-jswc-upgrade="months-cycle"></span>.
+                </span>
+              </div>
+            {% endif %}
           </div>
         </div>
       </div>
@@ -171,6 +224,8 @@
   const clientSecret = "{{ client_secret }}";
   const redirectUrl = "{{ redirect_url }}";
   const plan = "{{ plan }}";
+  const discountAmount = "{{ discount_amount }}";
+  const invoiceCredit = "{{ user.customer_balance_format }}";
   const defaultPaymentMethod = "{{ default_payment_method }}";
 </script>
 {% endblock js %}

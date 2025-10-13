@@ -10,7 +10,6 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db import transaction
 from django.urls import reverse
-from django.utils.timezone import datetime
 from django.utils.timezone import now
 from django.utils.timezone import timedelta
 from django.utils.translation import gettext_lazy as _
@@ -26,14 +25,20 @@ class User(AbstractUser):
     ROLE_ADMIN = "admin"
     ROLE_USER = "user"
     ROLE_PREMIUM = "premium"
+    ROLE_BUSINESS = "business"
+    ROLE_ADVANCED = "advanced"
 
-    MONTHLY_LINK_LIMIT_PER_USER = 5
-    MONTHLY_LINK_LIMIT_PER_PREMIUM = 10
+    MONTHLY_LINK_LIMIT_PER_USER = 10
+    MONTHLY_LINK_LIMIT_PER_PREMIUM = 25
+    MONTHLY_LINK_LIMIT_PER_BUSINESS = 50
+    MONTHLY_LINK_LIMIT_PER_ADVANCED = 100
 
     ROLE_CHOICES = [
         (ROLE_ADMIN, _("Admin")),
         (ROLE_USER, _("User")),
         (ROLE_PREMIUM, _("Premium")),
+        (ROLE_BUSINESS, _("Business")),
+        (ROLE_ADVANCED, _("Advanced")),
     ]
 
     role = models.CharField(
@@ -74,6 +79,11 @@ class User(AbstractUser):
         max_length=100,
         blank=True,
     )
+    customer_balance = models.IntegerField(
+        _("customer balance"),
+        default=0,
+        help_text=_("Customer balance in cents."),
+    )
     card_last_four_digits = models.CharField(
         _("card last four digits"),
         max_length=4,
@@ -92,22 +102,38 @@ class User(AbstractUser):
     @property
     def subscription_active(self) -> bool:
         """Check if the user has an active subscription"""
-        return self.subscription.is_active if hasattr(self, "subscription") else False
+        return self.subscription.is_active() if hasattr(self, "subscription") else False
+
+    @property
+    def user_level(self) -> str:
+        """Returns the user's level"""
+        return (self.subscription_active and self.subscription.level) or self.role
 
     @property
     def is_premium(self) -> bool:
         """Check if the user has a premium subscription"""
-        return self.subscription_active and self.subscription.level == self.ROLE_PREMIUM
+        return self.user_level == self.ROLE_PREMIUM
 
     @property
-    def premium_expiry(self) -> datetime | None:
-        """Returns the premium expires at date"""
-        return self.subscription.end_date or None
+    def is_business(self) -> bool:
+        """Check if the user has a business subscription"""
+        return self.user_level == self.ROLE_BUSINESS
+
+    @property
+    def is_advanced(self) -> bool:
+        """Check if the user has an advanced subscription"""
+        return self.user_level == self.ROLE_ADVANCED
 
     @property
     def remaining_monthly_link_limit(self) -> int:
         """Returns the number of remaining links limit for the user."""
         return max(0, self.monthly_link_limit - self.monthly_limit_links_used)
+
+    @property
+    def customer_balance_format(self):
+        """Returns the customer balance in dollars."""
+        positive_multiplier = -1 if self.customer_balance < 0 else 1
+        return (self.customer_balance / 100) * positive_multiplier
 
     def save(self, *args, **kwargs):
         if self.pk is None and self.is_superuser:
@@ -134,6 +160,8 @@ class User(AbstractUser):
 
         plan_config = {
             PlanType.PREMIUM: self.MONTHLY_LINK_LIMIT_PER_PREMIUM,
+            PlanType.BUSINESS: self.MONTHLY_LINK_LIMIT_PER_BUSINESS,
+            PlanType.ADVANCED: self.MONTHLY_LINK_LIMIT_PER_ADVANCED,
         }
 
         if plan not in plan_config:

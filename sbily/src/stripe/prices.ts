@@ -5,9 +5,13 @@ export function applyYearlyDiscount(amount: number) {
 export const prices = {
   monthly: {
     premium: 10,
+    business: 20,
+    advanced: 40,
   },
   yearly: {
     premium: applyYearlyDiscount(10 * 12) / 12,
+    business: applyYearlyDiscount(20 * 12) / 12,
+    advanced: applyYearlyDiscount(40 * 12) / 12,
   },
 };
 
