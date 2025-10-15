@@ -42,7 +42,12 @@ export default function MonthlyLinkLimitResetEmail() {
               key={index}
               className="my-[6px] inline-flex w-full items-start"
             >
-              <span className="mr-[12px] flex size-[18px] shrink-0 items-center justify-center rounded-[6px] border border-solid border-primary pl-[2px] text-[18px] font-semibold leading-none text-primary">
+              <span
+                className={`
+                  mr-[12px] flex size-[18px] shrink-0 items-center justify-center rounded-[6px] border border-solid
+                  border-primary pl-[2px] text-[18px] font-semibold leading-none text-primary
+                `}
+              >
                 ✓
               </span>
               {feature}

@@ -30,7 +30,11 @@ export function Action({
         Having trouble with the button? You can also copy and paste this URL
         into your browser:
       </Text>
-      <Text className="mt-[20px] rounded-[6px] border border-solid border-border bg-background p-[20px] text-muted-foreground">
+      <Text
+        className={`
+          mt-[20px] rounded-[6px] border border-solid border-border bg-background p-[20px] text-muted-foreground
+        `}
+      >
         {link}
       </Text>
     </>
