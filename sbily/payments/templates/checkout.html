@@ -3,28 +3,40 @@
 {% block title %}Review subscription{% endblock title %}
 
 {% block content %}
-<div class="container mx-auto my-12" id="checkout-page">
-  <div class="max-w-4xl mx-auto px-6 py-8 border rounded-md">
+<div id="checkout-page" class="container mx-auto my-12">
+  <div class="mx-auto max-w-4xl rounded-md border px-6 py-8">
     <h1 class="text-2xl font-bold">Review subscription and pay</h1>
 
+    <!-- eslint-disable-next-line html/require-form-method -->
     <form id="upgrade-checkout-form" class="grid gap-4 md:grid-cols-2">
       <div class="flex flex-col pt-8">
         <div>
           <h2 class="text-xl font-bold">Subscription Options</h2>
-          <div class="flex flex-col mt-4 gap-4">
-            <label for="yearly" class="flex items-center gap-2 p-4 border rounded-md cursor-pointer duration-200 hover:border-border/80 has-[:checked]:border-primary has-[:disabled]:opacity-80 has-[:disabled]:cursor-not-allowed">
+          <div class="mt-4 flex flex-col gap-4">
+            <label
+              class="
+                flex cursor-pointer items-center gap-2 rounded-md border p-4 duration-200 hover:border-border/80
+                has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-80 has-[:checked]:border-primary
+              "
+              for="yearly"
+            >
               <div class="h-full self-start">
                 <input
+                  name="plan_cycle"
                   id="yearly"
                   type="radio"
-                  name="plan_cycle"
-                  class="ring-primary rounded-full ring-offset-2 ring-offset-background duration-200 focus-visible:outline-none focus-visible:ring-2"
+                  class="
+                    rounded-full ring-primary ring-offset-2 ring-offset-background duration-200
+                    focus-visible:outline-none focus-visible:ring-2
+                  "
                   {% if plan_cycle == "yearly" and current_cycle != "yearly" %}checked{% endif %}
                   {% if current_cycle == "yearly" %}disabled{% endif %}
-                  {% if current_cycle == "yearly" %}title="Current cycle active"{% endif %}
+                  {% if current_cycle == "yearly" %}
+                  title="Current cycle active"
+                  {% endif %}
                 />
               </div>
-              <div class="flex justify-between gap-2 w-full">
+              <div class="flex w-full justify-between gap-2">
                 <div class="flex flex-col">
                   <span>12 months</span>
                   <span>
@@ -41,19 +53,30 @@
                 </div>
               </div>
             </label>
-            <label for="monthly" class="flex items-center gap-2 p-4 border rounded-md cursor-pointer duration-200 hover:border-border/80 has-[:checked]:border-primary has-[:disabled]:opacity-80 has-[:disabled]:cursor-not-allowed">
+            <label
+              class="
+                flex cursor-pointer items-center gap-2 rounded-md border p-4 duration-200 hover:border-border/80
+                has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-80 has-[:checked]:border-primary
+              "
+              for="monthly"
+            >
               <div class="h-full self-start">
                 <input
+                  name="plan_cycle"
                   id="monthly"
                   type="radio"
-                  name="plan_cycle"
-                  class="ring-primary rounded-full ring-offset-2 ring-offset-background duration-200 focus-visible:outline-none focus-visible:ring-2"
+                  class="
+                    rounded-full ring-primary ring-offset-2 ring-offset-background duration-200
+                    focus-visible:outline-none focus-visible:ring-2
+                  "
                   {% if not plan_cycle or plan_cycle == "monthly" and current_cycle != "monthly" %}checked{% endif %}
                   {% if current_cycle == "monthly" %}disabled{% endif %}
-                  {% if current_cycle == "monthly" %}title="Current cycle active"{% endif %}
+                  {% if current_cycle == "monthly" %}
+                  title="Current cycle active"
+                  {% endif %}
                 />
               </div>
-              <div class="flex justify-between gap-2 w-full">
+              <div class="flex w-full justify-between gap-2">
                 <div class="flex flex-col">
                   <span>1 month</span>
                   <span>
@@ -71,145 +94,160 @@
         </div>
         <div class="mt-8">
           <h2 class="text-xl font-bold">Payment details</h2>
-          <div class="flex flex-col mt-4 gap-4">
+          <div class="mt-4 flex flex-col gap-4">
             <div
-              class="w-full flex gap-1"
               data-jwsc-tab-list
               data-jwsc-tab-default="{% if default_payment_method %}default-method{% else %}other-method{% endif %}"
+              class="flex w-full gap-1"
             >
               <button
                 type="button"
                 data-jwsc-tab-value="default-method"
-                class="tab-item w-full justify-center md:border-l-0 md:border-b-4"
+                class="tab-item w-full justify-center md:border-b-4 md:border-l-0"
                 {% if not default_payment_method and not user.card_last_four_digits %}disabled{% endif %}
-                {% if not default_payment_method and not user.card_last_four_digits %}title="You don't have default method, add one."{% endif %}
+                {% if not default_payment_method and not user.card_last_four_digits %}
+                title="You don't have default method, add one."
+                {% endif %}
               >
                 Default Method
               </button>
-              <button type="button" data-jwsc-tab-value="other-method" class="tab-item w-full justify-center md:border-l-0 md:border-b-4">
+              <button
+                type="button"
+                data-jwsc-tab-value="other-method"
+                class="tab-item w-full justify-center md:border-b-4 md:border-l-0"
+              >
                 Other Method
               </button>
             </div>
             {% if default_payment_method %}
-              <div data-jwsc-tab-panel="default-method" class="hidden flex-col size-full data-[state=active]:flex">
-                <label for="default_payment_method" class="flex items-center gap-2 p-4 border rounded-md cursor-pointer duration-200 hover:border-border/80 has-[:checked]:border-primary">
-                  <div class="h-full self-start">
-                    <input
-                      id="default_payment_method"
-                      type="radio"
-                      name="default_payment_method"
-                      class="ring-primary rounded-full ring-offset-2 ring-offset-background duration-200 focus-visible:outline-none focus-visible:ring-2"
-                      {% if default_payment_method %}checked{% endif %}
-                    />
+            <div data-jwsc-tab-panel="default-method" class="hidden size-full flex-col data-[state=active]:flex">
+              <label
+                class="
+                  flex cursor-pointer items-center gap-2 rounded-md border p-4 duration-200 hover:border-border/80
+                  has-[:checked]:border-primary
+                "
+                for="default_payment_method"
+              >
+                <div class="h-full self-start">
+                  <input
+                    name="default_payment_method"
+                    id="default_payment_method"
+                    type="radio"
+                    class="
+                      rounded-full ring-primary ring-offset-2 ring-offset-background duration-200
+                      focus-visible:outline-none focus-visible:ring-2
+                    "
+                    {% if default_payment_method %}checked{% endif %}
+                  />
+                </div>
+                <div class="flex w-full justify-between gap-2">
+                  <div class="flex items-center gap-2 text-sm text-foreground/80">
+                    <i data-lucide="credit-card" class="size-5"></i>
+                    <span>Card ending in •••• {{ user.card_last_four_digits }}</span>
                   </div>
-                  <div class="flex justify-between gap-2 w-full">
-                    <div class="flex items-center gap-2 text-foreground/80 text-sm">
-                      <i data-lucide="credit-card" class="size-5"></i>
-                      <span>Card ending in •••• {{ user.card_last_four_digits }}</span>
-                    </div>
-                  </div>
-                </label>
-              </div>
+                </div>
+              </label>
+            </div>
             {% endif %}
-            <div data-jwsc-tab-panel="other-method" class="hidden flex-col size-full data-[state=active]:flex">
+            <div data-jwsc-tab-panel="other-method" class="hidden size-full flex-col data-[state=active]:flex">
               <div class="mb-4">
-                <label for="card-element" class="block text-sm font-medium mb-2">
+                <label class="mb-2 block text-sm font-medium" for="card-element">
                   Credit or debit card
                 </label>
-                <div id="card-element" class="p-3 border border-border/70 rounded-md duration-200 hover:border-border">
+                <div id="card-element" class="rounded-md border border-border/70 p-3 duration-200 hover:border-border">
                   <!-- Stripe Elements will create form elements here -->
                 </div>
-                <div id="card-errors" class="text-destructive text-sm mt-2" role="alert"></div>
+                <div id="card-errors" class="mt-2 text-sm text-destructive" role="alert"></div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="flex flex-col h-full bg-secondary rounded-md mt-4 pt-4 px-4">
+      <div class="mt-4 flex h-full flex-col rounded-md bg-secondary px-4 pt-4">
         <h2 class="text-xl font-bold">Resume</h2>
-        <div class="flex flex-col mt-6">
+        <div class="mt-6 flex flex-col">
           <div class="flex items-center gap-2 font-bold">
             <h3>{{ plan|capfirst }}</h3>
-            <span class="badge-default" data-jswc-upgrade="discount">-20%</span>
+            <span data-jswc-upgrade="discount" class="badge-default">-20%</span>
           </div>
           <span class="mt-1 text-xs text-muted-foreground">
             Billed <span data-jswc-upgrade="billing-cycle">yearly</span>
           </span>
         </div>
-        <div class="flex flex-col gap-2 mt-8">
-          <div class="flex justify-between items-center">
+        <div class="mt-8 flex flex-col gap-2">
+          <div class="flex items-center justify-between">
             <span>{{ plan|capfirst }} Plan</span>
             <div class="flex flex-col">
               <span>$<span data-jswc-upgrade="monthly-amount">8.00</span></span>
-              <span class="text-xs text-muted-foreground text-end">/month</span>
+              <span class="text-end text-xs text-muted-foreground">/month</span>
             </div>
           </div>
-          <div class="separator bg-background/60 mb-2"></div>
+          <div class="separator mb-2 bg-background/60"></div>
           {% if discount_amount %}
-            <div class="flex justify-between">
-              <span>Unused time on {{ user.user_level|capfirst }}</span>
-              <div class="flex flex-col">
-                <span>- $<span>{{ discount_amount }}</span></span>
-              </div>
+          <div class="flex justify-between">
+            <span>Unused time on {{ user.user_level|capfirst }}</span>
+            <div class="flex flex-col">
+              <span>- $<span>{{ discount_amount }}</span></span>
             </div>
-            <div class="separator bg-background/60"></div>
+          </div>
+          <div class="separator bg-background/60"></div>
           {% endif %}
           {% if user.customer_balance_format != 0 %}
-            <div class="flex justify-between">
-              <span>Invoice Credit</span>
-              <div class="flex flex-col">
-                <span>- $<span>{{ user.customer_balance_format }}</span></span>
-              </div>
+          <div class="flex justify-between">
+            <span>Invoice Credit</span>
+            <div class="flex flex-col">
+              <span>- $<span>{{ user.customer_balance_format }}</span></span>
             </div>
-            <div class="separator bg-background/60"></div>
+          </div>
+          <div class="separator bg-background/60"></div>
           {% endif %}
           <div class="flex justify-between font-bold">
             <span>Total (billed <span data-jswc-upgrade="billing-cycle">yearly</span>)</span>
             <span>$<span data-jswc-upgrade="total-amount">96.00</span></span>
           </div>
         </div>
-        <div class="separator bg-background mt-2 mb-6"></div>
+        <div class="separator mb-6 mt-2 bg-background"></div>
         <div class="flex flex-col">
           <button type="submit" class="button-primary button-sm gap-1">
             Pay US$ <span data-jswc-upgrade="total-amount"></span>
             {% if not is_upgrade and user.subscription_active %}
-              on {{ user.subscription.end_date|date:"F j, Y" }}
+            on {{ user.subscription.end_date|date:"F j, Y" }}
             {% else %}
-              now
+            now
             {% endif %}
           </button>
-          <div class="flex flex-col gap-2 mt-6">
+          <div class="mt-6 flex flex-col gap-2">
             {% if is_upgrade or not user.subscription_active %}
-              <div class="flex items-center gap-2 text-muted-foreground">
-                <span class="h-full self-start mt-0.5">
-                  <i data-lucide="circle-help"></i>
-                </span>
-                <span class="text-sm">
-                  Your subscription automatically renews every <span data-jswc-upgrade="months-cycle"></span>. Your next billing date is <span data-jswc-upgrade="next-billing"></span>.
-                </span>
-              </div>
-              {% if show_limit_warning %}
-                <div class="flex items-center gap-2 text-muted-foreground">
-                  <span class="h-full self-start mt-0.5">
-                    <i data-lucide="circle-help"></i>
-                  </span>
-                  <span class="text-sm">
-                    We recommend using your remaining links before you upgrade. This ensures you get the full value from your current plan and that none go to waste.
-                  </span>
-                </div>
-              {% endif %}
+            <div class="flex items-center gap-2 text-muted-foreground">
+              <span class="mt-0.5 h-full self-start">
+                <i data-lucide="circle-help"></i>
+              </span>
+              <span class="text-sm">
+                Your subscription automatically renews every <span data-jswc-upgrade="months-cycle"></span>. Your next billing date is <span data-jswc-upgrade="next-billing"></span>.
+              </span>
+            </div>
+            {% if show_limit_warning %}
+            <div class="flex items-center gap-2 text-muted-foreground">
+              <span class="mt-0.5 h-full self-start">
+                <i data-lucide="circle-help"></i>
+              </span>
+              <span class="text-sm">
+                We recommend using your remaining links before you upgrade. This ensures you get the full value from your current plan and that none go to waste.
+              </span>
+            </div>
+            {% endif %}
             {% else %}
-              <div class="flex items-center gap-2 text-muted-foreground">
-                <span class="h-full self-start mt-0.5">
-                  <i data-lucide="circle-help"></i>
-                </span>
-                <span class="text-sm">
-                  You will continue on your current plan until {{ user.subscription.end_date|date:"F j, Y" }}.
-                  On that date, your subscription will be changed to the {{ plan|capfirst }} plan
-                  for $<span data-jswc-upgrade="total-amount">96.00</span>
-                  per <span data-jswc-upgrade="months-cycle"></span>.
-                </span>
-              </div>
+            <div class="flex items-center gap-2 text-muted-foreground">
+              <span class="mt-0.5 h-full self-start">
+                <i data-lucide="circle-help"></i>
+              </span>
+              <span class="text-sm">
+                You will continue on your current plan until {{ user.subscription.end_date|date:"F j, Y" }}.
+                On that date, your subscription will be changed to the {{ plan|capfirst }} plan
+                for $<span data-jswc-upgrade="total-amount">96.00</span>
+                per <span data-jswc-upgrade="months-cycle"></span>.
+              </span>
+            </div>
             {% endif %}
           </div>
         </div>

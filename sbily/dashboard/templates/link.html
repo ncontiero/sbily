@@ -1,3 +1,4 @@
+<!-- eslint-disable tailwindcss/enforce-consistent-class-order -->
 {% extends "dashboard/base.html" %}
 
 {% block title %}Statistics for {{ link.shortened_path }}{% endblock title %}
@@ -9,8 +10,8 @@
 {% block dashboard_content %}
 <div id="links-stats"></div>
 <section class="py-8">
-  <div class="container mx-auto px-4 grid md:grid-cols-2 gap-6">
-    <div class="bg-background p-6 rounded-lg border border-border">
+  <div class="container mx-auto grid gap-6 px-4 md:grid-cols-2">
+    <div class="rounded-lg border border-border bg-background p-6">
       <div class="mb-4">
         <p class="text-muted-foreground">Destination URL:</p>
         <p class="truncate">{{ link.destination_url }}</p>
@@ -18,13 +19,14 @@
       <div class="mb-4">
         <p class="text-muted-foreground">Short URL:</p>
         <p class="flex items-center gap-2">
-          <a href="{{ link.get_absolute_url }}" target="_blank" class="text-primary hover:underline">
+          <a class="text-primary hover:underline" href="{{ link.get_absolute_url }}" target="_blank">
             {{ link.get_absolute_url }}
           </a>
           <button
             id="copy"
-            onclick="copy('{{ link.get_absolute_url }}', 'copy', false)"
+            type="submit"
             class="text-muted-foreground hover:text-foreground"
+            onclick="copy('{{ link.get_absolute_url }}', 'copy', false)"
           >
             <i data-lucide="copy" class="size-4"></i>
           </button>
@@ -32,16 +34,16 @@
       </div>
       <div class="mb-4">
         <p
+          class="flex items-center gap-1 text-muted-foreground"
           aria-label="Link is {% if not link.is_active %}not {% endif %}active"
           title="Link is {% if not link.is_active %}not {% endif %}active"
-          class="text-muted-foreground flex items-center gap-1"
         >
           Is active:
           <span class="mt-1">
             {% if link.is_active %}
-              <i data-lucide="circle-check" class="stroke-[3px] text-green-600"></i>
+            <i data-lucide="circle-check" class="stroke-[3px] text-green-600"></i>
             {% else %}
-              <i data-lucide="circle-x" class="stroke-[3px] text-red-600"></i>
+            <i data-lucide="circle-x" class="stroke-[3px] text-red-600"></i>
             {% endif %}
           </span>
         </p>
@@ -58,39 +60,39 @@
       {% endif %}
       <button
         type="button"
-        class="button-primary button-sm gap-2"
         data-jswc-dialog
         data-jswc-target="update-link-{{ link.id }}-dialog"
+        class="button-primary button-sm gap-2"
       >
         <i data-lucide="square-pen" class="size-3.5 stroke-[3px]"></i> Edit
       </button>
       {% include "partials/update_link_dialog.html" with hash="links-stats" %}
       <button
         type="button"
-        class="button-destructive button-sm gap-2"
         data-jswc-dialog
         data-jswc-target="remove-link-{{ link.id }}-dialog"
+        class="button-destructive button-sm gap-2"
       >
         <i data-lucide="trash-2" class="size-3.5 stroke-[3px]"></i> Delete
       </button>
       {% include "partials/delete_link_dialog.html" %}
     </div>
 
-    <div class="p-6 rounded-lg bg-background border border-border">
+    <div class="rounded-lg border border-border bg-background p-6">
       <div class="grid grid-cols-2 gap-4">
-        <div class="text-center p-4 bg-secondary/40 rounded-lg border">
+        <div class="rounded-lg border bg-secondary/40 p-4 text-center">
           <p class="text-muted-foreground">Total Clicks</p>
           <p class="text-3xl font-bold">{{ total_clicks }}</p>
         </div>
-        <div class="text-center p-4 bg-secondary/40 rounded-lg border">
+        <div class="rounded-lg border bg-secondary/40 p-4 text-center">
           <p class="text-muted-foreground">Today Total Clicks</p>
           <p class="text-3xl font-bold">{{ clicks_today }}</p>
         </div>
-        <div class="text-center p-4 bg-secondary/40 rounded-lg border">
+        <div class="rounded-lg border bg-secondary/40 p-4 text-center">
           <p class="text-muted-foreground">Unique Visitors</p>
           <p class="text-3xl font-bold">{{ unique_visitors }}</p>
         </div>
-        <div class="text-center p-4 bg-secondary/40 rounded-lg border">
+        <div class="rounded-lg border bg-secondary/40 p-4 text-center">
           <p class="text-muted-foreground">Today Unique Visitors</p>
           <p class="text-3xl font-bold">{{ unique_visitors_today }}</p>
         </div>
@@ -99,26 +101,29 @@
   </div>
 </section>
 
-<section class="pb-6" id="filters">
+<section id="filters" class="pb-6">
   <div class="container mx-auto px-4">
     <form
-      method="get"
-      action="{% url 'link' link.shortened_path %}"
-      class="{% if perms.links.view_advanced_statistics %}grid grid-cols-2 md:grid-cols-4{% else %}flex flex-col sm:flex-row{% endif %} gap-4"
       data-jswc-add-load
+      class="
+        {% if perms.links.view_advanced_statistics %}grid grid-cols-2 md:grid-cols-4{% else %}flex flex-col
+        sm:flex-row{% endif %} gap-4
+      "
+      action="{% url 'link' link.shortened_path %}"
+      method="get"
     >
-      <div class="flex flex-col flex-1 gap-2">
-        <label for="from-date" class="label">From Date:</label>
-        <input type="date" id="from-date" name="from-date" class="input" value="{{ from_date|safe }}" />
+      <div class="flex flex-1 flex-col gap-2">
+        <label class="label" for="from-date">From Date:</label>
+        <input name="from-date" id="from-date" type="date" class="input" value="{{ from_date|safe }}" />
       </div>
-      <div class="flex flex-col flex-1 gap-2">
-        <label for="to-date" class="label">To Date:</label>
-        <input type="date" id="to-date" name="to-date" class="input" value="{{ to_date|safe }}" />
+      <div class="flex flex-1 flex-col gap-2">
+        <label class="label" for="to-date">To Date:</label>
+        <input name="to-date" id="to-date" type="date" class="input" value="{{ to_date|safe }}" />
       </div>
       {% if perms.links.view_advanced_statistics %}
-      <div class="flex flex-col flex-1 gap-2">
-        <label for="device_type" class="label">Device Type:</label>
-        <select name="device_type" id="device_type" class="font-bold input px-2 py-0">
+      <div class="flex flex-1 flex-col gap-2">
+        <label class="label" for="device_type">Device Type:</label>
+        <select name="device_type" id="device_type" class="input px-2 py-0 font-bold">
           <option value="" {% if not filters.device_type %}selected{% endif %}>All</option>
           {% for item in devices %}
           <option
@@ -130,9 +135,9 @@
           {% endfor %}
         </select>
       </div>
-      <div class="flex flex-col flex-1 gap-2">
-        <label for="browser" class="label">Browser:</label>
-        <select name="browser" id="browser" class="font-bold input px-2 py-0">
+      <div class="flex flex-1 flex-col gap-2">
+        <label class="label" for="browser">Browser:</label>
+        <select name="browser" id="browser" class="input px-2 py-0 font-bold">
           <option value="" {% if not filters.browser %}selected{% endif %}>All</option>
           {% for item in browsers %}
           <option
@@ -144,9 +149,9 @@
           {% endfor %}
         </select>
       </div>
-      <div class="flex flex-col flex-1 gap-2">
-        <label for="operating_system" class="label">Operating System:</label>
-        <select name="operating_system" id="operating_system" class="font-bold input px-2 py-0">
+      <div class="flex flex-1 flex-col gap-2">
+        <label class="label" for="operating_system">Operating System:</label>
+        <select name="operating_system" id="operating_system" class="input px-2 py-0 font-bold">
           <option value="" {% if not filters.operating_system %}selected{% endif %}>All</option>
           {% for item in operating_systems %}
           <option
@@ -158,9 +163,9 @@
           {% endfor %}
         </select>
       </div>
-      <div class="flex flex-col flex-1 gap-2">
-        <label for="country" class="label">Country:</label>
-        <select name="country" id="country" class="font-bold input px-2 py-0">
+      <div class="flex flex-1 flex-col gap-2">
+        <label class="label" for="country">Country:</label>
+        <select name="country" id="country" class="input px-2 py-0 font-bold">
           <option value="" {% if not filters.country %}selected{% endif %}>All</option>
           {% for item in countries_and_cities %}
           <option
@@ -172,9 +177,9 @@
           {% endfor %}
         </select>
       </div>
-      <div class="flex flex-col justify-center flex-1 gap-2 col-span-2 md:col-span-1">
-        <label for="city" class="label">City:</label>
-        <select name="city" id="city" class="font-bold input px-2 py-0">
+      <div class="col-span-2 flex flex-1 flex-col justify-center gap-2 md:col-span-1">
+        <label class="label" for="city">City:</label>
+        <select name="city" id="city" class="input px-2 py-0 font-bold">
           <option value="" {% if not filters.city %}selected{% endif %}>All</option>
           {% for item in countries_and_cities %}
           <option
@@ -187,9 +192,12 @@
         </select>
       </div>
       {% endif %}
-      <div class="flex justify-center items-end gap-2 {% if perms.links.view_advanced_statistics %}col-span-2 md:col-span-1{% endif %}">
+      <div class="
+        flex justify-center items-end gap-2 {% if perms.links.view_advanced_statistics %}col-span-2 md:col-span-1{%
+        endif %}
+      ">
         <button type="submit" class="button-primary">Apply Filter</button>
-        <a href="{% url 'link' link.shortened_path %}#filters" class="button-outline">
+        <a class="button-outline" href="{% url 'link' link.shortened_path %}#filters">
           Reset Filter
         </a>
       </div>
@@ -199,15 +207,15 @@
 
 <section class="py-6">
   <div class="container mx-auto px-4">
-    <div class="grid md:grid-cols-2 gap-4">
-      <div class="bg-background p-6 rounded-lg border">
-        <h2 class="text-xl font-bold mb-4">Daily Clicks</h2>
+    <div class="grid gap-4 md:grid-cols-2">
+      <div class="rounded-lg border bg-background p-6">
+        <h2 class="mb-4 text-xl font-bold">Daily Clicks</h2>
         <div class="h-64">
           <canvas id="dailyClicksChart"></canvas>
         </div>
       </div>
-      <div class="bg-background p-6 rounded-lg border">
-        <h2 class="text-xl font-bold mb-4">Hourly Distribution</h2>
+      <div class="rounded-lg border bg-background p-6">
+        <h2 class="mb-4 text-xl font-bold">Hourly Distribution</h2>
         <div class="h-64">
           <canvas id="hourlyClicksChart"></canvas>
         </div>
@@ -219,33 +227,33 @@
 {% if perms.links.view_advanced_statistics %}
 <section class="py-6">
   <div class="container mx-auto px-4">
-    <div class="bg-background rounded-lg border shadow-sm p-6">
-      <h2 class="text-lg font-bold mb-4 px-4">Top Countries</h2>
-      <div class="h-fit lg:h-96 flex justify-center">
+    <div class="rounded-lg border bg-background p-6 shadow-sm">
+      <h2 class="mb-4 px-4 text-lg font-bold">Top Countries</h2>
+      <div class="flex h-fit justify-center lg:h-96">
         <canvas id="countriesAndCitiesChart"></canvas>
       </div>
-      <div class="border rounded-md mt-10 pt-6">
-        <h3 class="font-bold mb-8 md:mb-4 px-4">Top Countries and Cities Visitors</h3>
-        <div class="w-full overflow-auto max-h-[500px] overscroll-contain">
-          <table class="w-full text-sm border-t">
+      <div class="mt-10 rounded-md border pt-6">
+        <h3 class="mb-8 px-4 font-bold md:mb-4">Top Countries and Cities Visitors</h3>
+        <div class="max-h-[500px] w-full overflow-auto overscroll-contain">
+          <table class="w-full border-t text-sm">
             <thead>
-              <tr class="border-b duration-200 bg-muted/30 hover:bg-muted/50">
+              <tr class="border-b bg-muted/30 duration-200 hover:bg-muted/50">
                 <th class="h-12 w-1/2 border-r-2 px-4 text-start align-middle font-bold">
                   Country/City
                 </th>
-                <th class="h-12 w-1/2 px-4 text-center sm:text-end align-middle font-bold">Visitors</th>
+                <th class="h-12 w-1/2 px-4 text-center align-middle font-bold sm:text-end">Visitors</th>
               </tr>
             </thead>
             <tbody>
               {% for item in countries_and_cities %}
-                <tr class="border-b duration-200 hover:bg-muted/50">
-                  <td class="p-4 text-start whitespace-nowrap align-middle border-r-2">
-                    {{ item.country }}/{{ item.city }}
-                  </td>
-                  <td class="p-4 text-center sm:text-end align-middle">
-                    {{ item.count }}
-                  </td>
-                </tr>
+              <tr class="border-b duration-200 hover:bg-muted/50">
+                <td class="whitespace-nowrap border-r-2 p-4 text-start align-middle">
+                  {{ item.country }}/{{ item.city }}
+                </td>
+                <td class="p-4 text-center align-middle sm:text-end">
+                  {{ item.count }}
+                </td>
+              </tr>
               {% endfor %}
             </tbody>
           </table>
@@ -257,23 +265,23 @@
 
 <section class="py-6">
   <div class="container mx-auto px-4">
-    <div class="grid lg:grid-cols-3 gap-6">
-      <div class="bg-background p-6 rounded-lg border border-border">
-        <h2 class="text-xl font-bold mb-4">Device Distribution</h2>
+    <div class="grid gap-6 lg:grid-cols-3">
+      <div class="rounded-lg border border-border bg-background p-6">
+        <h2 class="mb-4 text-xl font-bold">Device Distribution</h2>
         <div class="h-80">
           <canvas id="devicesChart"></canvas>
         </div>
       </div>
 
-      <div class="bg-background p-6 rounded-lg border border-border">
-        <h2 class="text-xl font-bold mb-4">Browser Distribution</h2>
+      <div class="rounded-lg border border-border bg-background p-6">
+        <h2 class="mb-4 text-xl font-bold">Browser Distribution</h2>
         <div class="h-80">
           <canvas id="browsersChart"></canvas>
         </div>
       </div>
 
-      <div class="bg-background p-6 rounded-lg border border-border">
-        <h2 class="text-xl font-bold mb-4">Operating Systems</h2>
+      <div class="rounded-lg border border-border bg-background p-6">
+        <h2 class="mb-4 text-xl font-bold">Operating Systems</h2>
         <div class="h-80">
           <canvas id="osChart"></canvas>
         </div>
@@ -284,34 +292,34 @@
 
 <section class="py-6">
   <div class="container mx-auto px-4">
-    <div class="bg-background p-6 rounded-lg border">
-      <div class="border rounded-lg pt-6">
-        <h2 class="font-bold mb-4 px-4">Top Referrers</h2>
+    <div class="rounded-lg border bg-background p-6">
+      <div class="rounded-lg border pt-6">
+        <h2 class="mb-4 px-4 font-bold">Top Referrers</h2>
         {% if referrers %}
-          <div class="w-full overflow-auto max-h-[500px] overscroll-contain">
-            <table class="w-full text-sm border-t">
-              <thead>
-                <tr class="border-b duration-200 bg-muted/30 hover:bg-muted/50">
-                  <th class="h-12 px-4 text-start align-middle border-r-2 font-bold">Referrer</th>
-                  <th class="h-12 px-4 text-center align-middle font-bold">Clicks</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for ref in referrers %}
-                  <tr class="border-b duration-200 hover:bg-muted/50">
-                    <td class="p-4 text-start align-middle border-r-2">
-                      {{ ref.referrer }}
-                    </td>
-                    <td class="p-4 text-center align-middle">
-                      {{ ref.count }}
-                    </td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
+        <div class="max-h-[500px] w-full overflow-auto overscroll-contain">
+          <table class="w-full border-t text-sm">
+            <thead>
+              <tr class="border-b bg-muted/30 duration-200 hover:bg-muted/50">
+                <th class="h-12 border-r-2 px-4 text-start align-middle font-bold">Referrer</th>
+                <th class="h-12 px-4 text-center align-middle font-bold">Clicks</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for ref in referrers %}
+              <tr class="border-b duration-200 hover:bg-muted/50">
+                <td class="border-r-2 p-4 text-start align-middle">
+                  {{ ref.referrer }}
+                </td>
+                <td class="p-4 text-center align-middle">
+                  {{ ref.count }}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
         {% else %}
-          <p class="pb-6 px-4 text-muted-foreground">No referrer data available.</p>
+        <p class="px-4 pb-6 text-muted-foreground">No referrer data available.</p>
         {% endif %}
       </div>
     </div>

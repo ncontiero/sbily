@@ -3,18 +3,18 @@
 {% block title %}Sign In with email{% endblock title %}
 
 {% block content %}
-  <div class="mt-16 flex flex-col items-center justify-center max-w-md mx-auto p-6 border rounded-md">
-    <form method="post" action="{% url 'sign_in_with_email' %}" class="w-full" data-jswc-add-load>
-      {% csrf_token %}
-      <div class="text-center mb-8 mt-2">
-        <h2 class="text-3xl font-bold">Sign In with email</h2>
-        <p class="text-base font-medium mt-1 text-foreground/60">Enter your email to receive the sign in link</p>
-      </div>
-      {{ form }}
-      <button type="submit" class="mt-2 w-full button-primary">Send sign in link</button>
-      <p class="mt-4 text-sm text-center">
-        Or <a href="{% url 'sign_in' %}" class="link-primary">Sign In with password</a>
-      </p>
-    </form>
-  </div>
+<div class="mx-auto mt-16 flex max-w-md flex-col items-center justify-center rounded-md border p-6">
+  <form data-jswc-add-load class="w-full" action="{% url 'sign_in_with_email' %}" method="post">
+    {% csrf_token %}
+    <div class="mb-8 mt-2 text-center">
+      <h2 class="text-3xl font-bold">Sign In with email</h2>
+      <p class="mt-1 text-base font-medium text-foreground/60">Enter your email to receive the sign in link</p>
+    </div>
+    {{ form }}
+    <button type="submit" class="button-primary mt-2 w-full">Send sign in link</button>
+    <p class="mt-4 text-center text-sm">
+      Or <a class="link-primary" href="{% url 'sign_in' %}">Sign In with password</a>
+    </p>
+  </form>
+</div>
 {% endblock content %}

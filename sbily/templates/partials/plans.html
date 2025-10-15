@@ -1,33 +1,35 @@
 <div>
-  <div class="flex justify-center mt-6 {% if is_dialog %}mb-6{% else %}mb-10{% endif %}">
-    <div class="flex items-center p-1 bg-muted rounded-lg gap-1">
-      <button
-        class="button button-sm bg-primary text-primary-foreground font-medium data-[active='false']:hover:bg-background"
+  <div class="{% if is_dialog %}mb-6{% else %}mb-10{% endif %} mt-6 flex justify-center">
+    <div class="flex items-center gap-1 rounded-lg bg-muted p-1">
+      <button type="submit"
         data-active="true"
         data-jswc-price="monthly-button"
+        class="
+          button button-sm bg-primary font-medium text-primary-foreground data-[active='false']:hover:bg-background
+        "
       >
         Monthly
       </button>
-      <button
-        class="button button-sm font-medium data-[active='false']:hover:bg-background"
+      <button type="submit"
         data-active="false"
         data-jswc-price="yearly-button"
+        class="button button-sm font-medium data-[active='false']:hover:bg-background"
       >
         Yearly (20% Discount)
       </button>
     </div>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-    <div class="bg-background rounded-lg border-2 p-8 relative shadow-lg" data-jswc-price="premium">
-      <h3 class="text-2xl font-bold mb-2">Premium</h3>
-      <p class="text-muted-foreground mb-6">For small teams or creators needing advanced link features</p>
-      <p class="text-4xl font-bold mb-6">
+  <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div data-jswc-price="premium" class="relative rounded-lg border-2 bg-background p-8 shadow-lg">
+      <h3 class="mb-2 text-2xl font-bold">Premium</h3>
+      <p class="mb-6 text-muted-foreground">For small teams or creators needing advanced link features</p>
+      <p class="mb-6 text-4xl font-bold">
         $<span data-jswc-price="amount">10</span>
-        <span class="text-muted-foreground text-lg font-normal">/month</span>
+        <span class="text-lg font-normal text-muted-foreground">/month</span>
       </p>
 
-      <ul class="space-y-3 mb-8">
+      <ul class="mb-8 space-y-3">
         <li class="flex items-center gap-2">
           <i data-lucide="check" class="size-4 text-primary"></i>
           <span>25 new links/mo</span>
@@ -47,30 +49,30 @@
       </ul>
 
       {% if request.user.is_authenticated %}
-        <a
-          href="{% url 'checkout_page' %}?plan=premium"
-          class="button-primary w-full"
-          data-jswc-price="upgrade"
-          data-jswc-add-load
-        >
-          Select Premium
-        </a>
+      <a
+        data-jswc-price="upgrade"
+        data-jswc-add-load
+        class="button-primary w-full"
+        href="{% url 'checkout_page' %}?plan=premium"
+      >
+        Select Premium
+      </a>
       {% else %}
-        <a href="{% url 'sign_up' %}?plan=premium" class="button-primary w-full text-center" data-jswc-price="upgrade">
-          Get started
-        </a>
+      <a data-jswc-price="upgrade" class="button-primary w-full text-center" href="{% url 'sign_up' %}?plan=premium">
+        Get started
+      </a>
       {% endif %}
     </div>
 
-    <div class="bg-background rounded-lg border-2 p-8 relative shadow-lg" data-jswc-price="business">
-      <h3 class="text-2xl font-bold mb-2">Business</h3>
-      <p class="text-muted-foreground mb-6">For fast-growing startups and businesses looking to scale</p>
-      <p class="text-4xl font-bold mb-6">
+    <div data-jswc-price="business" class="relative rounded-lg border-2 bg-background p-8 shadow-lg">
+      <h3 class="mb-2 text-2xl font-bold">Business</h3>
+      <p class="mb-6 text-muted-foreground">For fast-growing startups and businesses looking to scale</p>
+      <p class="mb-6 text-4xl font-bold">
         $<span data-jswc-price="amount">20</span>
-        <span class="text-muted-foreground text-lg font-normal">/month</span>
+        <span class="text-lg font-normal text-muted-foreground">/month</span>
       </p>
 
-      <ul class="space-y-3 mb-8">
+      <ul class="mb-8 space-y-3">
         <li class="flex items-center gap-2">
           <i data-lucide="check" class="size-4 text-primary"></i>
           <span>50 new links/mo</span>
@@ -90,30 +92,33 @@
       </ul>
 
       {% if request.user.is_authenticated %}
-        <a
-          href="{% url 'checkout_page' %}?plan=business"
-          class="button-primary w-full"
-          data-jswc-price="upgrade"
-          data-jswc-add-load
-        >
-          Select Business
-        </a>
+      <a
+        data-jswc-price="upgrade"
+        data-jswc-add-load
+        class="button-primary w-full"
+        href="{% url 'checkout_page' %}?plan=business"
+      >
+        Select Business
+      </a>
       {% else %}
-        <a href="{% url 'sign_up' %}?plan=business" class="button-primary w-full text-center" data-jswc-price="upgrade">
-          Get started
-        </a>
+      <a data-jswc-price="upgrade" class="button-primary w-full text-center" href="{% url 'sign_up' %}?plan=business">
+        Get started
+      </a>
       {% endif %}
     </div>
 
-    <div class="col-span-1 md:col-span-2 lg:col-span-1 bg-background rounded-lg border-2 p-8 relative shadow-lg" data-jswc-price="advanced">
-      <h3 class="text-2xl font-bold mb-2">Advanced</h3>
-      <p class="text-muted-foreground mb-6">For hyperscalers needing higher usage quotas and retention</p>
-      <p class="text-4xl font-bold mb-6">
+    <div
+      data-jswc-price="advanced"
+      class="relative col-span-1 rounded-lg border-2 bg-background p-8 shadow-lg md:col-span-2 lg:col-span-1"
+    >
+      <h3 class="mb-2 text-2xl font-bold">Advanced</h3>
+      <p class="mb-6 text-muted-foreground">For hyperscalers needing higher usage quotas and retention</p>
+      <p class="mb-6 text-4xl font-bold">
         $<span data-jswc-price="amount">40</span>
-        <span class="text-muted-foreground text-lg font-normal">/month</span>
+        <span class="text-lg font-normal text-muted-foreground">/month</span>
       </p>
 
-      <ul class="space-y-3 mb-8">
+      <ul class="mb-8 space-y-3">
         <li class="flex items-center gap-2">
           <i data-lucide="check" class="size-4 text-primary"></i>
           <span>100 new links/mo</span>
@@ -133,18 +138,18 @@
       </ul>
 
       {% if request.user.is_authenticated %}
-        <a
-          href="{% url 'checkout_page' %}?plan=advanced"
-          class="button-primary w-full"
-          data-jswc-price="upgrade"
-          data-jswc-add-load
-        >
-          Select Advanced
-        </a>
+      <a
+        data-jswc-price="upgrade"
+        data-jswc-add-load
+        class="button-primary w-full"
+        href="{% url 'checkout_page' %}?plan=advanced"
+      >
+        Select Advanced
+      </a>
       {% else %}
-        <a href="{% url 'sign_up' %}?plan=advanced" class="button-primary w-full text-center" data-jswc-price="upgrade">
-          Get started
-        </a>
+      <a data-jswc-price="upgrade" class="button-primary w-full text-center" href="{% url 'sign_up' %}?plan=advanced">
+        Get started
+      </a>
       {% endif %}
     </div>
   </div>

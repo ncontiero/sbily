@@ -3,29 +3,29 @@
 {% block title %}Sign In{% endblock title %}
 
 {% block content %}
-  <div class="mt-16 flex flex-col items-center justify-center max-w-md mx-auto p-6 border rounded-md">
-    <form method="post" action="{% url 'sign_in' %}" class="w-full" data-jswc-add-load>
-      {% csrf_token %}
-      <div class="text-center mb-8 mt-2">
-        <h2 class="text-3xl font-bold">Sign In</h2>
-        <p class="text-base font-medium mt-1 text-foreground/60">
-          Welcome back! Please sign in to continue
-        </p>
-      </div>
-      {{ form }}
-      <div class="flex justify-between">
-        <a href="{% url "sign_in_with_email" %}" class="text-primary text-sm hover:underline">
-          Sign in with email
-        </a>
-        <a href="{% url "forgot_password" %}" class="text-primary text-sm hover:underline">
-          Forgot your password?
-        </a>
-      </div>
-      <button type="submit" class="mt-2 w-full button-primary">Sign In</button>
-      <p class="mt-4 text-sm text-center">
-        Don't have an account yet?
-        <a href="{{ sign_up_url }}" class="link-primary">Sign Up</a>.
+<div class="mx-auto mt-16 flex max-w-md flex-col items-center justify-center rounded-md border p-6">
+  <form data-jswc-add-load class="w-full" action="{% url 'sign_in' %}" method="post">
+    {% csrf_token %}
+    <div class="mb-8 mt-2 text-center">
+      <h2 class="text-3xl font-bold">Sign In</h2>
+      <p class="mt-1 text-base font-medium text-foreground/60">
+        Welcome back! Please sign in to continue
       </p>
-    </form>
-  </div>
+    </div>
+    {{ form }}
+    <div class="flex justify-between">
+      <a class="text-sm text-primary hover:underline" href="{% url "sign_in_with_email" %}">
+        Sign in with email
+      </a>
+      <a class="text-sm text-primary hover:underline" href="{% url "forgot_password" %}">
+        Forgot your password?
+      </a>
+    </div>
+    <button type="submit" class="button-primary mt-2 w-full">Sign In</button>
+    <p class="mt-4 text-center text-sm">
+      Don't have an account yet?
+      <a class="link-primary" href="{{ sign_up_url }}">Sign Up</a>.
+    </p>
+  </form>
+</div>
 {% endblock content %}

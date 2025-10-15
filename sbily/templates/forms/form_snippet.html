@@ -1,34 +1,35 @@
 {% if form.non_field_errors %}
-  <div class="flex flex-col gap-2 mb-6">
-    {% for error in form.non_field_errors %}
-      <div role="alert" class="alert-danger">
-        <i data-lucide="circle-x"></i>
-        <h5 class="alert-title">Error!</h5>
-        <div class="alert-description">{{ error|escape }}</div>
-      </div>
-    {% endfor %}
+<div class="mb-6 flex flex-col gap-2">
+  {% for error in form.non_field_errors %}
+  <div class="alert-danger" role="alert">
+    <i data-lucide="circle-x"></i>
+    <h5 class="alert-title">Error!</h5>
+    <div class="alert-description">{{ error|escape }}</div>
   </div>
+  {% endfor %}
+</div>
 {% endif %}
+
 {% for field in form %}
-  {% if field.is_hidden %}
+{% if field.is_hidden %}
+{{ field }}
+{% else %}
+<div class="mb-5 flex flex-col">
+  <div class="flex flex-col gap-1.5">
+    <label class="label {% if field.errors %}text-destructive{% endif %}" for="{{ field.id_for_label }}">
+      {{ field.label }}{% if not field.field.required %}
+      <span class="text-xs font-medium text-foreground/60"> (Optional)</span>{% endif %}
+    </label>
     {{ field }}
-  {% else %}
-    <div class="flex flex-col mb-5">
-      <div class="flex flex-col gap-1.5">
-        <label for="{{ field.id_for_label }}" class="label {% if field.errors %}text-destructive{% endif %}">
-          {{ field.label }}{% if not field.field.required %}
-          <span class="text-xs font-medium text-foreground/60"> (Optional)</span>{% endif %}
-        </label>
-        {{ field }}
-      </div>
-      {% if field.help_text %}
-        <span id="{{ field.auto_id }}_helptext" class="text-foreground/60 text-xs mt-0.5">
-          {{ field.help_text|safe }}
-        </span>
-      {% endif %}
-      {% for error in field.errors %}
-        <span class="text-sm font-medium text-destructive mt-1">{{ error|escape }}</span>
-      {% endfor %}
-    </div>
+  </div>
+  {% if field.help_text %}
+  <span id="{{ field.auto_id }}_helptext" class="mt-0.5 text-xs text-foreground/60">
+    {{ field.help_text|safe }}
+  </span>
   {% endif %}
+  {% for error in field.errors %}
+  <span class="mt-1 text-sm font-medium text-destructive">{{ error|escape }}</span>
+  {% endfor %}
+</div>
+{% endif %}
 {% endfor %}

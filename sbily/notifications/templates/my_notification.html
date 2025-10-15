@@ -5,82 +5,82 @@
 {% block title %}{{ notification.title }}{% endblock title %}
 
 {% block content %}
-  <div class="my-16 flex flex-col justify-center max-w-xl mx-auto bg-secondary rounded-md border-2">
-    <div class="bg-background p-6 rounded-md">
-      <h1 class="text-lg font-bold">{{ notification.title }}</h1>
-      <div class="flex items-center gap-2 mt-2 text-sm">
-        <div class="flex items-center gap-1">
-          <div class="size-4 [&_svg]:size-4">
-            {% include "partials/notification_icon.html" %}
-          </div>
-          <span class="uppercase font-medium text-{{ notification.type|get_notification_color }}">
-            {{ notification.get_type_display }}
-          </span>
+<div class="mx-auto my-16 flex max-w-xl flex-col justify-center rounded-md border-2 bg-secondary">
+  <div class="rounded-md bg-background p-6">
+    <h1 class="text-lg font-bold">{{ notification.title }}</h1>
+    <div class="mt-2 flex items-center gap-2 text-sm">
+      <div class="flex items-center gap-1">
+        <div class="size-4 [&_svg]:size-4">
+          {% include "partials/notification_icon.html" %}
         </div>
-        <div class="size-2 bg-foreground/50 rounded-full"></div>
-        <span class="flex items-center text-foreground/60">
-          {{ notification.created_at|timesince }} ago
+        <span class="text-{{ notification.type|get_notification_color }} font-medium uppercase">
+          {{ notification.get_type_display }}
         </span>
       </div>
-      <div class="separator my-6"></div>
-      <div class="prose dark:prose-invert prose-a:link-primary prose-a:no-underline">
-        {{ notification.content|markdown|safe }}
-      </div>
-      <div class="separator my-6"></div>
-      <div class="flex items-center justify-between">
-        <a href="{% url "my_notifications" %}" class="button-outline px-1">
-          <i data-lucide="chevron-left" class="size-5 stroke-[3px]"></i>
-          Go back
+      <div class="size-2 rounded-full bg-foreground/50"></div>
+      <span class="flex items-center text-foreground/60">
+        {{ notification.created_at|timesince }} ago
+      </span>
+    </div>
+    <div class="separator my-6"></div>
+    <div class="prose-a:link-primary prose-a:no-underline prose dark:prose-invert">
+      {{ notification.content|markdown|safe }}
+    </div>
+    <div class="separator my-6"></div>
+    <div class="flex items-center justify-between">
+      <a class="button-outline px-1" href="{% url "my_notifications" %}">
+        <i data-lucide="chevron-left" class="size-5 stroke-[3px]"></i>
+        Go back
+      </a>
+      <div class="flex items-center gap-2">
+        <a class="button-outline gap-2 px-1.5" href="{% url "handle_read" notification.id %}">
+          <div class="size-2 rounded-full bg-blue-600"></div>
+          <span>Mark as Unread</span>
         </a>
-        <div class="flex items-center gap-2">
-          <a href="{% url "handle_read" notification.id %}" class="button-outline px-1.5 gap-2">
-            <div class="bg-blue-600 size-2 rounded-full"></div>
-            <span>Mark as Unread</span>
-          </a>
-          <button
-            type="button"
-            class="button-destructive px-2 gap-2"
-            data-jswc-dialog
-            data-jswc-target="delete-notification-{{ notification.id }}"
-          >
-            <i data-lucide="trash2"></i>
-            <span>Delete</span>
-          </button>
-          <div id="delete-notification-{{ notification.id }}" class="hidden dialog" data-jswc-dialog-animation="true">
-            <div class="flex flex-col">
-              <div class="flex justify-between items-center">
-                <h2 class="text-xl font-bold">Are you sure?</h2>
-              </div>
-              <div class="flex flex-col gap-4 mt-2">
-                <p>
-                  Are you sure you want to remove the "{{ notification.title }}" notification?
-                  This action will be permanent!
-                </p>
-              </div>
-              <div class="flex items-center mt-4 gap-2">
-                <a href="{% url "delete_notification" notification.id %}" class="button-destructive w-full sm:w-auto">
-                  Yes, I’m sure
-                </a>
-                <button
-                  type="button"
-                  class="button-outline w-full sm:w-auto"
-                  data-jswc-dialog-close
-                >
-                  No, take me back
-                </button>
-              </div>
+        <button
+          type="button"
+          data-jswc-dialog
+          data-jswc-target="delete-notification-{{ notification.id }}"
+          class="button-destructive gap-2 px-2"
+        >
+          <i data-lucide="trash2"></i>
+          <span>Delete</span>
+        </button>
+        <div id="delete-notification-{{ notification.id }}" data-jswc-dialog-animation="true" class="dialog hidden">
+          <div class="flex flex-col">
+            <div class="flex items-center justify-between">
+              <h2 class="text-xl font-bold">Are you sure?</h2>
+            </div>
+            <div class="mt-2 flex flex-col gap-4">
+              <p>
+                Are you sure you want to remove the "{{ notification.title }}" notification?
+                This action will be permanent!
+              </p>
+            </div>
+            <div class="mt-4 flex items-center gap-2">
+              <a class="button-destructive w-full sm:w-auto" href="{% url "delete_notification" notification.id %}">
+                Yes, I’m sure
+              </a>
               <button
                 type="button"
-                class="absolute button-outline p-2 border-0 rounded-xl right-4 top-4"
-                aria-label="Close"
                 data-jswc-dialog-close
+                class="button-outline w-full sm:w-auto"
               >
-                <i data-lucide="x" class="size-5"></i>
+                No, take me back
               </button>
             </div>
+            <button
+              type="button"
+              data-jswc-dialog-close
+              class="button-outline absolute right-4 top-4 rounded-xl border-0 p-2"
+              aria-label="Close"
+            >
+              <i data-lucide="x" class="size-5"></i>
+            </button>
           </div>
         </div>
       </div>
     </div>
   </div>
+</div>
 {% endblock content %}

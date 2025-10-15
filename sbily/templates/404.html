@@ -3,16 +3,16 @@
 {% block title %}Page not found{% endblock title %}
 
 {% block content %}
-  <div class="flex flex-col justify-center items-center mt-10">
-    <h1 class="text-4xl underline font-bold my-4">
-      Page not found
-    </h1>
-    <p class="text-lg">
-      {% if exception %}
-        {{ exception }}
-      {% else %}
-        This is not the page you were looking for.
-      {% endif %}
-    </p>
-  </div>
+<div class="mt-10 flex flex-col items-center justify-center">
+  <h1 class="my-4 text-4xl font-bold underline">
+    Page not found
+  </h1>
+  <p class="text-lg">
+    {% if exception %}
+    {{ exception }}
+    {% else %}
+    This is not the page you were looking for.
+    {% endif %}
+  </p>
+</div>
 {% endblock content %}

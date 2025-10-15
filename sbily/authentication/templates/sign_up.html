@@ -3,21 +3,21 @@
 {% block title %}Sign Up{% endblock title %}
 
 {% block content %}
-  <div class="mt-16 flex flex-col items-center justify-center max-w-md mx-auto p-6 border rounded-md">
-    <form method="post" action="{% url 'sign_up' %}" class="w-full" data-jswc-add-load>
-      {% csrf_token %}
-      <div class="text-center mb-8 mt-2">
-        <h2 class="text-3xl font-bold">Create your account</h2>
-        <p class="text-base font-medium mt-1 text-foreground/60">
-          Welcome! Please fill in the details to get started.
-        </p>
-      </div>
-      {{ form }}
-      <button type="submit" class="mt-2 w-full button-primary">Sign Up</button>
-      <p class="mt-4 text-sm text-center">
-        Already have an account?
-        <a href="{{ sign_in_url }}" class="link-primary">Sign In</a>.
+<div class="mx-auto mt-16 flex max-w-md flex-col items-center justify-center rounded-md border p-6">
+  <form data-jswc-add-load class="w-full" action="{% url 'sign_up' %}" method="post">
+    {% csrf_token %}
+    <div class="mb-8 mt-2 text-center">
+      <h2 class="text-3xl font-bold">Create your account</h2>
+      <p class="mt-1 text-base font-medium text-foreground/60">
+        Welcome! Please fill in the details to get started.
       </p>
-    </form>
-  </div>
+    </div>
+    {{ form }}
+    <button type="submit" class="button-primary mt-2 w-full">Sign Up</button>
+    <p class="mt-4 text-center text-sm">
+      Already have an account?
+      <a class="link-primary" href="{{ sign_in_url }}">Sign In</a>.
+    </p>
+  </form>
+</div>
 {% endblock content %}

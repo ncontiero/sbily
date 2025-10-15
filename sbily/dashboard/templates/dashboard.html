@@ -4,24 +4,24 @@
 <div id="dashboard"></div>
 <section class="py-8">
   <div class="container mx-auto px-4">
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      <div class="bg-background rounded-lg border shadow-sm p-6">
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="rounded-lg border bg-background p-6 shadow-sm">
         <div class="flex items-center gap-4">
-          <div class="size-12 bg-primary/10 rounded-full flex items-center justify-center">
-            <i data-lucide="link" class="text-primary size-6"></i>
+          <div class="flex size-12 items-center justify-center rounded-full bg-primary/10">
+            <i data-lucide="link" class="size-6 text-primary"></i>
           </div>
           <div>
             <p class="text-sm text-muted-foreground">Total Links</p>
             <h2 class="text-2xl font-bold">{{ links_count }}</h2>
           </div>
         </div>
-        <div class="mt-4 pt-4 border-t">
-          <div class="flex justify-between items-center">
-            <div class="flex gap-2 items-center">
+        <div class="mt-4 border-t pt-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
               <div class="size-3 rounded-full bg-green-500"></div>
               <span class="text-sm">Active: {{ active_links }}</span>
             </div>
-            <div class="flex gap-2 items-center">
+            <div class="flex items-center gap-2">
               <div class="size-3 rounded-full bg-red-500"></div>
               <span class="text-sm">Expired: {{ expired_links }}</span>
             </div>
@@ -29,49 +29,52 @@
         </div>
       </div>
 
-      <div class="bg-background rounded-lg border shadow-sm p-6">
+      <div class="rounded-lg border bg-background p-6 shadow-sm">
         <div class="flex items-center gap-4">
-          <div class="size-12 bg-primary/10 rounded-full flex items-center justify-center">
-            <i data-lucide="mouse-pointer-click" class="text-primary size-6"></i>
+          <div class="flex size-12 items-center justify-center rounded-full bg-primary/10">
+            <i data-lucide="mouse-pointer-click" class="size-6 text-primary"></i>
           </div>
           <div>
             <p class="text-sm text-muted-foreground">Total Clicks</p>
             <h2 class="text-2xl font-bold">{{ total_clicks }}</h2>
           </div>
         </div>
-        <div class="mt-4 pt-4 border-t">
+        <div class="mt-4 border-t pt-4">
           <p class="text-sm text-muted-foreground">Across all your links</p>
         </div>
       </div>
 
-      <div class="bg-background rounded-lg border shadow-sm p-6">
+      <div class="rounded-lg border bg-background p-6 shadow-sm">
         <div class="flex items-center gap-4">
-          <div class="size-12 bg-primary/10 rounded-full flex items-center justify-center">
-            <i data-lucide="mouse-pointer-click" class="text-primary size-6"></i>
+          <div class="flex size-12 items-center justify-center rounded-full bg-primary/10">
+            <i data-lucide="mouse-pointer-click" class="size-6 text-primary"></i>
           </div>
           <div>
             <p class="text-sm text-muted-foreground">Unique Visitor</p>
             <h2 class="text-2xl font-bold">{{ unique_visitors }}</h2>
           </div>
         </div>
-        <div class="mt-4 pt-4 border-t">
+        <div class="mt-4 border-t pt-4">
           <p class="text-sm text-muted-foreground">Across all your links</p>
         </div>
       </div>
 
-      <div class="bg-background rounded-lg border shadow-sm p-6">
+      <div class="rounded-lg border bg-background p-6 shadow-sm">
         <div class="flex items-center gap-4">
-          <div class="size-12 bg-primary/10 rounded-full flex items-center justify-center">
-            <i data-lucide="infinity" class="text-primary size-6"></i>
+          <div class="flex size-12 items-center justify-center rounded-full bg-primary/10">
+            <i data-lucide="infinity" class="size-6 text-primary"></i>
           </div>
           <div>
             <p class="text-sm text-muted-foreground">Links Limit</p>
             <h2 class="text-2xl font-bold">{{ user.monthly_limit_links_used }} / {{ user.monthly_link_limit }}</h2>
           </div>
         </div>
-        <div class="mt-4 pt-4 border-t">
-          <div class="w-full bg-muted rounded-full h-2">
-            <div class="bg-primary h-2 rounded-full" style="width: {% widthratio user.monthly_limit_links_used user.monthly_link_limit 100 %}%"></div>
+        <div class="mt-4 border-t pt-4">
+          <div class="h-2 w-full rounded-full bg-muted">
+            <div
+              class="h-2 rounded-full bg-primary"
+              style="width: {% widthratio user.monthly_limit_links_used user.monthly_link_limit 100 %}%"
+            ></div>
           </div>
         </div>
       </div>
@@ -81,8 +84,8 @@
 
 <section class="py-6">
   <div class="container mx-auto px-4">
-    <div class="bg-background rounded-lg border shadow-sm p-6 lg:col-span-2">
-      <h2 class="text-lg font-bold mb-4">Daily Clicks (Last 30 Days)</h2>
+    <div class="rounded-lg border bg-background p-6 shadow-sm lg:col-span-2">
+      <h2 class="mb-4 text-lg font-bold">Daily Clicks (Last 30 Days)</h2>
       <div class="h-64">
         <canvas id="dailyClicksChart"></canvas>
       </div>
@@ -91,53 +94,53 @@
 </section>
 
 {% if perms.links.view_advanced_statistics %}
-  <section class="py-6">
-    <div class="container mx-auto px-4">
-      <div class="bg-background rounded-lg border shadow-sm p-6">
-        <h2 class="text-lg font-bold mb-8 md:mb-4">Top Countries</h2>
-        <div class="h-fit lg:h-96 flex justify-center">
-          <canvas id="countriesChart"></canvas>
-        </div>
-        <div class="border rounded-md mt-10 pt-6">
-          <h3 class="font-bold mb-4 px-4">Top Countries Clicks</h3>
-          <div class="w-full overflow-auto max-h-[500px] overscroll-contain">
-            <table class="w-full text-sm border-t">
-              <thead>
-                <tr class="border-b duration-200 bg-muted/30 hover:bg-muted/50">
-                  <th class="h-12 w-1/2 border-r-2 px-4 text-start align-middle font-bold">
-                    Country
-                  </th>
-                  <th class="h-12 w-1/2 px-4 text-end align-middle font-bold">Clicks</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for item in country_distribution %}
-                  <tr class="border-b duration-200 hover:bg-muted/50">
-                    <td class="p-4 text-start align-middle border-r-2">
-                      {{ item.country }}
-                    </td>
-                    <td class="p-4 text-end align-middle">
-                      {{ item.count }}
-                    </td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
+<section class="py-6">
+  <div class="container mx-auto px-4">
+    <div class="rounded-lg border bg-background p-6 shadow-sm">
+      <h2 class="mb-8 text-lg font-bold md:mb-4">Top Countries</h2>
+      <div class="flex h-fit justify-center lg:h-96">
+        <canvas id="countriesChart"></canvas>
+      </div>
+      <div class="mt-10 rounded-md border pt-6">
+        <h3 class="mb-4 px-4 font-bold">Top Countries Clicks</h3>
+        <div class="max-h-[500px] w-full overflow-auto overscroll-contain">
+          <table class="w-full border-t text-sm">
+            <thead>
+              <tr class="border-b bg-muted/30 duration-200 hover:bg-muted/50">
+                <th class="h-12 w-1/2 border-r-2 px-4 text-start align-middle font-bold">
+                  Country
+                </th>
+                <th class="h-12 w-1/2 px-4 text-end align-middle font-bold">Clicks</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in country_distribution %}
+              <tr class="border-b duration-200 hover:bg-muted/50">
+                <td class="border-r-2 p-4 text-start align-middle">
+                  {{ item.country }}
+                </td>
+                <td class="p-4 text-end align-middle">
+                  {{ item.count }}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 {% endif %}
 
-<section class="py-6" id="links">
+<section id="links" class="py-6">
   <div class="container mx-auto px-4">
-    <div class="bg-background rounded-lg border shadow-sm overflow-hidden">
-      <div class="p-6 border-b">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div class="overflow-hidden rounded-lg border bg-background shadow-sm">
+      <div class="border-b p-6">
+        <div class="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
           <h2 class="text-lg font-bold">Latest links</h2>
           <div class="flex gap-1.5 sm:gap-3">
-            <a href="{% url 'links' %}" class="button-outline button-sm">
+            <a class="button-outline button-sm" href="{% url 'links' %}">
               View All Links
             </a>
             <button
@@ -162,57 +165,57 @@
 
 <section class="py-6">
   <div class="container mx-auto px-4">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div class="bg-background rounded-lg border shadow-sm p-6">
-        <h2 class="text-lg font-bold mb-4">Top Performing Links</h2>
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <div class="rounded-lg border bg-background p-6 shadow-sm">
+        <h2 class="mb-4 text-lg font-bold">Top Performing Links</h2>
         <div class="space-y-4">
           {% for link in top_links %}
-          <div class="flex flex-col justify-between border-b pb-4 last:border-0 sm:items-center sm:flex-row">
+          <div class="flex flex-col justify-between border-b pb-4 last:border-0 sm:flex-row sm:items-center">
             <div class="flex items-center gap-1.5 sm:gap-3">
-              <div class="size-8 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
-                <i data-lucide="link" class="text-primary size-4"></i>
+              <div class="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                <i data-lucide="link" class="size-4 text-primary"></i>
               </div>
               <div class="truncate">
-                <a href="{{ link.get_absolute_url }}" target="_blank" class="font-medium hover:underline">
+                <a class="font-medium hover:underline" href="{{ link.get_absolute_url }}" target="_blank">
                   {{ link.shortened_path }}
                 </a>
-                <div class="pb-2 overflow-auto overscroll-contain">
+                <div class="overflow-auto overscroll-contain pb-2">
                   <p class="text-sm text-muted-foreground">{{ link.destination_url }}</p>
                 </div>
               </div>
             </div>
-            <div class="badge-default self-end mt-2 sm:self-auto sm:mt-0">{{ link.click_count }} clicks</div>
+            <div class="badge-default mt-2 self-end sm:mt-0 sm:self-auto">{{ link.click_count }} clicks</div>
           </div>
           {% empty %}
-          <div class="text-center text-muted-foreground py-4">
+          <div class="py-4 text-center text-muted-foreground">
             <p>No click data available yet.</p>
           </div>
           {% endfor %}
         </div>
       </div>
 
-      <div class="bg-background rounded-lg border shadow-sm p-6">
-        <h2 class="text-lg font-bold mb-4">Most Active Links (Last 7 Days)</h2>
+      <div class="rounded-lg border bg-background p-6 shadow-sm">
+        <h2 class="mb-4 text-lg font-bold">Most Active Links (Last 7 Days)</h2>
         <div class="space-y-4">
           {% for link in active_links_data %}
-          <div class="flex flex-col justify-between border-b pb-4 last:border-0 sm:items-center sm:flex-row">
+          <div class="flex flex-col justify-between border-b pb-4 last:border-0 sm:flex-row sm:items-center">
             <div class="flex items-center gap-1.5 sm:gap-3">
-              <div class="size-8 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
-                <i data-lucide="activity" class="text-primary size-4"></i>
+              <div class="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                <i data-lucide="activity" class="size-4 text-primary"></i>
               </div>
               <div class="truncate">
-                <a href="{{ link.get_absolute_url }}" target="_blank" class="font-medium hover:underline">
+                <a class="font-medium hover:underline" href="{{ link.get_absolute_url }}" target="_blank">
                   {{ link.shortened_path }}
                 </a>
-                <div class="pb-2 overflow-auto overscroll-contain">
+                <div class="overflow-auto overscroll-contain pb-2">
                   <p class="text-sm text-muted-foreground">{{ link.destination_url }}</p>
                 </div>
               </div>
             </div>
-            <div class="badge-secondary self-end mt-2 sm:self-auto sm:mt-0">{{ link.recent_clicks }} clicks</div>
+            <div class="badge-secondary mt-2 self-end sm:mt-0 sm:self-auto">{{ link.recent_clicks }} clicks</div>
           </div>
           {% empty %}
-          <div class="text-center text-muted-foreground py-4">
+          <div class="py-4 text-center text-muted-foreground">
             <p>No recent activity data available.</p>
           </div>
           {% endfor %}

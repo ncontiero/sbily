@@ -3,128 +3,633 @@
 {% block title %}My Account{% endblock title %}
 
 {% block content %}
-  <div class="mb-16 mt-10 px-2 flex flex-col justify-center max-w-5xl mx-auto md:px-0">
-    <div class="flex flex-col gap-1">
-      <h1 class="text-2xl font-bold">Settings</h1>
-      <p class="text-foreground/80">Manage your account settings.</p>
+<div class="mx-auto mb-16 mt-10 flex max-w-5xl flex-col justify-center px-2 md:px-0">
+  <div class="flex flex-col gap-1">
+    <h1 class="text-2xl font-bold">Settings</h1>
+    <p class="text-foreground/80">Manage your account settings.</p>
+  </div>
+  <div class="separator my-6"></div>
+  <div class="flex flex-col gap-4 md:flex-row">
+    <div class="flex overflow-hidden sm:overflow-visible md:w-1/4">
+      <aside
+        data-jwsc-tab-list
+        data-jwsc-tab-default="account"
+        data-jwsc-tab-url-query="tab"
+        class="flex w-full gap-1 overflow-x-scroll p-1 pb-1.5 text-muted-foreground md:flex-col md:overflow-x-auto"
+      >
+        <button type="button" data-jwsc-tab-value="account" class="tab-item">
+          <i data-lucide="settings"></i>
+          Account
+        </button>
+        <button type="button" data-jwsc-tab-value="email" class="tab-item">
+          <i data-lucide="mail"></i>
+          Email
+        </button>
+        <button type="button" data-jwsc-tab-value="plan" class="tab-item">
+          <i data-lucide="package"></i>
+          Plan
+        </button>
+        <button type="button" data-jwsc-tab-value="billing" class="tab-item">
+          <i data-lucide="credit-card"></i>
+          Billing
+        </button>
+        <button type="button" data-jwsc-tab-value="security" class="tab-item">
+          <i data-lucide="shield-alert"></i>
+          Security
+        </button>
+      </aside>
     </div>
-    <div class="separator my-6"></div>
-    <div class="flex flex-col gap-4 md:flex-row">
-      <div class="flex overflow-hidden sm:overflow-visible md:w-1/4">
-        <aside
-          class="w-full flex gap-1 p-1 pb-1.5 overflow-x-scroll text-muted-foreground md:flex-col md:overflow-x-auto"
-          data-jwsc-tab-list
-          data-jwsc-tab-default="account"
-          data-jwsc-tab-url-query="tab"
-        >
-          <button type="button" data-jwsc-tab-value="account" class="tab-item">
-            <i data-lucide="settings"></i>
-            Account
-          </button>
-          <button type="button" data-jwsc-tab-value="email" class="tab-item">
-            <i data-lucide="mail"></i>
-            Email
-          </button>
-          <button type="button" data-jwsc-tab-value="plan" class="tab-item">
-            <i data-lucide="package"></i>
-            Plan
-          </button>
-          <button type="button" data-jwsc-tab-value="billing" class="tab-item">
-            <i data-lucide="credit-card"></i>
-            Billing
-          </button>
-          <button type="button" data-jwsc-tab-value="security" class="tab-item">
-            <i data-lucide="shield-alert"></i>
-            Security
-          </button>
-        </aside>
+    <div data-jwsc-tab-panel="account" class="hidden size-full flex-col data-[state=active]:flex">
+      <div class="flex flex-col gap-1">
+        <h2 class="text-xl font-bold">My Account</h2>
+        <p class="text-foreground/80">Manage your account settings.</p>
       </div>
-      <div data-jwsc-tab-panel="account" class="hidden flex-col size-full data-[state=active]:flex">
-        <div class="flex flex-col gap-1">
-          <h2 class="text-xl font-bold">My Account</h2>
-          <p class="text-foreground/80">Manage your account settings.</p>
+      <div class="separator mb-7 mt-5 w-full"></div>
+      <form data-jswc-add-load class="card" action="{% url 'my_account' %}" method="post">
+        {% csrf_token %}
+        <div class="card-content">
+          <h3 class="card-title">Account info</h3>
+          <p class="card-description mt-0">Update your account info here.</p>
+          <div class="mt-4 flex flex-col">
+            {{ form }}
+          </div>
         </div>
-        <div class="separator w-full mt-5 mb-7"></div>
-        <form method="post" class="card" action="{% url 'my_account' %}" data-jswc-add-load>
-          {% csrf_token %}
+        <div class="card-footer">
+          <p class="card-footer-description">
+            Update account info.
+          </p>
+          <button type="submit" class="button-primary button-sm">Update account</button>
+        </div>
+      </form>
+      <div class="card mt-10 border-destructive">
+        <div class="card-content">
+          <h3 class="card-title">Delete account</h3>
+          <p class="card-description text-foreground/80">
+            Once you delete your account, there is no going back. Please be certain.
+          </p>
+        </div>
+        <div class="card-footer border-destructive/60 bg-destructive/20 sm:justify-end">
+          <button
+            type="button"
+            data-jswc-dialog
+            data-jswc-target="deactivate-dialog"
+            class="button-destructive button-sm"
+          >
+            Delete your account
+          </button>
+          <div id="deactivate-dialog" data-jswc-dialog-animation="true" class="dialog hidden">
+            <div class="flex flex-col">
+              <div class="flex items-center justify-between">
+                <h4 class="text-lg font-bold">Are you sure?</h4>
+              </div>
+              <div class="mt-4 flex flex-col gap-4 text-sm">
+                <p>
+                  Are you sure you want to delete the user "{{ user.username }}"?
+                  All of the following related items will be deleted:
+                </p>
+                <ul class="list-inside list-disc">
+                  <li>
+                      User: {{ user.username }}
+                    <ul class="list-inside list-disc pl-2 sm:pl-6">
+                      {% for link in user.shortened_links.all %}
+                      <li>
+                        Link:
+                        <a class="link-primary" href="{% url "link" link.shortened_path %}">{{ link }}</a>
+                      </li>
+                      {% endfor %}
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+              <div class="separator my-6"></div>
+              <div>
+                <form data-jswc-add-load class="flex flex-col" action="{% url "delete_account" %}" method="post">
+                  {% csrf_token %}
+                  <div class="mb-4 flex flex-col gap-2">
+                    <label class="label text-foreground/80" for="confirm_username">Your username:</label>
+                    <input name="username" id="confirm_username" type="text" class="input border-2" required />
+                  </div>
+                  <div class="flex flex-col gap-2">
+                    <label class="label text-foreground/80" for="confirm_password">Confirm your password:</label>
+                    <input name="password" id="confirm_password" type="password" class="input border-2" required />
+                  </div>
+                  <div class="mt-4 flex flex-wrap items-center gap-2">
+                    <button type="submit" class="button-destructive w-full sm:w-auto">Yes, I’m sure</button>
+                    <button
+                      type="button"
+                      data-jswc-dialog-close
+                      class="button-outline w-full sm:w-auto"
+                    >
+                      No, take me back
+                    </button>
+                  </div>
+                </form>
+              </div>
+              <button
+                type="button"
+                data-jswc-dialog-close
+                class="button-outline absolute right-4 top-4 rounded-xl border-0 p-2"
+                aria-label="Close"
+              >
+                <i data-lucide="x" class="size-5"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div data-jwsc-tab-panel="email" class="hidden size-full flex-col data-[state=active]:flex">
+      <div class="flex flex-col gap-1">
+        <h2 class="text-xl font-bold">Email Settings</h2>
+        <p class="text-foreground/80">Manage your email settings.</p>
+      </div>
+      <div class="separator mt-5 w-full"></div>
+      <div class="card mt-7">
+        <div class="card-content">
+          <h3 class="card-title">
+            {% if token %}
+            Change your email
+            {% else %}
+            Email
+            {% endif %}
+          </h3>
+          <p class="card-description">
+            {% if token %}
+            Enter your new email below to change your email.
+            {% else %}
+            This email will be used for account-related notifications and can also be used for password resets.
+            {% endif %}
+          </p>
+          {% if token %}
+          <form data-jswc-add-load class="flex flex-col" action="{% url 'change_email' token %}" method="post">
+            {% csrf_token %}
+            <div class="flex flex-col gap-3">
+              <label class="label text-foreground/80" for="new_email">New email:</label>
+              <input
+                name="new_email"
+                id="new_email"
+                type="email"
+                class="input"
+                placeholder="{{ user.email }}"
+                required
+              />
+            </div>
+            <div class="mt-4 flex items-center gap-2">
+              <button type="submit" class="button-primary button-sm">Change</button>
+              <a class="button-outline button-sm" href="{% url 'my_account' %}?tab=email">Cancel</a>
+            </div>
+          </form>
+          {% else %}
+          <div class="flex items-center rounded-md border p-4">
+            <div class="flex items-center gap-2">
+              <span class="text-sm">contact@ncontiero.com</span>
+              <div
+                class="{% if not user.email_verified %}badge-destructive{% else %}badge-secondary{% endif %}"
+              >
+                {% if not user.email_verified %}Not {% endif %}Verified
+              </div>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+        <div class="card-footer">
+          {% if not user.email_verified %}
+          <p class="card-footer-description">
+            Please check your email for full access! If you haven't received the verification email, click the button below.
+          </p>
+          <a class="button-outline mt-4 w-fit px-2 py-1" href="{% url "resend_verify_email" %}">
+            Resend verification email
+          </a>
+          {% else %}
+          <p class="card-footer-description">
+            You will receive a verification email to your email address.
+          </p>
+          <button
+            type="button"
+            class="button-primary button-sm"
+            title="Change your email"
+            {% if token %}disabled{% endif %}
+            data-jswc-dialog
+            data-jswc-target="change-email"
+          >
+            Change email
+          </button>
+          <div id="change-email" data-jswc-dialog-animation="true" class="dialog hidden">
+            <div class="flex flex-col">
+              <div class="flex items-center justify-between">
+                <h2 class="text-xl font-bold">Change email</h2>
+              </div>
+              <div class="mt-5 flex w-full flex-col">
+                <p>
+                  To change your email, click the “Change” button and you will receive an email
+                  with further instructions on how to change your email.
+                </p>
+                <div class="mt-4 flex items-center gap-2">
+                  <a class="button-primary w-fit" href="{% url 'change_email_instructions' %}">Change</a>
+                  <button type="button" data-jswc-dialog-close class="button-outline w-fit">
+                    No, take me back
+                  </button>
+                </div>
+              </div>
+              <button
+                type="button"
+                data-jswc-dialog-close
+                class="button-outline absolute right-4 top-4 rounded-xl border-0 p-2"
+                aria-label="Close"
+              >
+                <i data-lucide="x" class="size-5"></i>
+              </button>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div data-jwsc-tab-panel="plan" class="hidden size-full flex-col data-[state=active]:flex">
+      <div class="flex flex-col gap-1">
+        <h2 class="text-xl font-bold">My Plan</h2>
+        <p class="text-foreground/80">Manage your subscription.</p>
+      </div>
+      <div class="separator mb-7 mt-5 w-full"></div>
+
+      <div class="card">
+        <div class="card-content">
+          <div class="flex items-center gap-2">
+            <h3 class="card-title">Current Plan:</h3>
+            {% if user.subscription_active %}
+            <span class="badge-default">{{ user.subscription.level }}</span>
+            {% else %}
+            <span class="badge-secondary">Free</span>
+            {% endif %}
+          </div>
+          <p class="card-description">
+            {% if user.subscription_active %}
+            Your subscription {% if not user.subscription.is_auto_renew %}ends{% else %}renews{% endif %} on {{ user.subscription.end_date|date:"F j, Y" }}
+            {% else %}
+            You are currently using the Free plan with limited features.
+            {% endif %}
+          </p>
+        </div>
+        <div class="card-footer justify-end">
+          {% if user.subscription_active %}
+          {% if user.subscription.is_auto_renew %}
+          <button
+            type="button"
+            data-jswc-dialog
+            data-jswc-target="cancel-subscription-dialog"
+            class="button-outline button-sm"
+          >
+            Cancel Subscription
+          </button>
+          {% else %}
+          <button
+            type="button"
+            data-jswc-dialog
+            data-jswc-target="resume-subscription-dialog"
+            class="button-primary button-sm"
+          >
+            Keep Subscription
+          </button>
+          {% endif %}
+          {% endif %}
+          <button type="button" data-jswc-dialog data-jswc-target="choose-plan-dialog" class="button-primary button-sm">
+            Select plan
+          </button>
+        </div>
+      </div>
+
+      <div class="card mt-7">
+        <div class="card-content">
+          <h3 class="card-title">Link Usage</h3>
+
+          <div class="mt-4 flex flex-col gap-6">
+            <div>
+              <div class="mb-2 flex items-center justify-between">
+                <h4 class="font-medium">Links</h4>
+                <span class="text-sm">
+                  {{ user.monthly_limit_links_used }} / {{ user.monthly_link_limit }}
+                </span>
+              </div>
+              <div class="h-2 overflow-hidden rounded-full bg-secondary/60">
+                <div
+                  class="h-full bg-primary"
+                  style="width: {% widthratio user.monthly_limit_links_used user.monthly_link_limit 100 %}%"
+                ></div>
+              </div>
+              <div class="mt-1 flex justify-between text-xs text-foreground/80">
+                <span>Used</span>
+                <span>Total</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <p class="card-footer-description">Last reset was {{ user.last_monthly_limit_reset }}</p>
+        </div>
+      </div>
+
+      <div class="card mt-7">
+        <div class="card-content">
+          <h3 class="card-title">Plan Features</h3>
+          <ul class="mt-4 space-y-3">
+            <li class="flex items-center gap-2">
+              <i data-lucide="check" class="size-4 text-primary"></i>
+              <span>{{ user.monthly_link_limit }} new links/mo (resets monthly)</span>
+            </li>
+            {% if user.subscription_active %}
+            <li class="flex items-center gap-2">
+              <i data-lucide="check" class="size-4 text-primary"></i>
+              <span>Advanced statistics</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <i data-lucide="check" class="size-4 text-primary"></i>
+              <span>Priority support</span>
+            </li>
+            {% else %}
+            <li class="flex items-center gap-2 text-muted-foreground">
+              <i data-lucide="x" class="size-4"></i>
+              <span>Advanced statistics</span>
+            </li>
+            <li class="flex items-center gap-2 text-muted-foreground">
+              <i data-lucide="x" class="size-4"></i>
+              <span>Priority support</span>
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+
+      <!-- Dialogs -->
+      <!-- Choose Plan Dialog -->
+      {% include "partials/choose_plan_dialog.html" %}
+
+      {% if user.subscription.is_auto_renew %}
+      <!-- Cancel Plan Dialog -->
+      <div id="cancel-subscription-dialog" data-jswc-dialog-animation="true" class="dialog hidden">
+        <div class="flex flex-col">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xl font-bold">Cancel {{ user.subscription.get_level_display }} Subscription</h2>
+          </div>
+          <div class="mt-4">
+            <div class="mb-6 rounded-lg border bg-secondary/40 p-4">
+              <p class="text-foreground/80">
+                <i data-lucide="info" class="mr-1 inline-block size-4 text-primary"></i>
+                You'll continue to have access to all {{ user.subscription.level }} features until the end of your current billing period on {{ user.subscription.end_date|date:"F j, Y" }}.
+              </p>
+            </div>
+
+            <p class="mb-4">After your subscription ends:</p>
+            <ul class="mb-6 space-y-2">
+              <li class="flex items-center gap-2">
+                <i data-lucide="minus" class="size-4 text-destructive"></i>
+                <span>Your link limits will be reduced to 5 links;</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i data-lucide="minus" class="size-4 text-destructive"></i>
+                <span>You will lose access to {{ user.subscription.level }} features;</span>
+              </li>
+            </ul>
+
+            <form data-jswc-add-load class="w-full" action="{% url 'cancel_plan' %}" method="post">
+              {% csrf_token %}
+              <div class="flex items-center gap-2">
+                <button type="submit" class="button-destructive">Cancel Subscription</button>
+                <button type="button" data-jswc-dialog-close class="button-outline">Keep My Subscription</button>
+              </div>
+            </form>
+          </div>
+          <button
+            type="button"
+            data-jswc-dialog-close
+            class="button-outline absolute right-4 top-4 rounded-xl border-0 p-2"
+            aria-label="Close"
+          >
+            <i data-lucide="x" class="size-5"></i>
+          </button>
+        </div>
+      </div>
+      {% else %}
+      <!-- Resume Subscription Dialog -->
+      <div id="resume-subscription-dialog" data-jswc-dialog-animation="true" class="dialog hidden">
+        <div class="flex flex-col">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xl font-bold">Resume {{ user.subscription.get_level_display }} Subscription</h2>
+          </div>
+          <div class="mt-4">
+            <div class="mb-6 rounded-lg border bg-secondary/40 p-4">
+              <p class="text-foreground/80">
+                <i data-lucide="info" class="mr-1 inline-block size-4 text-primary"></i>
+                Your {{ user.subscription.get_level_display }} subscription currently ends
+                on {{ user.subscription.end_date|date:"F j, Y" }}. By resuming, your subscription
+                will automatically renew after this date.
+              </p>
+            </div>
+
+            <p class="mb-4">By resuming your subscription:</p>
+            <ul class="mb-6 space-y-2">
+              <li class="flex items-center gap-2">
+                <i data-lucide="check" class="size-4 text-primary"></i>
+                <span>You'll continue to enjoy all {{ user.subscription.get_level_display }} features without interruption;</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i data-lucide="check" class="size-4 text-primary"></i>
+                <span>Your subscription will automatically renew at the regular price;</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i data-lucide="check" class="size-4 text-primary"></i>
+                <span>You can cancel again at any time.</span>
+              </li>
+            </ul>
+
+            <form data-jswc-add-load class="w-full" action="{% url 'resume_plan' %}" method="post">
+              {% csrf_token %}
+              <div class="flex items-center gap-2">
+                <button type="submit" class="button-primary">Resume Subscription</button>
+                <button type="button" data-jswc-dialog-close class="button-outline">Not Now</button>
+              </div>
+            </form>
+          </div>
+          <button
+            type="button"
+            data-jswc-dialog-close
+            class="button-outline absolute right-4 top-4 rounded-xl border-0 p-2"
+            aria-label="Close"
+          >
+            <i data-lucide="x" class="size-5"></i>
+          </button>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+    <div data-jwsc-tab-panel="billing" class="hidden size-full flex-col data-[state=active]:flex">
+      <div class="flex flex-col gap-1">
+        <h2 class="text-xl font-bold">Billing</h2>
+        <p class="text-foreground/80">Manage your payment methods and view your payments.</p>
+      </div>
+      <div class="separator mb-7 mt-5 w-full"></div>
+
+      <div class="card">
+        <div class="card-content">
+          <h3 class="card-title">Payment Method</h3>
+          <p class="card-description">
+            {% if user.card_last_four_digits %}
+            Subscription fees will be billed to this card.
+            {% else %}
+            No payment methods added
+            {% endif %}
+          </p>
+          {% if user.card_last_four_digits %}
+          <div class="rounded-md border p-4">
+            <div class="flex items-center gap-2 text-sm text-foreground/80">
+              <i data-lucide="credit-card" class="size-5"></i>
+              <span>Card ending in •••• {{ user.card_last_four_digits }}</span>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+        <div class="card-footer">
+          <p class="card-footer-description">
+            {% if user.card_last_four_digits %}
+            Keep your card up to date to keep your plan on auto-renew.
+            {% else %}
+            Add a card to keep your plan with automatic renewal.
+            {% endif %}
+          </p>
+          <a class="button-primary button-sm" href="{% url 'add_payment_method' %}">
+            {% if user.card_last_four_digits %}
+            Update card
+            {% else %}
+            Add card
+            {% endif %}
+          </a>
+        </div>
+      </div>
+
+      <div class="card mt-7">
+        <div class="card-content pb-5">
+          <h3 class="card-title">Invoice Balance</h3>
+          <p class="card-description">
+            These are the credits on your account:
+            <span class="text-lg font-bold">$ {{ user.customer_balance_format }}</span>
+          </p>
+        </div>
+        <div class="card-footer">
+          <p class="card-footer-description">
+            Any available credit will be automatically applied towards invoices generated for this account.
+          </p>
+        </div>
+      </div>
+
+      <div class="card mt-7">
+        <div class="card-content">
+          <h3 class="card-title">Payments History</h3>
+
+          {% if user.payments %}
+          <div class="mt-4 rounded-md border pb-2">
+            <div class="size-full max-h-[500px] overflow-auto overscroll-contain">
+              <table class="w-full caption-bottom text-sm">
+                <caption class="mt-4 text-sm text-muted-foreground">
+                  A list of your payments.
+                </caption>
+                <thead class="border-b duration-200 hover:bg-muted/50">
+                  <tr>
+                    <th class="h-12 px-4 text-start align-middle font-medium text-muted-foreground">Date</th>
+                    <th class="h-12 px-4 text-start align-middle font-medium text-muted-foreground">Description</th>
+                    <th class="h-12 px-4 text-start align-middle font-medium text-muted-foreground">Amount</th>
+                    <th class="h-12 px-4 text-center align-middle font-medium text-muted-foreground">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for payment in user.payments.all %}
+                  <tr class="border-b duration-200 hover:bg-muted/50">
+                    <td class="p-4 align-middle">{{ payment.payment_date|date:"M d, Y" }}</td>
+                    <td class="p-4 align-middle">
+                      {% if payment.invoice_url %}
+                      <a class="link-primary" href="{{ payment.invoice_url }}" rel="noopener noreferrer" target="_blank">
+                        {{ payment.description }}
+                      </a>
+                      {% else %}
+                      {{ payment.description }}
+                      {% endif %}
+                    </td>
+                    <td class="p-4 align-middle">${{ payment.amount }}</td>
+                    <td class="p-4 text-center align-middle">
+                      <span class="badge-{{ payment.status_badge }}">{{ payment.status }}</span>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          {% else %}
+          <p class="text-sm text-muted-foreground">No purchase history yet.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div data-jwsc-tab-panel="security" class="hidden size-full flex-col data-[state=active]:flex">
+      <div class="flex flex-col gap-1">
+        <h2 class="text-xl font-bold">Account Security</h2>
+        <p class="text-foreground/80">Manage your password and authentication settings.</p>
+      </div>
+      <div class="separator mb-7 mt-5 w-full"></div>
+      <div class="flex flex-col">
+        <div class="card">
           <div class="card-content">
-            <h3 class="card-title">Account info</h3>
-            <p class="card-description mt-0">Update your account info here.</p>
-            <div class="flex flex-col mt-4">
-              {{ form }}
+            <h3 class="card-title">Password</h3>
+            <p class="card-description">This is your password.</p>
+            <div class="rounded-md border p-4">
+              <div class="flex items-center gap-4">
+                <i data-lucide="lock-keyhole" class="size-5 text-primary"></i>
+                <span>**********</span>
+              </div>
             </div>
           </div>
           <div class="card-footer">
-            <p class="card-footer-description">
-              Update account info.
-            </p>
-            <button type="submit" class="button-primary button-sm">Update account</button>
-          </div>
-        </form>
-        <div class="card border-destructive mt-10">
-          <div class="card-content">
-            <h3 class="card-title">Delete account</h3>
-            <p class="card-description text-foreground/80">
-              Once you delete your account, there is no going back. Please be certain.
-            </p>
-          </div>
-          <div class="card-footer border-destructive/60 bg-destructive/20 sm:justify-end">
-            <button type="button" class="button-destructive button-sm" data-jswc-dialog data-jswc-target="deactivate-dialog">
-              Delete your account
+            <a
+              class="
+                card-footer-description rounded-md underline-offset-4 ring-ring hover:underline focus-visible:ring-2
+              "
+              href="{% url 'forgot_password' %}?email={{ user.email|urlencode }}"
+            >
+              Forgot password? Click here.
+            </a>
+            <button
+              type="button"
+              data-jswc-dialog
+              data-jswc-target="change-password"
+              class="button-primary button-sm"
+            >
+              Change password
             </button>
-            <div id="deactivate-dialog" class="hidden dialog" data-jswc-dialog-animation="true">
+            <div id="change-password" data-jswc-dialog-animation="true" class="dialog hidden">
               <div class="flex flex-col">
-                <div class="flex justify-between items-center">
-                  <h4 class="text-lg font-bold">Are you sure?</h4>
+                <div class="flex items-center justify-between">
+                  <h4 class="text-xl font-bold">Change your password</h4>
                 </div>
-                <div class="flex flex-col gap-4 mt-4 text-sm">
-                  <p>
-                    Are you sure you want to delete the user "{{ user.username }}"?
-                    All of the following related items will be deleted:
-                  </p>
-                  <ul class="list-disc list-inside">
-                    <li>
-                      User: {{ user.username }}
-                      <ul class="list-disc list-inside pl-2 sm:pl-6">
-                        {% for link in user.shortened_links.all %}
-                          <li>
-                            Link:
-                            <a href="{% url "link" link.shortened_path %}" class="link-primary">{{ link }}</a>
-                          </li>
-                        {% endfor %}
-                      </ul>
-                    </li>
-                  </ul>
-                </div>
-                <div class="separator my-6"></div>
-                <div>
-                  <form method="post" action="{% url "delete_account" %}" class="flex flex-col" data-jswc-add-load>
-                    {% csrf_token %}
-                    <div class="flex flex-col gap-2 mb-4">
-                      <label for="confirm_username" class="label text-foreground/80">Your username:</label>
-                      <input type="text" id="confirm_username" name="username" class="input border-2" required />
-                    </div>
-                    <div class="flex flex-col gap-2">
-                      <label for="confirm_password" class="label text-foreground/80">Confirm your password:</label>
-                      <input type="password" id="confirm_password" name="password" class="input border-2" required />
-                    </div>
-                    <div class="flex items-center gap-2 flex-wrap mt-4">
-                      <button type="submit" class="button-destructive w-full sm:w-auto">Yes, I’m sure</button>
-                      <button
-                        type="button"
-                        class="button-outline w-full sm:w-auto"
-                        data-jswc-dialog-close
-                      >
-                        No, take me back
-                      </button>
-                    </div>
-                  </form>
-                </div>
+                <form
+                  data-jswc-add-load
+                  class="mt-6 flex w-full flex-col flex-wrap gap-2"
+                  action="{% url "change_password" %}"
+                  method="post"
+                >
+                  {% csrf_token %}
+                  <div class="mb-2 flex w-full flex-col gap-2">
+                    <label class="label" for="old_password">Old Password:</label>
+                    <input name="old_password" id="old_password" type="password" class="input" required />
+                  </div>
+                  <div class="mb-4 flex w-full flex-col gap-2">
+                    <label class="label" for="new_password">New Password:</label>
+                    <input name="new_password" id="new_password" type="password" class="input" required />
+                  </div>
+                  <button type="submit" class="button-primary w-fit self-end">Change</button>
+                </form>
                 <button
                   type="button"
-                  class="absolute button-outline p-2 border-0 rounded-xl right-4 top-4"
-                  aria-label="Close"
                   data-jswc-dialog-close
+                  class="button-outline absolute right-4 top-4 rounded-xl border-0 p-2"
+                  aria-label="Close"
                 >
                   <i data-lucide="x" class="size-5"></i>
                 </button>
@@ -132,511 +637,35 @@
             </div>
           </div>
         </div>
-      </div>
-      <div data-jwsc-tab-panel="email" class="hidden flex-col size-full data-[state=active]:flex">
-        <div class="flex flex-col gap-1">
-          <h2 class="text-xl font-bold">Email Settings</h2>
-          <p class="text-foreground/80">Manage your email settings.</p>
-        </div>
-        <div class="separator w-full mt-5"></div>
-        <div class="card mt-7">
-          <div class="card-content">
-            <h3 class="card-title">
-              {% if token %}
-                Change your email
-              {% else %}
-                Email
-              {% endif %}
-            </h3>
-            <p class="card-description">
-              {% if token %}
-                Enter your new email below to change your email.
-              {% else %}
-                This email will be used for account-related notifications and can also be used for password resets.
-              {% endif %}
-            </p>
-            {% if token %}
-              <form method="post" class="flex flex-col" action="{% url 'change_email' token %}" data-jswc-add-load>
-                {% csrf_token %}
-                <div class="flex flex-col gap-3">
-                  <label for="new_email" class="label text-foreground/80">New email:</label>
-                  <input type="email" name="new_email" id="new_email" class="input" placeholder="{{ user.email }}" required />
-                </div>
-                <div class="flex items-center gap-2 mt-4">
-                  <button type="submit" class="button-primary button-sm">Change</button>
-                  <a href="{% url 'my_account' %}?tab=email" class="button-outline button-sm">Cancel</a>
-                </div>
-              </form>
-            {% else %}
-              <div class="flex items-center rounded-md border p-4">
-                <div class="flex items-center gap-2">
-                  <span class="text-sm">contact@ncontiero.com</span>
-                  <div
-                    class="{% if not user.email_verified %}badge-destructive{% else %}badge-secondary{% endif %}"
-                  >
-                    {% if not user.email_verified %}Not {% endif %}Verified
-                  </div>
-                </div>
-              </div>
-            {% endif %}
-          </div>
-          <div class="card-footer">
-            {% if not user.email_verified %}
-              <p class="card-footer-description">
-                Please check your email for full access! If you haven't received the verification email, click the button below.
+        <form data-jswc-add-load class="card mt-7" action="{% url 'account_security' %}" method="post">
+          {% csrf_token %}
+          <div class="card-content flex-row items-center justify-between">
+            <label for="login_with_email">
+              <h3 class="card-title">Login with email</h3>
+              <p class="card-description mb-0">
+                Enable if you want to allow login with magic link.
               </p>
-              <a href="{% url "resend_verify_email" %}" class="button-outline w-fit mt-4 px-2 py-1">
-                Resend verification email
-              </a>
-            {% else %}
-              <p class="card-footer-description">
-                You will receive a verification email to your email address.
-              </p>
-              <button
-                type="button"
-                class="button-primary button-sm"
-                title="Change your email"
-                {% if token %}disabled{% endif %}
-                data-jswc-dialog
-                data-jswc-target="change-email"
-              >
-                Change email
-              </button>
-              <div id="change-email" class="hidden dialog" data-jswc-dialog-animation="true">
-                <div class="flex flex-col">
-                  <div class="flex justify-between items-center">
-                    <h2 class="text-xl font-bold">Change email</h2>
-                  </div>
-                  <div class="mt-5 w-full flex flex-col">
-                    <p>
-                      To change your email, click the “Change” button and you will receive an email
-                      with further instructions on how to change your email.
-                    </p>
-                    <div class="flex items-center gap-2 mt-4">
-                      <a href="{% url 'change_email_instructions' %}" class="button-primary w-fit">Change</a>
-                      <button type="button" class="button-outline w-fit" data-jswc-dialog-close>
-                        No, take me back
-                      </button>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    class="button-outline absolute p-2 border-0 rounded-xl right-4 top-4"
-                    aria-label="Close"
-                    data-jswc-dialog-close
-                  >
-                    <i data-lucide="x" class="size-5"></i>
-                  </button>
-                </div>
-              </div>
-            {% endif %}
-          </div>
-        </div>
-      </div>
-      <div data-jwsc-tab-panel="plan" class="hidden flex-col size-full data-[state=active]:flex">
-        <div class="flex flex-col gap-1">
-          <h2 class="text-xl font-bold">My Plan</h2>
-          <p class="text-foreground/80">Manage your subscription.</p>
-        </div>
-        <div class="separator w-full mt-5 mb-7"></div>
-
-        <div class="card">
-          <div class="card-content">
-            <div class="flex items-center gap-2">
-              <h3 class="card-title">Current Plan:</h3>
-              {% if user.subscription_active %}
-                <span class="badge-default">{{ user.subscription.level }}</span>
-              {% else %}
-                <span class="badge-secondary">Free</span>
+            </label>
+            <button
+              id="login_with_email"
+              type="button"
+              data-jswc-switch
+              data-name="login_with_email"
+              class="switch-button"
+              {% if user.login_with_email %}
+              data-state="checked"
               {% endif %}
-            </div>
-            <p class="card-description">
-              {% if user.subscription_active %}
-                Your subscription {% if not user.subscription.is_auto_renew %}ends{% else %}renews{% endif %} on {{ user.subscription.end_date|date:"F j, Y" }}
-              {% else %}
-                You are currently using the Free plan with limited features.
-              {% endif %}
-            </p>
-          </div>
-          <div class="card-footer justify-end">
-            {% if user.subscription_active %}
-              {% if user.subscription.is_auto_renew %}
-                <button
-                  type="button"
-                  class="button-outline button-sm"
-                  data-jswc-dialog
-                  data-jswc-target="cancel-subscription-dialog"
-                >
-                  Cancel Subscription
-                </button>
-              {% else %}
-                <button
-                  type="button"
-                  class="button-primary button-sm"
-                  data-jswc-dialog
-                  data-jswc-target="resume-subscription-dialog"
-                >
-                  Keep Subscription
-                </button>
-              {% endif %}
-            {% endif %}
-            <button type="button" class="button-primary button-sm" data-jswc-dialog data-jswc-target="choose-plan-dialog">
-              Select plan
-            </button>
-          </div>
-        </div>
-
-        <div class="card mt-7">
-          <div class="card-content">
-            <h3 class="card-title">Link Usage</h3>
-
-            <div class="flex flex-col gap-6 mt-4">
-              <div>
-                <div class="flex justify-between items-center mb-2">
-                  <h4 class="font-medium">Links</h4>
-                  <span class="text-sm">
-                    {{ user.monthly_limit_links_used }} / {{ user.monthly_link_limit }}
-                  </span>
-                </div>
-                <div class="bg-secondary/60 rounded-full h-2 overflow-hidden">
-                  <div class="bg-primary h-full" style="width: {% widthratio user.monthly_limit_links_used user.monthly_link_limit 100 %}%"></div>
-                </div>
-                <div class="flex justify-between text-xs text-foreground/80 mt-1">
-                  <span>Used</span>
-                  <span>Total</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="card-footer">
-            <p class="card-footer-description">Last reset was {{ user.last_monthly_limit_reset }}</p>
-          </div>
-        </div>
-
-        <div class="card mt-7">
-          <div class="card-content">
-            <h3 class="card-title">Plan Features</h3>
-            <ul class="space-y-3 mt-4">
-              <li class="flex items-center gap-2">
-                <i data-lucide="check" class="size-4 text-primary"></i>
-                <span>{{ user.monthly_link_limit }} new links/mo (resets monthly)</span>
-              </li>
-              {% if user.subscription_active %}
-                <li class="flex items-center gap-2">
-                  <i data-lucide="check" class="size-4 text-primary"></i>
-                  <span>Advanced statistics</span>
-                </li>
-                <li class="flex items-center gap-2">
-                  <i data-lucide="check" class="size-4 text-primary"></i>
-                  <span>Priority support</span>
-                </li>
-              {% else %}
-                <li class="flex items-center gap-2 text-muted-foreground">
-                  <i data-lucide="x" class="size-4"></i>
-                  <span>Advanced statistics</span>
-                </li>
-                <li class="flex items-center gap-2 text-muted-foreground">
-                  <i data-lucide="x" class="size-4"></i>
-                  <span>Priority support</span>
-                </li>
-              {% endif %}
-            </ul>
-          </div>
-        </div>
-
-        <!-- Dialogs -->
-        <!-- Choose Plan Dialog -->
-        {% include "partials/choose_plan_dialog.html" %}
-
-        {% if user.subscription.is_auto_renew %}
-          <!-- Cancel Plan Dialog -->
-          <div id="cancel-subscription-dialog" class="hidden dialog" data-jswc-dialog-animation="true">
-            <div class="flex flex-col">
-              <div class="flex justify-between items-center">
-                <h2 class="text-xl font-bold">Cancel {{ user.subscription.get_level_display }} Subscription</h2>
-              </div>
-              <div class="mt-4">
-                <div class="bg-secondary/40 p-4 rounded-lg mb-6 border">
-                  <p class="text-foreground/80">
-                    <i data-lucide="info" class="size-4 inline-block mr-1 text-primary"></i>
-                    You'll continue to have access to all {{ user.subscription.level }} features until the end of your current billing period on {{ user.subscription.end_date|date:"F j, Y" }}.
-                  </p>
-                </div>
-
-                <p class="mb-4">After your subscription ends:</p>
-                <ul class="space-y-2 mb-6">
-                  <li class="flex items-center gap-2">
-                    <i data-lucide="minus" class="size-4 text-destructive"></i>
-                    <span>Your link limits will be reduced to 5 links;</span>
-                  </li>
-                  <li class="flex items-center gap-2">
-                    <i data-lucide="minus" class="size-4 text-destructive"></i>
-                    <span>You will lose access to {{ user.subscription.level }} features;</span>
-                  </li>
-                </ul>
-
-                <form method="post" action="{% url 'cancel_plan' %}" class="w-full" data-jswc-add-load>
-                  {% csrf_token %}
-                  <div class="flex items-center gap-2">
-                    <button type="submit" class="button-destructive">Cancel Subscription</button>
-                    <button type="button" class="button-outline" data-jswc-dialog-close>Keep My Subscription</button>
-                  </div>
-                </form>
-              </div>
-              <button type="button" class="button-outline absolute p-2 border-0 rounded-xl right-4 top-4" aria-label="Close" data-jswc-dialog-close>
-                <i data-lucide="x" class="size-5"></i>
-              </button>
-            </div>
-          </div>
-        {% else %}
-          <!-- Resume Subscription Dialog -->
-          <div id="resume-subscription-dialog" class="hidden dialog" data-jswc-dialog-animation="true">
-            <div class="flex flex-col">
-              <div class="flex justify-between items-center">
-                <h2 class="text-xl font-bold">Resume {{ user.subscription.get_level_display }} Subscription</h2>
-              </div>
-              <div class="mt-4">
-                <div class="bg-secondary/40 p-4 rounded-lg mb-6 border">
-                  <p class="text-foreground/80">
-                    <i data-lucide="info" class="size-4 inline-block mr-1 text-primary"></i>
-                    Your {{ user.subscription.get_level_display }} subscription currently ends
-                    on {{ user.subscription.end_date|date:"F j, Y" }}. By resuming, your subscription
-                    will automatically renew after this date.
-                  </p>
-                </div>
-
-                <p class="mb-4">By resuming your subscription:</p>
-                <ul class="space-y-2 mb-6">
-                  <li class="flex items-center gap-2">
-                    <i data-lucide="check" class="size-4 text-primary"></i>
-                    <span>You'll continue to enjoy all {{ user.subscription.get_level_display }} features without interruption;</span>
-                  </li>
-                  <li class="flex items-center gap-2">
-                    <i data-lucide="check" class="size-4 text-primary"></i>
-                    <span>Your subscription will automatically renew at the regular price;</span>
-                  </li>
-                  <li class="flex items-center gap-2">
-                    <i data-lucide="check" class="size-4 text-primary"></i>
-                    <span>You can cancel again at any time.</span>
-                  </li>
-                </ul>
-
-                <form method="post" action="{% url 'resume_plan' %}" class="w-full" data-jswc-add-load>
-                  {% csrf_token %}
-                  <div class="flex items-center gap-2">
-                    <button type="submit" class="button-primary">Resume Subscription</button>
-                    <button type="button" class="button-outline" data-jswc-dialog-close>Not Now</button>
-                  </div>
-                </form>
-              </div>
-              <button type="button" class="button-outline absolute p-2 border-0 rounded-xl right-4 top-4" aria-label="Close" data-jswc-dialog-close>
-                <i data-lucide="x" class="size-5"></i>
-              </button>
-            </div>
-          </div>
-        {% endif %}
-      </div>
-      <div data-jwsc-tab-panel="billing" class="hidden flex-col size-full data-[state=active]:flex">
-        <div class="flex flex-col gap-1">
-          <h2 class="text-xl font-bold">Billing</h2>
-          <p class="text-foreground/80">Manage your payment methods and view your payments.</p>
-        </div>
-        <div class="separator w-full mt-5 mb-7"></div>
-
-        <div class="card">
-          <div class="card-content">
-            <h3 class="card-title">Payment Method</h3>
-            <p class="card-description">
-              {% if user.card_last_four_digits %}
-                Subscription fees will be billed to this card.
-              {% else %}
-                No payment methods added
-              {% endif %}
-            </p>
-            {% if user.card_last_four_digits %}
-              <div class="border rounded-md p-4">
-                <div class="flex items-center gap-2 text-foreground/80 text-sm">
-                  <i data-lucide="credit-card" class="size-5"></i>
-                  <span>Card ending in •••• {{ user.card_last_four_digits }}</span>
-                </div>
-              </div>
-            {% endif %}
+            ></button>
           </div>
           <div class="card-footer">
             <p class="card-footer-description">
-              {% if user.card_last_four_digits %}
-                Keep your card up to date to keep your plan on auto-renew.
-              {% else %}
-                Add a card to keep your plan with automatic renewal.
-              {% endif %}
+              By enabling this, you will be able to log in with email only.
             </p>
-            <a href="{% url 'add_payment_method' %}" class="button-primary button-sm">
-              {% if user.card_last_four_digits %}
-                Update card
-              {% else %}
-                Add card
-              {% endif %}
-            </a>
+            <button type="submit" class="button-primary button-sm">Save</button>
           </div>
-        </div>
-
-        <div class="card mt-7">
-          <div class="card-content pb-5">
-            <h3 class="card-title">Invoice Balance</h3>
-            <p class="card-description">
-              These are the credits on your account:
-              <span class="font-bold text-lg">$ {{ user.customer_balance_format }}</span>
-            </p>
-          </div>
-          <div class="card-footer">
-            <p class="card-footer-description">
-              Any available credit will be automatically applied towards invoices generated for this account.
-            </p>
-          </div>
-        </div>
-
-        <div class="card mt-7">
-          <div class="card-content">
-            <h3 class="card-title">Payments History</h3>
-
-            {% if user.payments %}
-              <div class="border rounded-md mt-4 pb-2">
-                <div class="size-full overflow-auto max-h-[500px] overscroll-contain">
-                  <table class="w-full caption-bottom text-sm">
-                    <caption class="mt-4 text-sm text-muted-foreground">
-                      A list of your payments.
-                    </caption>
-                    <thead class="border-b duration-200 hover:bg-muted/50">
-                      <tr>
-                        <th class="h-12 px-4 text-start align-middle font-medium text-muted-foreground">Date</th>
-                        <th class="h-12 px-4 text-start align-middle font-medium text-muted-foreground">Description</th>
-                        <th class="h-12 px-4 text-start align-middle font-medium text-muted-foreground">Amount</th>
-                        <th class="h-12 px-4 text-center align-middle font-medium text-muted-foreground">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {% for payment in user.payments.all %}
-                      <tr class="border-b duration-200 hover:bg-muted/50">
-                        <td class="p-4 align-middle">{{ payment.payment_date|date:"M d, Y" }}</td>
-                        <td class="p-4 align-middle">
-                          {% if payment.invoice_url %}
-                            <a href="{{ payment.invoice_url }}" target="_blank" rel="noopener noreferrer" class="link-primary">
-                              {{ payment.description }}
-                            </a>
-                          {% else %}
-                            {{ payment.description }}
-                          {% endif %}
-                        </td>
-                        <td class="p-4 align-middle">${{ payment.amount }}</td>
-                        <td class="p-4 align-middle text-center">
-                          <span class="badge-{{ payment.status_badge }}">{{ payment.status }}</span>
-                        </td>
-                      </tr>
-                      {% endfor %}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            {% else %}
-              <p class="text-muted-foreground text-sm">No purchase history yet.</p>
-            {% endif %}
-          </div>
-        </div>
-      </div>
-      <div data-jwsc-tab-panel="security" class="hidden flex-col size-full data-[state=active]:flex">
-        <div class="flex flex-col gap-1">
-          <h2 class="text-xl font-bold">Account Security</h2>
-          <p class="text-foreground/80">Manage your password and authentication settings.</p>
-        </div>
-        <div class="separator w-full mt-5 mb-7"></div>
-        <div class="flex flex-col">
-          <div class="card">
-            <div class="card-content">
-              <h3 class="card-title">Password</h3>
-              <p class="card-description">This is your password.</p>
-              <div class="border rounded-md p-4">
-                <div class="flex items-center gap-4">
-                  <i data-lucide="lock-keyhole" class="size-5 text-primary"></i>
-                  <span>**********</span>
-                </div>
-              </div>
-            </div>
-            <div class="card-footer">
-              <a
-                href="{% url 'forgot_password' %}?email={{ user.email|urlencode }}"
-                class="card-footer-description rounded-md ring-ring underline-offset-4 hover:underline focus-visible:ring-2"
-              >
-                Forgot password? Click here.
-              </a>
-              <button
-                type="button"
-                class="button-primary button-sm"
-                data-jswc-dialog
-                data-jswc-target="change-password"
-              >
-                Change password
-              </button>
-              <div id="change-password" class="hidden dialog" data-jswc-dialog-animation="true">
-                <div class="flex flex-col">
-                  <div class="flex justify-between items-center">
-                    <h4 class="text-xl font-bold">Change your password</h4>
-                  </div>
-                  <form
-                    method="post"
-                    action="{% url "change_password" %}"
-                    class="mt-6 w-full flex flex-col gap-2 flex-wrap"
-                    data-jswc-add-load
-                  >
-                    {% csrf_token %}
-                    <div class="w-full flex flex-col gap-2 mb-2">
-                      <label for="old_password" class="label">Old Password:</label>
-                      <input type="password" id="old_password" name="old_password" class="input" required />
-                    </div>
-                    <div class="w-full flex flex-col gap-2 mb-4">
-                      <label for="new_password" class="label">New Password:</label>
-                      <input type="password" id="new_password" name="new_password" class="input" required />
-                    </div>
-                    <button type="submit" class="button-primary w-fit self-end">Change</button>
-                  </form>
-                  <button
-                    type="button"
-                    class="button-outline absolute p-2 border-0 rounded-xl right-4 top-4"
-                    aria-label="Close"
-                    data-jswc-dialog-close
-                  >
-                    <i data-lucide="x" class="size-5"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <form method="post" class="card mt-7" action="{% url 'account_security' %}" data-jswc-add-load>
-            {% csrf_token %}
-            <div class="card-content flex-row items-center justify-between">
-              <label for="login_with_email">
-                <h3 class="card-title">Login with email</h3>
-                <p class="card-description mb-0">
-                  Enable if you want to allow login with magic link.
-                </p>
-              </label>
-              <button
-                id="login_with_email"
-                type="button"
-                class="switch-button"
-                data-jswc-switch
-                data-name="login_with_email"
-                {% if user.login_with_email %}data-state="checked"{% endif %}
-              ></button>
-            </div>
-            <div class="card-footer">
-              <p class="card-footer-description">
-                By enabling this, you will be able to log in with email only.
-              </p>
-              <button type="submit" class="button-primary button-sm">Save</button>
-            </div>
-          </form>
-        </div>
+        </form>
       </div>
     </div>
   </div>
+</div>
 {% endblock content %}

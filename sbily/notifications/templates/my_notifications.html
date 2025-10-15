@@ -3,147 +3,160 @@
 {% block title %}My Notifications{% endblock title %}
 
 {% block content %}
-  <div class="my-10 flex flex-col justify-center max-w-xl mx-auto rounded-md border-2 border-secondary md:my-16">
-    <div class="p-6 border-b-2">
-      <h1 class="text-lg font-bold">My Notifications</h1>
-    </div>
-    <div class="flex flex-col gap-2 p-4">
-      {% if notifications|length <= 0 %}
-        <p class="text-center my-8 text-lg">You have no new notifications!</p>
-      {% endif %}
-      {% for notification in notifications %}
-        <div class="relative group rounded-md {% if notification.is_read %}bg-secondary/40{% else %}bg-secondary/50{% endif %}">
-          <a
-            href="{% url "my_notification" notification.id %}"
-            class="-z-[1px] flex items-center justify-between p-4 gap-4 rounded-md duration-200 ring-ring outline-none hover:bg-secondary/60 focus:ring-2"
-          >
-            <div
-              class="absolute size-2.5 {% if notification.is_read %}border-2{% else %}bg-blue-600 animate-bounce{% endif %} rounded-full top-2 left-2"
-            ></div>
-            <div class="flex items-center gap-4">
-              <div class="size-6">
-                {% include "partials/notification_icon.html" %}
-              </div>
-              <div>
-                <p class="{% if notification.is_read %}opacity-80{% endif %}">
-                  {{ notification.title }}
-                </p>
-                <span class="text-sm text-foreground/60">{{ notification.created_at|timesince }} ago</span>
-              </div>
-            </div>
+<div class="mx-auto my-10 flex max-w-xl flex-col justify-center rounded-md border-2 border-secondary md:my-16">
+  <div class="border-b-2 p-6">
+    <h1 class="text-lg font-bold">My Notifications</h1>
+  </div>
+  <div class="flex flex-col gap-2 p-4">
+    {% if notifications|length <= 0 %}
+    <p class="my-8 text-center text-lg">You have no new notifications!</p>
+    {% endif %}
+    {% for notification in notifications %}
+    <div
+      class="
+        {% if notification.is_read %}bg-secondary/40{% else %}bg-secondary/50{% endif %} group relative rounded-md
+      "
+    >
+      <a
+        class="
+          -z-[1px] flex items-center justify-between gap-4 rounded-md p-4 outline-none ring-ring duration-200
+          hover:bg-secondary/60 focus:ring-2
+        "
+        href="{% url "my_notification" notification.id %}"
+      >
+        <div
+          class="
+            {% if notification.is_read %}border-2{% else %}bg-blue-600 animate-bounce{% endif %} absolute left-2 top-2
+            size-2.5 rounded-full
+          "
+        ></div>
+        <div class="flex items-center gap-4">
+          <div class="size-6">
+            {% include "partials/notification_icon.html" %}
+          </div>
+          <div>
+            <p class="{% if notification.is_read %}opacity-80{% endif %}">
+              {{ notification.title }}
+            </p>
+            <span class="text-sm text-foreground/60">{{ notification.created_at|timesince }} ago</span>
+          </div>
+        </div>
+      </a>
+      <div class="absolute right-2 top-2">
+        <button
+          type="button"
+          data-jswc-dropdown
+          data-jswc-target="dropdown-menu-notification-{{ notification.id }}"
+          class="
+            button-outline p-1.5 opacity-0 duration-200 focus:opacity-100 group-focus-within:opacity-100
+            group-hover:opacity-100
+          "
+          aria-label="Open action menu for notification {{ notification.title }}"
+          title="Open action menu for notification {{ notification.title }}"
+        >
+          <i data-lucide="ellipsis" class="size-3"></i>
+        </button>
+        <div
+          id="dropdown-menu-notification-{{ notification.id }}"
+          data-jswc-dropdown-animation="true"
+          class="dropdown-menu right-0 hidden"
+        >
+          <a class="dropdown-menu-item gap-2" href="{% url "handle_read" notification.id %}">
+            {% if notification.is_read %}
+            <span class="size-2 rounded-full bg-blue-600"></span>
+            Mark as unread
+            {% else %}
+            <span class="size-2 rounded-full border-2 border-foreground"></span>
+            Mark as read
+            {% endif %}
           </a>
-          <div class="absolute top-2 right-2">
-            <button
-              type="button"
-              class="button-outline p-1.5 opacity-0 duration-200 focus:opacity-100 group-hover:opacity-100 group-focus-within:opacity-100"
-              data-jswc-dropdown
-              data-jswc-target="dropdown-menu-notification-{{ notification.id }}"
-              aria-label="Open action menu for notification {{ notification.title }}"
-              title="Open action menu for notification {{ notification.title }}"
-            >
-              <i data-lucide="ellipsis" class="size-3"></i>
-            </button>
-            <div
-              id="dropdown-menu-notification-{{ notification.id }}"
-              class="hidden dropdown-menu right-0"
-              data-jswc-dropdown-animation="true"
-            >
-              <a href="{% url "handle_read" notification.id %}" class="dropdown-menu-item gap-2">
-                {% if notification.is_read %}
-                  <span class="bg-blue-600 rounded-full size-2"></span>
-                  Mark as unread
-                {% else %}
-                  <span class="border-2 border-foreground rounded-full size-2"></span>
-                  Mark as read
-                {% endif %}
+          <button
+            type="button"
+            data-jswc-dialog
+            data-jswc-target="delete-notification-{{ notification.id }}"
+            class="dropdown-menu-item gap-2 text-red-600"
+          >
+            <i data-lucide="trash2"></i>
+            Delete
+          </button>
+        </div>
+        <div id="delete-notification-{{ notification.id }}" data-jswc-dialog-animation="true" class="dialog hidden">
+          <div class="flex flex-col">
+            <div class="flex items-center justify-between">
+              <h2 class="text-xl font-bold">Are you sure?</h2>
+            </div>
+            <div class="mt-2 flex flex-col gap-4">
+              <p>
+                Are you sure you want to remove the "{{ notification.title }}" notification?
+                This action will be permanent!
+              </p>
+            </div>
+            <div class="mt-4 flex items-center gap-2">
+              <a class="button-destructive w-full sm:w-auto" href="{% url "delete_notification" notification.id %}">
+                Yes, I’m sure
               </a>
               <button
                 type="button"
-                class="dropdown-menu-item gap-2 text-red-600"
-                data-jswc-dialog
-                data-jswc-target="delete-notification-{{ notification.id }}"
-              >
-                <i data-lucide="trash2"></i>
-                Delete
-              </button>
-            </div>
-            <div id="delete-notification-{{ notification.id }}" class="hidden dialog" data-jswc-dialog-animation="true">
-              <div class="flex flex-col">
-                <div class="flex justify-between items-center">
-                  <h2 class="text-xl font-bold">Are you sure?</h2>
-                </div>
-                <div class="flex flex-col gap-4 mt-2">
-                  <p>
-                    Are you sure you want to remove the "{{ notification.title }}" notification?
-                    This action will be permanent!
-                  </p>
-                </div>
-                <div class="flex items-center mt-4 gap-2">
-                  <a href="{% url "delete_notification" notification.id %}" class="button-destructive w-full sm:w-auto">
-                    Yes, I’m sure
-                  </a>
-                  <button
-                    type="button"
-                    class="button-outline w-full sm:w-auto"
-                    data-jswc-dialog-close
-                  >
-                    No, take me back
-                  </button>
-                </div>
-                <button
-                  type="button"
-                  class="absolute button-outline p-2 border-0 rounded-xl right-4 top-4"
-                  aria-label="Close"
-                  data-jswc-dialog-close
-                >
-                  <i data-lucide="x" class="size-5"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      {% endfor %}
-    </div>
-    {% if notifications|length > 0 %}
-      <div class="p-6 border-t-2 flex justify-between items-center">
-        <button
-          type="button"
-          class="button-destructive px-2 py-1"
-          data-jswc-dialog
-          data-jswc-target="clear-all-dialog"
-        >
-          Clear All
-        </button>
-        <a href="{% url "mark_all_as_read" %}" class="px-2 py-1 button-outline">Mark All as read</a>
-        <div id="clear-all-dialog" class="hidden dialog" data-jswc-dialog-animation="true">
-          <div class="flex flex-col">
-            <div class="flex justify-between items-center">
-              <h2 class="text-xl font-bold">Are you sure?</h2>
-            </div>
-            <div class="flex flex-col gap-4 mt-2">
-              <p>Are you sure you want to remove all notifications? This action will be permanent!</p>
-            </div>
-            <div class="flex items-center mt-4 gap-2">
-              <a href="{% url "delete_all" %}" class="button-destructive w-full sm:w-auto">Yes, I’m sure</a>
-              <button
-                type="button"
-                class="button-outline w-full sm:w-auto"
                 data-jswc-dialog-close
+                class="button-outline w-full sm:w-auto"
               >
                 No, take me back
               </button>
             </div>
             <button
               type="button"
-              class="absolute button-outline p-2 border-0 rounded-xl right-4 top-4"
-              aria-label="Close"
               data-jswc-dialog-close
+              class="button-outline absolute right-4 top-4 rounded-xl border-0 p-2"
+              aria-label="Close"
             >
               <i data-lucide="x" class="size-5"></i>
             </button>
           </div>
         </div>
       </div>
-    {% endif %}
+    </div>
+    {% endfor %}
   </div>
+  {% if notifications|length > 0 %}
+  <div class="flex items-center justify-between border-t-2 p-6">
+    <button
+      type="button"
+      data-jswc-dialog
+      data-jswc-target="clear-all-dialog"
+      class="button-destructive px-2 py-1"
+    >
+      Clear All
+    </button>
+    <a class="button-outline px-2 py-1" href="{% url "mark_all_as_read" %}">Mark All as read</a>
+    <div id="clear-all-dialog" data-jswc-dialog-animation="true" class="dialog hidden">
+      <div class="flex flex-col">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-bold">Are you sure?</h2>
+        </div>
+        <div class="mt-2 flex flex-col gap-4">
+          <p>Are you sure you want to remove all notifications? This action will be permanent!</p>
+        </div>
+        <div class="mt-4 flex items-center gap-2">
+          <a class="button-destructive w-full sm:w-auto" href="{% url "delete_all" %}">Yes, I’m sure</a>
+          <button
+            type="button"
+            data-jswc-dialog-close
+            class="button-outline w-full sm:w-auto"
+          >
+            No, take me back
+          </button>
+        </div>
+        <button
+          type="button"
+          data-jswc-dialog-close
+          class="button-outline absolute right-4 top-4 rounded-xl border-0 p-2"
+          aria-label="Close"
+        >
+          <i data-lucide="x" class="size-5"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
 {% endblock content %}

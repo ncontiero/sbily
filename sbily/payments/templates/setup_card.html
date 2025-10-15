@@ -4,27 +4,28 @@
 
 {% block content %}
 <div class="container mx-auto px-4 py-8">
-  <div class="max-w-lg mx-auto">
-    <h1 class="text-2xl font-bold mb-4">Set Up Payment Method</h1>
+  <div class="mx-auto max-w-lg">
+    <h1 class="mb-4 text-2xl font-bold">Set Up Payment Method</h1>
 
-    <div class="bg-background rounded-lg border border-border p-6">
+    <div class="rounded-lg border border-border bg-background p-6">
+      <!-- eslint-disable-next-line html/require-form-method -->
       <form id="payment-form">
         <div class="mb-4">
-          <label for="card-element" class="block text-sm font-medium mb-2">
+          <label class="mb-2 block text-sm font-medium" for="card-element">
             Credit or debit card
           </label>
-          <div id="card-element" class="p-3 border border-border/70 rounded-md duration-200 hover:border-border">
+          <div id="card-element" class="rounded-md border border-border/70 p-3 duration-200 hover:border-border">
             <!-- Stripe Elements will create form elements here -->
           </div>
-          <div id="card-errors" class="text-destructive text-sm mt-2" role="alert"></div>
+          <div id="card-errors" class="mt-2 text-sm text-destructive" role="alert"></div>
         </div>
 
-        <div class="flex justify-between mt-6">
-          <button type="submit" class="button-primary justify-center items-center" id="submit-button">
-            <i data-lucide="loader" class="animate-spin hidden" id="spinner"></i>
+        <div class="mt-6 flex justify-between">
+          <button id="submit-button" type="submit" class="button-primary items-center justify-center">
+            <i id="spinner" data-lucide="loader" class="hidden animate-spin"></i>
             <span id="button-text">Submit Payment Method</span>
           </button>
-          <a href="{% url 'my_account' %}?tab=billing" class="button-outline">Cancel</a>
+          <a class="button-outline" href="{% url 'my_account' %}?tab=billing">Cancel</a>
         </div>
       </form>
     </div>

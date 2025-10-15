@@ -3,13 +3,19 @@
 {% block title %}Dashboard{% endblock title %}
 
 {% block content %}
-<main class="bg-[radial-gradient(hsl(var(--primary)/0.2)_1px,transparent_1px)] [background-size:16px_16px] dark:bg-[radial-gradient(hsl(var(--secondary)/0.4)_1px,transparent_1px)] min-h-screen pb-12">
-  <section class="relative overflow-hidden bg-[radial-gradient(hsl(var(--primary)/0.5)_1px,transparent_1px)] [background-size:16px_16px]">
-    <div class="absolute inset-0 bg-gradient-to-br from-primary/30 to-background z-0"></div>
-    <div class="container mx-auto px-4 py-12 relative z-10">
-      <div class="flex flex-col md:flex-row text-center md:text-start justify-between items-center gap-6">
+<main class="
+  min-h-screen bg-[radial-gradient(hsl(var(--primary)/0.2)_1px,transparent_1px)] pb-12 [background-size:16px_16px]
+  dark:bg-[radial-gradient(hsl(var(--secondary)/0.4)_1px,transparent_1px)]
+">
+  <section class="
+    relative overflow-hidden bg-[radial-gradient(hsl(var(--primary)/0.5)_1px,transparent_1px)]
+    [background-size:16px_16px]
+  ">
+    <div class="absolute inset-0 z-0 bg-gradient-to-br from-primary/30 to-background"></div>
+    <div class="container relative z-10 mx-auto px-4 py-12">
+      <div class="flex flex-col items-center justify-between gap-6 text-center md:flex-row md:text-start">
         <div>
-          <h1 class="text-3xl md:text-4xl font-bold mb-2">
+          <h1 class="mb-2 text-3xl font-bold md:text-4xl">
             {% block dashboard_title %}Dashboard{% endblock dashboard_title %}
           </h1>
           <p class="text-lg text-foreground/80">
@@ -18,29 +24,29 @@
             {% endblock dashboard_description %}
           </p>
           <nav
-            aria-label="breadcrumb"
-            class="mt-4 flex justify-center sm:justify-start"
             data-jswc-breadcrumb
             data-jswc-urls="{% url 'dashboard' %},{% url 'links' %}{% if link %},{% url 'link' link.shortened_path %}{% endif %}"
             data-jswc-labels="Dashboard,Links{% if link %},{{ link.shortened_path }}{% endif %}"
+            class="mt-4 flex justify-center sm:justify-start"
+            aria-label="breadcrumb"
           >
           </nav>
         </div>
-        <div class="flex flex-col sm:flex-row items-center gap-3">
+        <div class="flex flex-col items-center gap-3 sm:flex-row">
           <button
             type="button"
             data-jswc-dialog
             data-jswc-target="create-link-dialog"
-            class="button-primary gap-2 w-fit"
+            class="button-primary w-fit gap-2"
           >
             <i data-lucide="plus" class="size-5"></i>
             New Link
           </button>
           {% if not perms.links.view_advanced_statistics %}
-            <a href="{% url 'plans' %}" class="button-outline bg-background/30 gap-2">
-              <i data-lucide="zap" class="size-5"></i>
-              Upgrade to Premium
-            </a>
+          <a class="button-outline gap-2 bg-background/30" href="{% url 'plans' %}">
+            <i data-lucide="zap" class="size-5"></i>
+            Upgrade to Premium
+          </a>
           {% endif %}
         </div>
       </div>
@@ -52,95 +58,92 @@
   {% if not perms.links.view_advanced_statistics %}
   <section class="py-6">
     <div class="container mx-auto px-4">
-      <div class="bg-secondary/50 p-6 rounded-lg border border-primary/30 text-center mb-8">
-        <h2 class="text-xl font-bold mb-4">Unlock Advanced Analytics</h2>
+      <div class="mb-8 rounded-lg border border-primary/30 bg-secondary/50 p-6 text-center">
+        <h2 class="mb-4 text-xl font-bold">Unlock Advanced Analytics</h2>
         <p class="mb-4">Upgrade to Premium to access advanced analytics and get deeper insights into your link performance.</p>
-        <div class="grid md:grid-cols-2 gap-4 max-w-3xl mx-auto mb-6">
-          <div class="bg-background p-4 rounded-lg border border-border">
-            <i data-lucide="map" class="text-primary size-6 mx-auto mb-2"></i>
-            <h3 class="font-bold mb-1">Geographic Data</h3>
+        <div class="mx-auto mb-6 grid max-w-3xl gap-4 md:grid-cols-2">
+          <div class="rounded-lg border border-border bg-background p-4">
+            <i data-lucide="map" class="mx-auto mb-2 size-6 text-primary"></i>
+            <h3 class="mb-1 font-bold">Geographic Data</h3>
             <p class="text-sm text-muted-foreground">See where your visitors are coming from around the world.</p>
           </div>
-          <div class="bg-background p-4 rounded-lg border border-border">
-            <i data-lucide="smartphone" class="text-primary size-6 mx-auto mb-2"></i>
-            <h3 class="font-bold mb-1">Device Analytics</h3>
+          <div class="rounded-lg border border-border bg-background p-4">
+            <i data-lucide="smartphone" class="mx-auto mb-2 size-6 text-primary"></i>
+            <h3 class="mb-1 font-bold">Device Analytics</h3>
             <p class="text-sm text-muted-foreground">Understand which devices your audience is using.</p>
           </div>
         </div>
-        <a href="{% url 'plans' %}" class="button-primary">Upgrade to Premium</a>
+        <a class="button-primary" href="{% url 'plans' %}">Upgrade to Premium</a>
       </div>
     </div>
   </section>
   {% endif %}
 
-  <div id="create-link-dialog" class="hidden dialog" data-jswc-dialog-animation="true">
-    <form method="post" action="{% url 'create_link' %}" class="flex flex-col" data-jswc-add-load>
+  <div id="create-link-dialog" data-jswc-dialog-animation="true" class="dialog hidden">
+    <form data-jswc-add-load class="flex flex-col" action="{% url 'create_link' %}" method="post">
       {% csrf_token %}
-      <div class="flex justify-between items-center">
+      <div class="flex items-center justify-between">
         <h2 class="text-xl font-bold">Create link</h2>
       </div>
-      <div class="flex flex-col gap-4 mt-2">
+      <div class="mt-2 flex flex-col gap-4">
         <p>You can create a link by filling in the items below.</p>
       </div>
       <div class="separator my-4"></div>
       <div class="mb-6 flex flex-col">
-        <div class="flex flex-col gap-2 mb-4">
-          <label for="destination_url" class="label">Destination URL</label>
+        <div class="mb-4 flex flex-col gap-2">
+          <label class="label" for="destination_url">Destination URL</label>
           <input
-            type="url"
-            id="destination_url"
             name="destination_url"
-            autocomplete="url"
+            id="destination_url"
+            type="url"
             class="input"
+            autocomplete="url"
             placeholder="https://www.google.com/"
             required
           />
         </div>
-        <div class="flex flex-col mb-5 gap-2">
-          <label for="shortened_path" class="label">
+        <div class="mb-5 flex flex-col gap-2">
+          <label class="label" for="shortened_path">
             Shortened URL <span class="text-sm font-medium text-muted-foreground">(Optional)</span>
           </label>
-          <div class="flex items-center border rounded-md">
-            <label
-              class="h-10 flex items-center px-3 py-2"
-              for="shortened_path"
-            >
+          <div class="flex items-center rounded-md border">
+            <label class="flex h-10 items-center px-3 py-2" for="shortened_path">
               {{ LINK_BASE_URL }}
             </label>
             <input
-              type="text"
-              id="shortened_path"
               name="shortened_path"
-              class="input border-y-0 border-r-0 rounded-l-none"
+              id="shortened_path"
+              type="text"
+              class="input rounded-l-none border-y-0 border-r-0"
               placeholder="my_link"
             />
           </div>
         </div>
         <div class="flex flex-col">
-          <label for="expires_at" class="label mb-2">
+          <label class="label mb-2" for="expires_at">
             Expires At <span class="text-sm font-medium text-muted-foreground">(Optional)</span>
           </label>
           <input
-            type="datetime-local"
-            id="expires_at"
             name="expires_at"
+            id="expires_at"
+            type="datetime-local"
             class="input"
           />
         </div>
       </div>
-      <div class="w-full flex items-center gap-2 flex-wrap">
+      <div class="flex w-full flex-wrap items-center gap-2">
         <button type="submit" class="button-primary w-full sm:w-auto">
           Create
         </button>
-        <button type="button" class="button-outline w-full sm:w-auto" data-jswc-dialog-close>
+        <button type="button" data-jswc-dialog-close class="button-outline w-full sm:w-auto">
           Cancel
         </button>
       </div>
       <button
         type="button"
-        class="absolute button-outline p-2 border-0 rounded-xl right-4 top-4"
-        aria-label="Close"
         data-jswc-dialog-close
+        class="button-outline absolute right-4 top-4 rounded-xl border-0 p-2"
+        aria-label="Close"
       >
         <i data-lucide="x" class="size-5"></i>
       </button>

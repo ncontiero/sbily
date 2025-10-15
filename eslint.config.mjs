@@ -2,7 +2,7 @@ import { ncontiero } from "@ncontiero/eslint-config";
 
 export default ncontiero(
   {
-    ignores: ["**/*.html", "**/countries-50m.json"],
+    ignores: ["**/countries-50m.json"],
     javascript: {
       overrides: {
         "node/no-unsupported-features/node-builtins": [
@@ -16,6 +16,11 @@ export default ncontiero(
     },
     toml: {
       overrides: { "toml/indent": ["error", 4] },
+    },
+    tailwindcss: {
+      overrides: {
+        "tailwindcss/no-unknown-classes": "off",
+      },
     },
   },
   {

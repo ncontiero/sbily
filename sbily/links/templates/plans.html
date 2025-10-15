@@ -3,172 +3,184 @@
 {% block title %}Plans{% endblock title %}
 
 {% block content %}
-  <main class="bg-[radial-gradient(hsl(var(--primary)/0.2)_1px,transparent_1px)] [background-size:16px_16px] dark:bg-[radial-gradient(hsl(var(--secondary)/0.4)_1px,transparent_1px)]">
-    <section class="relative overflow-hidden bg-[radial-gradient(hsl(var(--primary)/0.5)_1px,transparent_1px)] [background-size:16px_16px]">
-      <div class="absolute inset-0 bg-gradient-to-br from-primary/30 to-background z-0"></div>
-      <div class="container mx-auto px-4 py-16 md:py-20 relative z-10">
-        <div class="text-center">
-          <h1 class="text-4xl md:text-5xl font-bold mb-4">Choose Your Plan</h1>
-          <p class="text-lg md:text-xl mb-8 max-w-2xl mx-auto">Select the plan that best suits your link shortening needs. Scale up anytime as your requirements grow.</p>
-        </div>
+<main
+  class="
+    bg-[radial-gradient(hsl(var(--primary)/0.2)_1px,transparent_1px)] [background-size:16px_16px]
+    dark:bg-[radial-gradient(hsl(var(--secondary)/0.4)_1px,transparent_1px)]
+  "
+>
+  <section
+    class="
+      relative overflow-hidden bg-[radial-gradient(hsl(var(--primary)/0.5)_1px,transparent_1px)]
+      [background-size:16px_16px]
+    "
+  >
+    <div class="absolute inset-0 z-0 bg-gradient-to-br from-primary/30 to-background"></div>
+    <div class="container relative z-10 mx-auto px-4 py-16 md:py-20">
+      <div class="text-center">
+        <h1 class="mb-4 text-4xl font-bold md:text-5xl">Choose Your Plan</h1>
+        <p class="mx-auto mb-8 max-w-2xl text-lg md:text-xl">
+          Select the plan that best suits your link shortening needs. Scale up anytime as your requirements grow.
+        </p>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section class="py-16 bg-secondary/50" id="plans">
-      <div class="container">
-        <h2 class="text-3xl font-bold text-center">Available plans</h2>
+  <section id="plans" class="bg-secondary/50 py-16">
+    <div class="container">
+      <h2 class="text-center text-3xl font-bold">Available plans</h2>
 
-        <div class="max-w-4xl mx-auto">
-          {% include "partials/plans.html" %}
+      <div class="mx-auto max-w-4xl">
+        {% include "partials/plans.html" %}
 
-          <div class="mt-8 bg-background rounded-lg border border-border p-8 shadow-lg">
-            <div class="flex items-center justify-between border-b pb-6">
-              <div>
-                <h3 class="text-2xl font-bold mb-2">Free</h3>
-                <p class="text-muted-foreground">
-                  <span class="font-bold">$0</span>
-                  free forever - Perfect for personal and casual use
-                </p>
-              </div>
-
-              {% if request.user.is_authenticated %}
-                {% if request.user.is_free %}
-                  <button type="button" class="button-secondary text-center" disabled>Current plan</button>
-                {% endif %}
-              {% else %}
-                <a href="{% url 'sign_up' %}" class="button-outline text-center">Start Free</a>
-              {% endif %}
+        <div class="mt-8 rounded-lg border border-border bg-background p-8 shadow-lg">
+          <div class="flex items-center justify-between border-b pb-6">
+            <div>
+              <h3 class="mb-2 text-2xl font-bold">Free</h3>
+              <p class="text-muted-foreground">
+                <span class="font-bold">$0</span>
+                free forever - Perfect for personal and casual use
+              </p>
             </div>
 
-            <ul class="space-y-3 mb-8 mt-6">
-              <li class="flex items-center gap-2">
-                <i data-lucide="check" class="size-4 text-primary"></i>
-                <span>10 new links/mo</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <i data-lucide="check" class="size-4 text-primary"></i>
-                <span>Basic statistics</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <i data-lucide="check" class="size-4 text-primary"></i>
-                <span>30-day analytics retention</span>
-              </li>
-              <li class="flex items-center gap-2">
-                <i data-lucide="check" class="size-4 text-primary"></i>
-                <span>Basic support</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="py-16 bg-background/50">
-      <div class="container">
-        <h2 class="text-3xl font-bold text-center mb-12">Plans Comparison</h2>
-
-        <div class="mx-auto max-w-3xl">
-          <div class="border rounded-md mt-2">
-            <div class="size-full overflow-auto overscroll-contain">
-              <table class="size-full">
-                <thead class="bg-secondary/60 border-b">
-                  <tr class="text-left">
-                    <th class="p-4">Feature</th>
-                    <th class="p-4 text-center">Free</th>
-                    <th class="p-4 text-center">Premium</th>
-                    <th class="p-4 text-center">Business</th>
-                    <th class="p-4 text-center">Advanced</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr class="border-b border-dashed duration-200 hover:bg-muted/50">
-                    <td class="p-4 font-medium">Links</td>
-                    <td class="p-4 text-center">5 new links/mo</td>
-                    <td class="p-4 text-center">25 new links/mo</td>
-                    <td class="p-4 text-center">50 new links/mo</td>
-                    <td class="p-4 text-center">100 new links/mo</td>
-                  </tr>
-                  <tr class="border-b border-dashed duration-200 hover:bg-muted/50">
-                    <td class="p-4 font-medium">Basic Statistics</td>
-                    <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
-                    <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
-                    <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
-                    <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
-                  </tr>
-                  <tr class="border-b border-dashed duration-200 hover:bg-muted/50">
-                    <td class="p-4 font-medium">Advanced Statistics</td>
-                    <td class="p-4 text-center"><i data-lucide="x" class="size-4 text-muted-foreground mx-auto"></i></td>
-                    <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
-                    <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
-                    <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
-                  </tr>
-                  <tr class="border-b border-dashed duration-200 hover:bg-muted/50">
-                    <td class="p-4 font-medium">Analytics Retention</td>
-                    <td class="p-4 text-center">30-day</td>
-                    <td class="p-4 text-center">1-year</td>
-                    <td class="p-4 text-center">3-year</td>
-                    <td class="p-4 text-center">5-year</td>
-                  </tr>
-                  <tr class="duration-200 hover:bg-muted/50">
-                    <td class="p-4 font-medium">Priority Support</td>
-                    <td class="p-4 text-center"><i data-lucide="x" class="size-4 text-muted-foreground mx-auto"></i></td>
-                    <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
-                    <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
-                    <td class="p-4 text-center"><i data-lucide="check" class="size-4 text-primary mx-auto"></i></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="py-16 bg-secondary/50">
-      <div class="container">
-        <h2 class="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
-        <div class="max-w-3xl mx-auto space-y-6">
-          <div class="bg-background/40 border p-6 rounded-lg shadow-lg">
-            <h3 class="text-xl font-bold mb-2">Can I upgrade from Free to Premium?</h3>
-            <p>Yes! You can upgrade to Premium at any time from your account settings. Your existing links will be preserved, and you'll immediately get access to premium features.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="py-16 bg-background/50">
-      <div class="container">
-        <div class="max-w-3xl mx-auto text-center">
-          <h2 class="text-3xl font-bold mb-6">Ready to get started?</h2>
-          <p class="text-lg mb-8 text-muted-foreground">Join thousands of users who are already simplifying their link sharing with Sbily.</p>
-          <div class="flex flex-col sm:flex-row gap-4 justify-center">
             {% if request.user.is_authenticated %}
-              <a href="{% url "dashboard" %}" class="button-primary">Go to dashboard</a>
+            {% if request.user.is_free %}
+            <button type="button" class="button-secondary text-center" disabled>Current plan</button>
+            {% endif %}
             {% else %}
-              <a href="{% url 'sign_up' %}" class="button-primary">Create Free Account</a>
-              <a href="{% url 'sign_in' %}" class="button-outline">Sign In</a>
+            <a class="button-outline text-center" href="{% url 'sign_up' %}">Start Free</a>
             {% endif %}
           </div>
+
+          <ul class="mb-8 mt-6 space-y-3">
+            <li class="flex items-center gap-2">
+              <i data-lucide="check" class="size-4 text-primary"></i>
+              <span>10 new links/mo</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <i data-lucide="check" class="size-4 text-primary"></i>
+              <span>Basic statistics</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <i data-lucide="check" class="size-4 text-primary"></i>
+              <span>30-day analytics retention</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <i data-lucide="check" class="size-4 text-primary"></i>
+              <span>Basic support</span>
+            </li>
+          </ul>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- <section class="py-16 bg-muted/50">
-      <div class="container">
-        <div class="max-w-3xl mx-auto bg-background p-8 rounded-lg border border-border">
-          <div class="flex flex-col md:flex-row gap-6 items-center">
-            <div class="size-16 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
-              <i data-lucide="building" class="text-primary size-8"></i>
-            </div>
-            <div>
-              <h3 class="text-2xl font-bold mb-2">Enterprise Solutions</h3>
-              <p class="text-muted-foreground mb-4">Need a custom solution for your organization? We offer enterprise plans with custom features, dedicated support, and volume discounts.</p>
-              <a href="#" class="button-outline">Contact Us</a>
-              {% comment %} <a href="{% url 'contact' %}" class="button-outline">Contact Us</a> {% endcomment %}
-            </div>
+  <section class="bg-background/50 py-16">
+    <div class="container">
+      <h2 class="mb-12 text-center text-3xl font-bold">Plans Comparison</h2>
+
+      <div class="mx-auto max-w-3xl">
+        <div class="mt-2 rounded-md border">
+          <div class="size-full overflow-auto overscroll-contain">
+            <table class="size-full">
+              <thead class="border-b bg-secondary/60">
+                <tr class="text-left">
+                  <th class="p-4">Feature</th>
+                  <th class="p-4 text-center">Free</th>
+                  <th class="p-4 text-center">Premium</th>
+                  <th class="p-4 text-center">Business</th>
+                  <th class="p-4 text-center">Advanced</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-b border-dashed duration-200 hover:bg-muted/50">
+                  <td class="p-4 font-medium">Links</td>
+                  <td class="p-4 text-center">5 new links/mo</td>
+                  <td class="p-4 text-center">25 new links/mo</td>
+                  <td class="p-4 text-center">50 new links/mo</td>
+                  <td class="p-4 text-center">100 new links/mo</td>
+                </tr>
+                <tr class="border-b border-dashed duration-200 hover:bg-muted/50">
+                  <td class="p-4 font-medium">Basic Statistics</td>
+                  <td class="p-4 text-center"><i data-lucide="check" class="mx-auto size-4 text-primary"></i></td>
+                  <td class="p-4 text-center"><i data-lucide="check" class="mx-auto size-4 text-primary"></i></td>
+                  <td class="p-4 text-center"><i data-lucide="check" class="mx-auto size-4 text-primary"></i></td>
+                  <td class="p-4 text-center"><i data-lucide="check" class="mx-auto size-4 text-primary"></i></td>
+                </tr>
+                <tr class="border-b border-dashed duration-200 hover:bg-muted/50">
+                  <td class="p-4 font-medium">Advanced Statistics</td>
+                  <td class="p-4 text-center"><i data-lucide="x" class="mx-auto size-4 text-muted-foreground"></i></td>
+                  <td class="p-4 text-center"><i data-lucide="check" class="mx-auto size-4 text-primary"></i></td>
+                  <td class="p-4 text-center"><i data-lucide="check" class="mx-auto size-4 text-primary"></i></td>
+                  <td class="p-4 text-center"><i data-lucide="check" class="mx-auto size-4 text-primary"></i></td>
+                </tr>
+                <tr class="border-b border-dashed duration-200 hover:bg-muted/50">
+                  <td class="p-4 font-medium">Analytics Retention</td>
+                  <td class="p-4 text-center">30-day</td>
+                  <td class="p-4 text-center">1-year</td>
+                  <td class="p-4 text-center">3-year</td>
+                  <td class="p-4 text-center">5-year</td>
+                </tr>
+                <tr class="duration-200 hover:bg-muted/50">
+                  <td class="p-4 font-medium">Priority Support</td>
+                  <td class="p-4 text-center"><i data-lucide="x" class="mx-auto size-4 text-muted-foreground"></i></td>
+                  <td class="p-4 text-center"><i data-lucide="check" class="mx-auto size-4 text-primary"></i></td>
+                  <td class="p-4 text-center"><i data-lucide="check" class="mx-auto size-4 text-primary"></i></td>
+                  <td class="p-4 text-center"><i data-lucide="check" class="mx-auto size-4 text-primary"></i></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <section class="bg-secondary/50 py-16">
+    <div class="container">
+      <h2 class="mb-12 text-center text-3xl font-bold">Frequently Asked Questions</h2>
+      <div class="mx-auto max-w-3xl space-y-6">
+        <div class="rounded-lg border bg-background/40 p-6 shadow-lg">
+          <h3 class="mb-2 text-xl font-bold">Can I upgrade from Free to Premium?</h3>
+          <p>Yes! You can upgrade to Premium at any time from your account settings. Your existing links will be preserved, and you'll immediately get access to premium features.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-background/50 py-16">
+    <div class="container">
+      <div class="mx-auto max-w-3xl text-center">
+        <h2 class="mb-6 text-3xl font-bold">Ready to get started?</h2>
+        <p class="mb-8 text-lg text-muted-foreground">Join thousands of users who are already simplifying their link sharing with Sbily.</p>
+        <div class="flex flex-col justify-center gap-4 sm:flex-row">
+          {% if request.user.is_authenticated %}
+          <a class="button-primary" href="{% url "dashboard" %}">Go to dashboard</a>
+          {% else %}
+          <a class="button-primary" href="{% url 'sign_up' %}">Create Free Account</a>
+          <a class="button-outline" href="{% url 'sign_in' %}">Sign In</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- <section class="py-16 bg-muted/50">
+    <div class="container">
+    <div class="max-w-3xl mx-auto bg-background p-8 rounded-lg border border-border">
+    <div class="flex flex-col md:flex-row gap-6 items-center">
+    <div class="size-16 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+    <i data-lucide="building" class="text-primary size-8"></i>
+    </div>
+    <div>
+    <h3 class="text-2xl font-bold mb-2">Enterprise Solutions</h3>
+    <p class="text-muted-foreground mb-4">Need a custom solution for your organization? We offer enterprise plans with custom features, dedicated support, and volume discounts.</p>
+    <a href="#" class="button-outline">Contact Us</a>
+    {% comment %} <a href="{% url 'contact' %}" class="button-outline">Contact Us</a> {% endcomment %}
+    </div>
+    </div>
+    </div>
+    </div>
     </section> -->
-  </main>
+</main>
 {% endblock content %}

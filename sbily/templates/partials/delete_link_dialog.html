@@ -1,33 +1,33 @@
-<div id="remove-link-{{ link.id }}-dialog" class="hidden dialog" data-jswc-dialog-animation="true">
+<div id="remove-link-{{ link.id }}-dialog" data-jswc-dialog-animation="true" class="dialog hidden">
   <div class="flex flex-col">
-    <div class="flex justify-between items-center">
+    <div class="flex items-center justify-between">
       <h2 class="text-xl font-bold">Are you sure?</h2>
     </div>
-    <div class="flex flex-col gap-4 mt-2">
+    <div class="mt-2 flex flex-col gap-4">
       <p>Are you sure you want to delete the "{{ link }}" link permanently?</p>
-      <ul class="list-disc list-inside">
+      <ul class="list-inside list-disc">
         <li>
-          Link: <a href="{% url 'link' link.shortened_path %}" class="link-primary">{{ link }}</a>
+          Link: <a class="link-primary" href="{% url 'link' link.shortened_path %}">{{ link }}</a>
         </li>
       </ul>
     </div>
-    <div class="mt-4 w-full flex items-center gap-2 flex-wrap">
+    <div class="mt-4 flex w-full flex-wrap items-center gap-2">
       <a
-        href="{% url 'delete_link' link.shortened_path %}?current_path={{ request.path }}#{{ hash|default:'links-table' }}"
-        class="button-destructive w-full sm:w-auto"
         data-jswc-add-load
+        class="button-destructive w-full sm:w-auto"
+        href="{% url 'delete_link' link.shortened_path %}?current_path={{ request.path }}#{{ hash|default:'links-table' }}"
       >
         Yes, I’m sure
       </a>
-      <button type="button" class="button-outline w-full sm:w-auto" data-jswc-dialog-close>
+      <button type="button" data-jswc-dialog-close class="button-outline w-full sm:w-auto">
         No, take me back
       </button>
     </div>
     <button
       type="button"
-      class="absolute button-outline p-2 border-0 rounded-xl right-4 top-4"
-      aria-label="Close"
       data-jswc-dialog-close
+      class="button-outline absolute right-4 top-4 rounded-xl border-0 p-2"
+      aria-label="Close"
     >
       <i data-lucide="x" class="size-5"></i>
     </button>

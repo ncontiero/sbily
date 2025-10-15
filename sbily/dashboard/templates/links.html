@@ -7,17 +7,17 @@
 {% endblock dashboard_description %}
 
 {% block dashboard_content %}
-  <section class="py-8" id="links">
-    <div class="container mx-auto px-4 flex flex-col justify-center gap-2">
-      <div class="bg-background flex-col justify-center p-6 border relative rounded-md">
-        <h2 class="text-2xl font-bold my-2">Links</h2>
-        <div class="mt-1 mb-2 flex flex-wrap gap-0.5">
-          <span class="badge-default">
-            You have {{ user.monthly_limit_links_used }} of {{ user.monthly_link_limit }} links.
-          </span>
-        </div>
-        {% include "partials/links_table.html" with hash="links" %}
+<section id="links" class="py-8">
+  <div class="container mx-auto flex flex-col justify-center gap-2 px-4">
+    <div class="relative flex-col justify-center rounded-md border bg-background p-6">
+      <h2 class="my-2 text-2xl font-bold">Links</h2>
+      <div class="mb-2 mt-1 flex flex-wrap gap-0.5">
+        <span class="badge-default">
+          You have {{ user.monthly_limit_links_used }} of {{ user.monthly_link_limit }} links.
+        </span>
       </div>
+      {% include "partials/links_table.html" with hash="links" %}
     </div>
-  </section>
+  </div>
+</section>
 {% endblock dashboard_content %}

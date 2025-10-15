@@ -2,94 +2,104 @@
 {% load static %}
 
 {% block overwrite_title %}
-  <title>Sbily</title>
+<title>Sbily</title>
 {% endblock overwrite_title %}
 
 {% block content %}
-  <main class="bg-[radial-gradient(hsl(var(--primary)/0.2)_1px,transparent_1px)] [background-size:16px_16px] dark:bg-[radial-gradient(hsl(var(--secondary)/0.4)_1px,transparent_1px)]">
-    <section class="relative overflow-hidden bg-[radial-gradient(hsl(var(--primary)/0.5)_1px,transparent_1px)] [background-size:16px_16px]">
-      <div class="absolute inset-0 bg-gradient-to-br from-primary/30 to-background z-0"></div>
-      <div class="container mx-auto px-4 py-16 md:py-24 relative z-10">
-        <div class="text-center">
-          <h1 class="text-4xl md:text-6xl font-bold mb-4">
-            <span class="text-primary">
-              Sb<span class="text-foreground selection:bg-background/80 selection:text-primary">ily</span>
-            </span>
-          </h1>
-          <p class="text-xl md:text-2xl mb-8">A simple, fast, and secure Open-Source link shortener.</p>
-          <div class="max-w-3xl mx-auto">
-            <form
-              class="flex flex-col md:flex-row gap-4 max-w-2xl mx-auto"
-              method="post"
-              action="{% url 'create_link' %}"
-              data-jswc-add-load
-            >
-              {% csrf_token %}
-              <label for="destination_url" class="sr-only">Paste your link here</label>
-              <input
-                type="url"
-                id="destination_url"
-                name="destination_url"
-                placeholder="Paste your link here"
-                class="input flex-1"
-                required
-              />
-              <button type="submit" class="button-primary">
-                Shorten
-              </button>
-            </form>
-          </div>
+<main
+  class="
+    bg-[radial-gradient(hsl(var(--primary)/0.2)_1px,transparent_1px)] [background-size:16px_16px]
+    dark:bg-[radial-gradient(hsl(var(--secondary)/0.4)_1px,transparent_1px)]
+  "
+>
+  <section
+    class="
+      relative overflow-hidden bg-[radial-gradient(hsl(var(--primary)/0.5)_1px,transparent_1px)]
+      [background-size:16px_16px]
+    "
+  >
+    <div class="absolute inset-0 z-0 bg-gradient-to-br from-primary/30 to-background"></div>
+    <div class="container relative z-10 mx-auto px-4 py-16 md:py-24">
+      <div class="text-center">
+        <h1 class="mb-4 text-4xl font-bold md:text-6xl">
+          <span class="text-primary">
+            Sb<span class="text-foreground selection:bg-background/80 selection:text-primary">ily</span>
+          </span>
+        </h1>
+        <p class="mb-8 text-xl md:text-2xl">A simple, fast, and secure Open-Source link shortener.</p>
+        <div class="mx-auto max-w-3xl">
+          <form
+            data-jswc-add-load
+            class="mx-auto flex max-w-2xl flex-col gap-4 md:flex-row"
+            action="{% url 'create_link' %}"
+            method="post"
+          >
+            {% csrf_token %}
+            <label class="sr-only" for="destination_url">Paste your link here</label>
+            <input
+              name="destination_url"
+              id="destination_url"
+              type="url"
+              class="input flex-1"
+              placeholder="Paste your link here"
+              required
+            />
+            <button type="submit" class="button-primary">
+              Shorten
+            </button>
+          </form>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section class="py-16 bg-secondary/50">
-      <div class="container">
-        <h2 class="text-3xl font-bold text-center mb-12">Why choose Sbily?</h2>
+  <section class="bg-secondary/50 py-16">
+    <div class="container">
+      <h2 class="mb-12 text-center text-3xl font-bold">Why choose Sbily?</h2>
 
-        <div class="grid md:grid-cols-3 gap-8">
-          <div class="bg-background p-6 rounded-lg border border-border">
-            <div class="size-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-              <i data-lucide="file" class="text-primary size-6"></i>
-            </div>
-            <h3 class="text-xl font-bold mb-2">Easy to use</h3>
-            <p class="text-muted-foreground">Shorten your links in seconds, without complications. Intuitive and easy-to-use interface.</p>
+      <div class="grid gap-8 md:grid-cols-3">
+        <div class="rounded-lg border border-border bg-background p-6">
+          <div class="mb-4 flex size-12 items-center justify-center rounded-full bg-primary/10">
+            <i data-lucide="file" class="size-6 text-primary"></i>
           </div>
+          <h3 class="mb-2 text-xl font-bold">Easy to use</h3>
+          <p class="text-muted-foreground">Shorten your links in seconds, without complications. Intuitive and easy-to-use interface.</p>
+        </div>
 
-          <div class="bg-background p-6 rounded-lg border border-border">
-            <div class="size-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-              <i data-lucide="chart-line" class="text-primary size-6"></i>
-            </div>
-            <h3 class="text-xl font-bold mb-2">Detailed statistics</h3>
-            <p class="text-muted-foreground">Track the performance of your links with click analysis, geographic location, devices, and more.</p>
+        <div class="rounded-lg border border-border bg-background p-6">
+          <div class="mb-4 flex size-12 items-center justify-center rounded-full bg-primary/10">
+            <i data-lucide="chart-line" class="size-6 text-primary"></i>
           </div>
+          <h3 class="mb-2 text-xl font-bold">Detailed statistics</h3>
+          <p class="text-muted-foreground">Track the performance of your links with click analysis, geographic location, devices, and more.</p>
+        </div>
 
-          <div class="bg-background p-6 rounded-lg border border-border">
-            <div class="size-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-              <i data-lucide="globe" class="text-primary size-6"></i>
-            </div>
-            <h3 class="text-xl font-bold mb-2">Open Source</h3>
-            <p class="text-muted-foreground">Open-Source project, transparent and secure. Contribute to the development on GitHub.</p>
+        <div class="rounded-lg border border-border bg-background p-6">
+          <div class="mb-4 flex size-12 items-center justify-center rounded-full bg-primary/10">
+            <i data-lucide="globe" class="size-6 text-primary"></i>
           </div>
+          <h3 class="mb-2 text-xl font-bold">Open Source</h3>
+          <p class="text-muted-foreground">Open-Source project, transparent and secure. Contribute to the development on GitHub.</p>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section class="py-16 bg-background/50">
-      <div class="container">
-        <div class="max-w-3xl mx-auto text-center">
-          <h2 class="text-3xl font-bold mb-6">Start shortening your links now</h2>
-          <p class="text-lg mb-8 text-muted-foreground">Simple, fast, and hassle-free. Try Sbily today.</p>
-          <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            {% if request.user.is_authenticated %}
-              <a href="{% url "dashboard" %}" class="button-primary">Go to dashboard</a>
-            {% else %}
-              <a href="{% url "sign_up" %}" class="button-primary">Create free account</a>
-            {% endif %}
-            <a href="{% url "plans" %}" class="button-outline">See Plans</a>
-          </div>
+  <section class="bg-background/50 py-16">
+    <div class="container">
+      <div class="mx-auto max-w-3xl text-center">
+        <h2 class="mb-6 text-3xl font-bold">Start shortening your links now</h2>
+        <p class="mb-8 text-lg text-muted-foreground">Simple, fast, and hassle-free. Try Sbily today.</p>
+        <div class="flex flex-col justify-center gap-4 sm:flex-row">
+          {% if request.user.is_authenticated %}
+          <a class="button-primary" href="{% url "dashboard" %}">Go to dashboard</a>
+          {% else %}
+          <a class="button-primary" href="{% url "sign_up" %}">Create free account</a>
+          {% endif %}
+          <a class="button-outline" href="{% url "plans" %}">See Plans</a>
         </div>
       </div>
-    </section>
-  </main>
+    </div>
+  </section>
+</main>
 {% endblock content %}

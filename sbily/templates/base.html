@@ -1,8 +1,8 @@
 {% load static %}
 {% load render_bundle from webpack_loader %}
 
-<!DOCTYPE html>
-<html lang="en" class="dark opacity-0 duration-200">
+<!doctype html>
+<html class="dark opacity-0 duration-200" lang="en">
   <head>
     <meta charset="UTF-8" />
 
@@ -11,7 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     {% block overwrite_title %}
-      <title>{% block title %}{% endblock title %} • Sbily</title>
+    <title>{% block title %}{% endblock title %} • Sbily</title>
     {% endblock overwrite_title %}
     <meta name="description" content="A simple, fast, and secure Open-Source link shortener." />
     <meta name="keywords" content="link shortener, open-source, fast, secure, URL shortening, Sbily" />
@@ -27,177 +27,184 @@
   </head>
   <body>
     {% block body %}
-      <header class="sticky h-16 inset-x-0 top-0 bg-secondary/60 backdrop-blur-md z-[9999] border-b">
-        <nav class="flex items-center justify-between px-4 md:px-12 size-full gap-4 container">
-          <a class="link font-bold text-lg gap-2 group" href="{% url 'home' %}">
-            <img
-              src="{% static 'images/favicons/logo.jpg' %}"
-              alt="Sbily logo"
-              class="size-10 rounded-full group-hover:brightness-200 duration-200"
-              width="40px"
-              height="40px"
-            />
-            <div>
-              <span class="text-primary">Sb</span>ily
+    <header class="sticky inset-x-0 top-0 z-[9999] h-16 border-b bg-secondary/60 backdrop-blur-md">
+      <nav class="container flex size-full items-center justify-between gap-4 px-4 md:px-12">
+        <a class="link group gap-2 text-lg font-bold" href="{% url 'home' %}">
+          <img
+            class="size-10 rounded-full duration-200 group-hover:brightness-200"
+            alt="Sbily logo"
+            height="40px"
+            src="{% static 'images/favicons/logo.jpg' %}"
+            width="40px"
+          />
+          <div>
+            <span class="text-primary">Sb</span>ily
+          </div>
+        </a>
+        <div class="relative flex items-center gap-2">
+          {% if request.user.is_authenticated %}
+          <a
+            class="link relative border border-foreground/20 p-2 hover:border-foreground/40"
+            href="{% url 'my_notifications' %}"
+            title="See your notifications"
+          >
+            {% if user.get_unread_notifications_count > 0 %}
+            <span
+              class="
+                absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full border-2 border-secondary
+                bg-primary text-xs text-background dark:text-foreground
+              "
+            >
+              {{ user.get_unread_notifications_count }}
+            </span>
+            {% endif %}
+            <div class="size-5">
+              <i data-lucide="bell" class="size-5"></i>
+              <span class="sr-only">See your notifications</span>
             </div>
           </a>
-          <div class="relative flex items-center gap-2">
-            {% if request.user.is_authenticated %}
-              <a
-                href="{% url 'my_notifications' %}"
-                class="link relative p-2 border border-foreground/20 hover:border-foreground/40"
-                title="See your notifications"
-              >
-                {% if user.get_unread_notifications_count > 0 %}
-                  <span
-                    class="flex absolute -top-1 -right-1 size-5 justify-center items-center text-xs border-2 border-secondary bg-primary rounded-full text-background dark:text-foreground"
-                  >
-                    {{ user.get_unread_notifications_count }}
-                  </span>
-                {% endif %}
-                <div class="size-5">
-                  <i data-lucide="bell" class="size-5"></i>
-                  <span class="sr-only">See your notifications</span>
-                </div>
-              </a>
-              <button
-                type="button"
-                class="button-ghost-outline p-2"
-                data-jswc-dropdown
-                data-jswc-target="dropdown-menu-account-content"
-                aria-label="Open My Account menu."
-                title="Open My Account menu."
-              >
-                <i data-lucide="circle-user" class="size-5"></i>
-              </button>
-              <div
-                id="dropdown-menu-account-content"
-                class="hidden dropdown-menu right-0 top-12"
-                data-jswc-dropdown-animation="true"
-              >
-                <a href="{% url 'dashboard' %}" class="dropdown-menu-item gap-3 px-2 justify-between text-start">
-                  <div class="size-5">
-                    <i data-lucide="layout-dashboard" class="size-5"></i>
-                  </div>
-                  <span class="w-full">Dashboard</span>
-                </a>
-                <a href="{% url 'my_account' %}" class="dropdown-menu-item gap-3 px-2 justify-between text-start">
-                  <div class="size-5">
-                    <i data-lucide="circle-user" class="size-5"></i>
-                  </div>
-                  <span class="w-full">My Account</span>
-                </a>
-                <a href="{% url 'my_account' %}?tab=plan" class="dropdown-menu-item gap-3 px-2 justify-between text-start">
-                  <div class="size-5">
-                    <i data-lucide="credit-card" class="size-5"></i>
-                  </div>
-                  <span class="w-full">Manage plan</span>
-                </a>
-                <div class="separator my-1"></div>
-                <a href="{% url 'sign_out' %}" class="dropdown-menu-item gap-3 px-2 justify-between text-start text-red-600">
-                  <div class="size-5">
-                    <i data-lucide="log-out" class="size-5"></i>
-                  </div>
-                  <span class="w-full">Sign Out</span>
-                </a>
-              </div>
-            {% else %}
-              <a href="{% url 'plans' %}" class="link p-2 hover:text-primary">Pricing</a>
-              <a href="{% url 'sign_in' %}" class="link p-2 hover:text-primary">Sign In</a>
-            {% endif %}
-            <button
-              type="button"
-              class="link relative items-center justify-center p-2 border border-foreground/20 hover:border-foreground/40"
-              title="Theme toggle"
-              data-jswc-theme-toggle
-            >
+          <button
+            type="button"
+            data-jswc-dropdown
+            data-jswc-target="dropdown-menu-account-content"
+            class="button-ghost-outline p-2"
+            aria-label="Open My Account menu."
+            title="Open My Account menu."
+          >
+            <i data-lucide="circle-user" class="size-5"></i>
+          </button>
+          <div
+            id="dropdown-menu-account-content"
+            data-jswc-dropdown-animation="true"
+            class="dropdown-menu right-0 top-12 hidden"
+          >
+            <a class="dropdown-menu-item justify-between gap-3 px-2 text-start" href="{% url 'dashboard' %}">
               <div class="size-5">
-                <span class="sr-only">Theme toggle</span>
+                <i data-lucide="layout-dashboard" class="size-5"></i>
               </div>
-            </button>
+              <span class="w-full">Dashboard</span>
+            </a>
+            <a class="dropdown-menu-item justify-between gap-3 px-2 text-start" href="{% url 'my_account' %}">
+              <div class="size-5">
+                <i data-lucide="circle-user" class="size-5"></i>
+              </div>
+              <span class="w-full">My Account</span>
+            </a>
+            <a class="dropdown-menu-item justify-between gap-3 px-2 text-start" href="{% url 'my_account' %}?tab=plan">
+              <div class="size-5">
+                <i data-lucide="credit-card" class="size-5"></i>
+              </div>
+              <span class="w-full">Manage plan</span>
+            </a>
+            <div class="separator my-1"></div>
+            <a class="dropdown-menu-item justify-between gap-3 px-2 text-start text-red-600" href="{% url 'sign_out' %}">
+              <div class="size-5">
+                <i data-lucide="log-out" class="size-5"></i>
+              </div>
+              <span class="w-full">Sign Out</span>
+            </a>
           </div>
-        </nav>
-      </header>
-      <div class="min-h-screen">
-        {% block content %}{% endblock content %}
-      </div>
-      <footer class="bg-secondary/60 py-12 border-t">
-        <div class="container">
-          <div class="grid grid-cols-1 md:grid-cols-1 gap-8 mb-12">
-            <div>
-              <a href="{% url "home" %}" class="flex items-center gap-2 mb-4 w-fit">
-                <img src="{% static "images/favicons/logo.jpg" %}" alt="Sbily Logo" class="size-6 rounded-full" />
-                <h3 class="text-xl font-bold">
-                  <span class="text-primary">
-                    Sb<span class="text-foreground selection:bg-background/80 selection:text-primary">ily</span>
-                  </span>
-                </h3>
-              </a>
-              <p class="text-muted-foreground">A simple, fast, and secure Open-Source link shortener.</p>
+          {% else %}
+          <a class="link p-2 hover:text-primary" href="{% url 'plans' %}">Pricing</a>
+          <a class="link p-2 hover:text-primary" href="{% url 'sign_in' %}">Sign In</a>
+          {% endif %}
+          <button
+            type="button"
+            data-jswc-theme-toggle
+            class="
+              link relative items-center justify-center border border-foreground/20 p-2 hover:border-foreground/40
+            "
+            title="Theme toggle"
+          >
+            <div class="size-5">
+              <span class="sr-only">Theme toggle</span>
             </div>
-            {% comment %} <div>
-              <h4 class="font-bold mb-4">Product</h4>
-              <ul class="space-y-2">
-                <li>
-                  <a href="#" class="text-muted-foreground hover:text-foreground duration-200">Features</a>
-                </li>
-                <li>
-                  <a href="{% url "plans" %}" class="text-muted-foreground hover:text-foreground duration-200">Plans</a>
-                </li>
-                <li>
-                  <a href="#" class="text-muted-foreground hover:text-foreground duration-200">FAQ</a>
-                </li>
-                <li>
-                  <a href="#" class="text-muted-foreground hover:text-foreground duration-200">Roadmap</a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 class="font-bold mb-4">Community</h4>
-              <ul class="space-y-2">
-                <li>
-                  <a
-                    href="https://github.com/ncontiero/sbily"
-                    class="text-muted-foreground hover:text-foreground duration-200"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    GitHub
-                  </a>
-                </li>
-                <li><a href="#" class="text-muted-foreground hover:text-foreground duration-200">Discord</a></li>
-                <li><a href="#" class="text-muted-foreground hover:text-foreground duration-200">Twitter</a></li>
-                <li><a href="#" class="text-muted-foreground hover:text-foreground duration-200">Blog</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 class="font-bold mb-4">Legal</h4>
-              <ul class="space-y-2">
-                <li><a href="#" class="text-muted-foreground hover:text-foreground duration-200">Terms of Service</a></li>
-                <li><a href="#" class="text-muted-foreground hover:text-foreground duration-200">Privacy Policy</a></li>
-                <li><a href="#" class="text-muted-foreground hover:text-foreground duration-200">Cookies</a></li>
-              </ul>
-            </div> {% endcomment %}
+          </button>
+        </div>
+      </nav>
+    </header>
+    <div class="min-h-screen">
+      {% block content %}{% endblock content %}
+    </div>
+    <footer class="border-t bg-secondary/60 py-12">
+      <div class="container">
+        <div class="mb-12 grid grid-cols-1 gap-8 md:grid-cols-1">
+          <div>
+            <a class="mb-4 flex w-fit items-center gap-2" href="{% url "home" %}">
+              <img class="size-6 rounded-full" alt="Sbily Logo" src="{% static "images/favicons/logo.jpg" %}" />
+              <h3 class="text-xl font-bold">
+                <span class="text-primary">
+                  Sb<span class="text-foreground selection:bg-background/80 selection:text-primary">ily</span>
+                </span>
+              </h3>
+            </a>
+            <p class="text-muted-foreground">A simple, fast, and secure Open-Source link shortener.</p>
           </div>
-          <div class="separator"></div>
-          <div class="mt-8 flex flex-col md:flex-row justify-between items-center">
-            <p class="text-muted-foreground text-sm">&copy; 2025 Sbily. All rights reserved.</p>
-            <div class="flex gap-4 mt-4 md:mt-0">
-              <a
-                href="https://github.com/ncontiero/sbily"
-                class="text-muted-foreground hover:text-foreground duration-200"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <i data-lucide="github" class="size-5"></i>
-              </a>
-            </div>
+          {% comment %}
+          <div>
+            <h4 class="mb-4 font-bold">Product</h4>
+            <ul class="space-y-2">
+              <li>
+                <a class="text-muted-foreground duration-200 hover:text-foreground" href="#">Features</a>
+              </li>
+              <li>
+                <a class="text-muted-foreground duration-200 hover:text-foreground" href="{% url "plans" %}">Plans</a>
+              </li>
+              <li>
+                <a class="text-muted-foreground duration-200 hover:text-foreground" href="#">FAQ</a>
+              </li>
+              <li>
+                <a class="text-muted-foreground duration-200 hover:text-foreground" href="#">Roadmap</a>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="mb-4 font-bold">Community</h4>
+            <ul class="space-y-2">
+              <li>
+                <a
+                  class="text-muted-foreground duration-200 hover:text-foreground"
+                  href="https://github.com/ncontiero/sbily"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  GitHub
+                </a>
+              </li>
+              <li><a class="text-muted-foreground duration-200 hover:text-foreground" href="#">Discord</a></li>
+              <li><a class="text-muted-foreground duration-200 hover:text-foreground" href="#">Twitter</a></li>
+              <li><a class="text-muted-foreground duration-200 hover:text-foreground" href="#">Blog</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="mb-4 font-bold">Legal</h4>
+            <ul class="space-y-2">
+              <li><a class="text-muted-foreground duration-200 hover:text-foreground" href="#">Terms of Service</a></li>
+              <li><a class="text-muted-foreground duration-200 hover:text-foreground" href="#">Privacy Policy</a></li>
+              <li><a class="text-muted-foreground duration-200 hover:text-foreground" href="#">Cookies</a></li>
+            </ul>
+          </div>
+          {% endcomment %}
+        </div>
+        <div class="separator"></div>
+        <div class="mt-8 flex flex-col items-center justify-between md:flex-row">
+          <p class="text-sm text-muted-foreground">&copy; 2025 Sbily. All rights reserved.</p>
+          <div class="mt-4 flex gap-4 md:mt-0">
+            <a
+              class="text-muted-foreground duration-200 hover:text-foreground"
+              href="https://github.com/ncontiero/sbily"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <i data-lucide="github" class="size-5"></i>
+            </a>
           </div>
         </div>
-      </footer>
+      </div>
+    </footer>
     {% endblock body %}
-    <div role="region" aria-label="Notifications" tabindex="-1">
-      <ol tabindex="-1" id="toast-ol" class="toast-list"></ol>
+    <div aria-label="Notifications" role="region" tabindex="-1">
+      <ol id="toast-ol" class="toast-list" tabindex="-1"></ol>
     </div>
     <script>
       document.addEventListener("DOMContentLoaded", () => {
