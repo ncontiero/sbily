@@ -54,16 +54,7 @@ export const commonConfig = defineConfig({
       {
         test: /\.css$/,
         type: "css",
-        use: [
-          {
-            loader: "postcss-loader",
-            options: {
-              postcssOptions: {
-                plugins: ["postcss-preset-env", "autoprefixer", "tailwindcss"],
-              },
-            },
-          },
-        ],
+        use: ["postcss-loader"],
       },
     ],
   },
