@@ -18,6 +18,7 @@ export default ncontiero(
       overrides: { "toml/indent": ["error", 4] },
     },
     tailwindcss: {
+      cssGlobalPath: "./sbily/src/index.css",
       overrides: {
         "tailwindcss/no-unknown-classes": "off",
       },
@@ -33,6 +34,7 @@ export default ncontiero(
     files: ["emails/**"],
     rules: {
       "import/no-default-export": "off",
+      "tailwindcss/enforce-consistent-line-wrapping": "off",
     },
   },
 );

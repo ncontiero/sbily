@@ -3,7 +3,7 @@
 {% block title %}My Account{% endblock title %}
 
 {% block content %}
-<div class="mx-auto mb-16 mt-10 flex max-w-5xl flex-col justify-center px-2 md:px-0">
+<div class="mx-auto mt-10 mb-16 flex max-w-5xl flex-col justify-center px-2 md:px-0">
   <div class="flex flex-col gap-1">
     <h1 class="text-2xl font-bold">Settings</h1>
     <p class="text-foreground/80">Manage your account settings.</p>
@@ -15,7 +15,7 @@
         data-jwsc-tab-list
         data-jwsc-tab-default="account"
         data-jwsc-tab-url-query="tab"
-        class="flex w-full gap-1 overflow-x-scroll p-1 pb-1.5 text-muted-foreground md:flex-col md:overflow-x-auto"
+        class="text-muted-foreground flex w-full gap-1 overflow-x-scroll p-1 pb-1.5 md:flex-col md:overflow-x-auto"
       >
         <button type="button" data-jwsc-tab-value="account" class="tab-item">
           <i data-lucide="settings"></i>
@@ -44,7 +44,7 @@
         <h2 class="text-xl font-bold">My Account</h2>
         <p class="text-foreground/80">Manage your account settings.</p>
       </div>
-      <div class="separator mb-7 mt-5 w-full"></div>
+      <div class="separator mt-5 mb-7 w-full"></div>
       <form data-jswc-add-load class="card" action="{% url 'my_account' %}" method="post">
         {% csrf_token %}
         <div class="card-content">
@@ -61,7 +61,7 @@
           <button type="submit" class="button-primary button-sm">Update account</button>
         </div>
       </form>
-      <div class="card mt-10 border-destructive">
+      <div class="card border-destructive mt-10">
         <div class="card-content">
           <h3 class="card-title">Delete account</h3>
           <p class="card-description text-foreground/80">
@@ -128,7 +128,7 @@
               <button
                 type="button"
                 data-jswc-dialog-close
-                class="button-outline absolute right-4 top-4 rounded-xl border-0 p-2"
+                class="button-outline absolute top-4 right-4 rounded-xl border-0 p-2"
                 aria-label="Close"
               >
                 <i data-lucide="x" class="size-5"></i>
@@ -234,7 +234,7 @@
               <button
                 type="button"
                 data-jswc-dialog-close
-                class="button-outline absolute right-4 top-4 rounded-xl border-0 p-2"
+                class="button-outline absolute top-4 right-4 rounded-xl border-0 p-2"
                 aria-label="Close"
               >
                 <i data-lucide="x" class="size-5"></i>
@@ -250,7 +250,7 @@
         <h2 class="text-xl font-bold">My Plan</h2>
         <p class="text-foreground/80">Manage your subscription.</p>
       </div>
-      <div class="separator mb-7 mt-5 w-full"></div>
+      <div class="separator mt-5 mb-7 w-full"></div>
 
       <div class="card">
         <div class="card-content">
@@ -310,13 +310,13 @@
                   {{ user.monthly_limit_links_used }} / {{ user.monthly_link_limit }}
                 </span>
               </div>
-              <div class="h-2 overflow-hidden rounded-full bg-secondary/60">
+              <div class="bg-secondary/60 h-2 overflow-hidden rounded-full">
                 <div
-                  class="h-full bg-primary"
+                  class="bg-primary h-full"
                   style="width: {% widthratio user.monthly_limit_links_used user.monthly_link_limit 100 %}%"
                 ></div>
               </div>
-              <div class="mt-1 flex justify-between text-xs text-foreground/80">
+              <div class="text-foreground/80 mt-1 flex justify-between text-xs">
                 <span>Used</span>
                 <span>Total</span>
               </div>
@@ -333,24 +333,24 @@
           <h3 class="card-title">Plan Features</h3>
           <ul class="mt-4 space-y-3">
             <li class="flex items-center gap-2">
-              <i data-lucide="check" class="size-4 text-primary"></i>
+              <i data-lucide="check" class="text-primary size-4"></i>
               <span>{{ user.monthly_link_limit }} new links/mo (resets monthly)</span>
             </li>
             {% if user.subscription_active %}
             <li class="flex items-center gap-2">
-              <i data-lucide="check" class="size-4 text-primary"></i>
+              <i data-lucide="check" class="text-primary size-4"></i>
               <span>Advanced statistics</span>
             </li>
             <li class="flex items-center gap-2">
-              <i data-lucide="check" class="size-4 text-primary"></i>
+              <i data-lucide="check" class="text-primary size-4"></i>
               <span>Priority support</span>
             </li>
             {% else %}
-            <li class="flex items-center gap-2 text-muted-foreground">
+            <li class="text-muted-foreground flex items-center gap-2">
               <i data-lucide="x" class="size-4"></i>
               <span>Advanced statistics</span>
             </li>
-            <li class="flex items-center gap-2 text-muted-foreground">
+            <li class="text-muted-foreground flex items-center gap-2">
               <i data-lucide="x" class="size-4"></i>
               <span>Priority support</span>
             </li>
@@ -371,9 +371,9 @@
             <h2 class="text-xl font-bold">Cancel {{ user.subscription.get_level_display }} Subscription</h2>
           </div>
           <div class="mt-4">
-            <div class="mb-6 rounded-lg border bg-secondary/40 p-4">
+            <div class="bg-secondary/40 mb-6 rounded-lg border p-4">
               <p class="text-foreground/80">
-                <i data-lucide="info" class="mr-1 inline-block size-4 text-primary"></i>
+                <i data-lucide="info" class="text-primary mr-1 inline-block size-4"></i>
                 You'll continue to have access to all {{ user.subscription.level }} features until the end of your current billing period on {{ user.subscription.end_date|date:"F j, Y" }}.
               </p>
             </div>
@@ -381,11 +381,11 @@
             <p class="mb-4">After your subscription ends:</p>
             <ul class="mb-6 space-y-2">
               <li class="flex items-center gap-2">
-                <i data-lucide="minus" class="size-4 text-destructive"></i>
+                <i data-lucide="minus" class="text-destructive size-4"></i>
                 <span>Your link limits will be reduced to 5 links;</span>
               </li>
               <li class="flex items-center gap-2">
-                <i data-lucide="minus" class="size-4 text-destructive"></i>
+                <i data-lucide="minus" class="text-destructive size-4"></i>
                 <span>You will lose access to {{ user.subscription.level }} features;</span>
               </li>
             </ul>
@@ -401,7 +401,7 @@
           <button
             type="button"
             data-jswc-dialog-close
-            class="button-outline absolute right-4 top-4 rounded-xl border-0 p-2"
+            class="button-outline absolute top-4 right-4 rounded-xl border-0 p-2"
             aria-label="Close"
           >
             <i data-lucide="x" class="size-5"></i>
@@ -416,9 +416,9 @@
             <h2 class="text-xl font-bold">Resume {{ user.subscription.get_level_display }} Subscription</h2>
           </div>
           <div class="mt-4">
-            <div class="mb-6 rounded-lg border bg-secondary/40 p-4">
+            <div class="bg-secondary/40 mb-6 rounded-lg border p-4">
               <p class="text-foreground/80">
-                <i data-lucide="info" class="mr-1 inline-block size-4 text-primary"></i>
+                <i data-lucide="info" class="text-primary mr-1 inline-block size-4"></i>
                 Your {{ user.subscription.get_level_display }} subscription currently ends
                 on {{ user.subscription.end_date|date:"F j, Y" }}. By resuming, your subscription
                 will automatically renew after this date.
@@ -428,15 +428,15 @@
             <p class="mb-4">By resuming your subscription:</p>
             <ul class="mb-6 space-y-2">
               <li class="flex items-center gap-2">
-                <i data-lucide="check" class="size-4 text-primary"></i>
+                <i data-lucide="check" class="text-primary size-4"></i>
                 <span>You'll continue to enjoy all {{ user.subscription.get_level_display }} features without interruption;</span>
               </li>
               <li class="flex items-center gap-2">
-                <i data-lucide="check" class="size-4 text-primary"></i>
+                <i data-lucide="check" class="text-primary size-4"></i>
                 <span>Your subscription will automatically renew at the regular price;</span>
               </li>
               <li class="flex items-center gap-2">
-                <i data-lucide="check" class="size-4 text-primary"></i>
+                <i data-lucide="check" class="text-primary size-4"></i>
                 <span>You can cancel again at any time.</span>
               </li>
             </ul>
@@ -452,7 +452,7 @@
           <button
             type="button"
             data-jswc-dialog-close
-            class="button-outline absolute right-4 top-4 rounded-xl border-0 p-2"
+            class="button-outline absolute top-4 right-4 rounded-xl border-0 p-2"
             aria-label="Close"
           >
             <i data-lucide="x" class="size-5"></i>
@@ -466,7 +466,7 @@
         <h2 class="text-xl font-bold">Billing</h2>
         <p class="text-foreground/80">Manage your payment methods and view your payments.</p>
       </div>
-      <div class="separator mb-7 mt-5 w-full"></div>
+      <div class="separator mt-5 mb-7 w-full"></div>
 
       <div class="card">
         <div class="card-content">
@@ -480,7 +480,7 @@
           </p>
           {% if user.card_last_four_digits %}
           <div class="rounded-md border p-4">
-            <div class="flex items-center gap-2 text-sm text-foreground/80">
+            <div class="text-foreground/80 flex items-center gap-2 text-sm">
               <i data-lucide="credit-card" class="size-5"></i>
               <span>Card ending in •••• {{ user.card_last_four_digits }}</span>
             </div>
@@ -528,20 +528,20 @@
           <div class="mt-4 rounded-md border pb-2">
             <div class="size-full max-h-[500px] overflow-auto overscroll-contain">
               <table class="w-full caption-bottom text-sm">
-                <caption class="mt-4 text-sm text-muted-foreground">
+                <caption class="text-muted-foreground mt-4 text-sm">
                   A list of your payments.
                 </caption>
-                <thead class="border-b duration-200 hover:bg-muted/50">
+                <thead class="hover:bg-muted/50 border-b duration-200">
                   <tr>
-                    <th class="h-12 px-4 text-start align-middle font-medium text-muted-foreground">Date</th>
-                    <th class="h-12 px-4 text-start align-middle font-medium text-muted-foreground">Description</th>
-                    <th class="h-12 px-4 text-start align-middle font-medium text-muted-foreground">Amount</th>
-                    <th class="h-12 px-4 text-center align-middle font-medium text-muted-foreground">Status</th>
+                    <th class="text-muted-foreground h-12 px-4 text-start align-middle font-medium">Date</th>
+                    <th class="text-muted-foreground h-12 px-4 text-start align-middle font-medium">Description</th>
+                    <th class="text-muted-foreground h-12 px-4 text-start align-middle font-medium">Amount</th>
+                    <th class="text-muted-foreground h-12 px-4 text-center align-middle font-medium">Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {% for payment in user.payments.all %}
-                  <tr class="border-b duration-200 hover:bg-muted/50">
+                  <tr class="hover:bg-muted/50 border-b duration-200">
                     <td class="p-4 align-middle">{{ payment.payment_date|date:"M d, Y" }}</td>
                     <td class="p-4 align-middle">
                       {% if payment.invoice_url %}
@@ -563,7 +563,7 @@
             </div>
           </div>
           {% else %}
-          <p class="text-sm text-muted-foreground">No purchase history yet.</p>
+          <p class="text-muted-foreground text-sm">No purchase history yet.</p>
           {% endif %}
         </div>
       </div>
@@ -573,7 +573,7 @@
         <h2 class="text-xl font-bold">Account Security</h2>
         <p class="text-foreground/80">Manage your password and authentication settings.</p>
       </div>
-      <div class="separator mb-7 mt-5 w-full"></div>
+      <div class="separator mt-5 mb-7 w-full"></div>
       <div class="flex flex-col">
         <div class="card">
           <div class="card-content">
@@ -581,7 +581,7 @@
             <p class="card-description">This is your password.</p>
             <div class="rounded-md border p-4">
               <div class="flex items-center gap-4">
-                <i data-lucide="lock-keyhole" class="size-5 text-primary"></i>
+                <i data-lucide="lock-keyhole" class="text-primary size-5"></i>
                 <span>**********</span>
               </div>
             </div>
@@ -589,7 +589,7 @@
           <div class="card-footer">
             <a
               class="
-                card-footer-description rounded-md underline-offset-4 ring-ring hover:underline focus-visible:ring-2
+                card-footer-description ring-ring rounded-md underline-offset-4 hover:underline focus-visible:ring-2
               "
               href="{% url 'forgot_password' %}?email={{ user.email|urlencode }}"
             >
@@ -628,7 +628,7 @@
                 <button
                   type="button"
                   data-jswc-dialog-close
-                  class="button-outline absolute right-4 top-4 rounded-xl border-0 p-2"
+                  class="button-outline absolute top-4 right-4 rounded-xl border-0 p-2"
                   aria-label="Close"
                 >
                   <i data-lucide="x" class="size-5"></i>

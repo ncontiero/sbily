@@ -7,19 +7,13 @@
 
 {% block content %}
 <main
-  class="
-    bg-[radial-gradient(hsl(var(--primary)/0.2)_1px,transparent_1px)] [background-size:16px_16px]
-    dark:bg-[radial-gradient(hsl(var(--secondary)/0.4)_1px,transparent_1px)]
-  "
+  class="from-primary/20 bg-radial from-10% to-transparent to-10% bg-size-[16px_16px] dark:from-secondary/40"
 >
   <section
-    class="
-      relative overflow-hidden bg-[radial-gradient(hsl(var(--primary)/0.5)_1px,transparent_1px)]
-      [background-size:16px_16px]
-    "
+    class="from-primary/50 relative overflow-hidden bg-radial from-10% to-transparent to-10% bg-size-[16px_16px]"
   >
-    <div class="absolute inset-0 z-0 bg-gradient-to-br from-primary/30 to-background"></div>
-    <div class="container relative z-10 mx-auto px-4 py-16 md:py-24">
+    <div class="from-primary/30 to-background absolute inset-0 z-0 bg-linear-to-br"></div>
+    <div class="relative z-10 container mx-auto px-4 py-16 md:py-24">
       <div class="text-center">
         <h1 class="mb-4 text-4xl font-bold md:text-6xl">
           <span class="text-primary">
@@ -58,25 +52,25 @@
       <h2 class="mb-12 text-center text-3xl font-bold">Why choose Sbily?</h2>
 
       <div class="grid gap-8 md:grid-cols-3">
-        <div class="rounded-lg border border-border bg-background p-6">
-          <div class="mb-4 flex size-12 items-center justify-center rounded-full bg-primary/10">
-            <i data-lucide="file" class="size-6 text-primary"></i>
+        <div class="border-border bg-background rounded-lg border p-6">
+          <div class="bg-primary/10 mb-4 flex size-12 items-center justify-center rounded-full">
+            <i data-lucide="file" class="text-primary size-6"></i>
           </div>
           <h3 class="mb-2 text-xl font-bold">Easy to use</h3>
           <p class="text-muted-foreground">Shorten your links in seconds, without complications. Intuitive and easy-to-use interface.</p>
         </div>
 
-        <div class="rounded-lg border border-border bg-background p-6">
-          <div class="mb-4 flex size-12 items-center justify-center rounded-full bg-primary/10">
-            <i data-lucide="chart-line" class="size-6 text-primary"></i>
+        <div class="border-border bg-background rounded-lg border p-6">
+          <div class="bg-primary/10 mb-4 flex size-12 items-center justify-center rounded-full">
+            <i data-lucide="chart-line" class="text-primary size-6"></i>
           </div>
           <h3 class="mb-2 text-xl font-bold">Detailed statistics</h3>
           <p class="text-muted-foreground">Track the performance of your links with click analysis, geographic location, devices, and more.</p>
         </div>
 
-        <div class="rounded-lg border border-border bg-background p-6">
-          <div class="mb-4 flex size-12 items-center justify-center rounded-full bg-primary/10">
-            <i data-lucide="globe" class="size-6 text-primary"></i>
+        <div class="border-border bg-background rounded-lg border p-6">
+          <div class="bg-primary/10 mb-4 flex size-12 items-center justify-center rounded-full">
+            <i data-lucide="globe" class="text-primary size-6"></i>
           </div>
           <h3 class="mb-2 text-xl font-bold">Open Source</h3>
           <p class="text-muted-foreground">Open-Source project, transparent and secure. Contribute to the development on GitHub.</p>
@@ -89,7 +83,7 @@
     <div class="container">
       <div class="mx-auto max-w-3xl text-center">
         <h2 class="mb-6 text-3xl font-bold">Start shortening your links now</h2>
-        <p class="mb-8 text-lg text-muted-foreground">Simple, fast, and hassle-free. Try Sbily today.</p>
+        <p class="text-muted-foreground mb-8 text-lg">Simple, fast, and hassle-free. Try Sbily today.</p>
         <div class="flex flex-col justify-center gap-4 sm:flex-row">
           {% if request.user.is_authenticated %}
           <a class="button-primary" href="{% url "dashboard" %}">Go to dashboard</a>

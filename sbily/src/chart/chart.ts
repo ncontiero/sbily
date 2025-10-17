@@ -42,22 +42,27 @@ export function initializeChart() {
     ArcElement,
   );
 
-  Chart.defaults.color = `hsl(${foregroundColor})`;
-  Chart.defaults.borderColor = `hsl(${backgroundColor})`;
-  Chart.overrides.pie.borderColor = `hsl(${backgroundColor})`;
+  Chart.defaults.backgroundColor = `oklch(${backgroundColor})`;
+  Chart.defaults.color = `oklch(${foregroundColor})`;
+  Chart.defaults.borderColor = `oklch(${backgroundColor})`;
+  Chart.overrides.pie.borderColor = `oklch(${backgroundColor})`;
   Chart.defaults.font.family = "Inter";
+  Chart.overrides.pie.hoverBackgroundColor = `oklch(${primaryColor})`;
 
   Chart.defaults.scales.color.ticks = {
     ...Chart.defaults.scales.color.ticks,
-    color: `hsl(${foregroundColor}/0.5)`,
+    color: `oklch(${foregroundColor}/0.5)`,
   };
   Chart.defaults.scales.color.interpolate = (v) =>
-    v < 1 ? `hsl(${foregroundColor}/0.3)` : `hsl(${primaryColor}/0.8)`;
+    v < 1 ? `oklch(${foregroundColor}/0.3)` : `oklch(${primaryColor}/0.8)`;
 
   Chart.overrides.choropleth.hoverBackgroundColor = (ctx) => {
     const { value } = ctx.dataset.data[ctx.dataIndex];
-    return value > 0 ? `hsl(${primaryColor})` : `hsl(${foregroundColor}/0.5)`;
+    return value > 0
+      ? `oklch(${primaryColor})`
+      : `oklch(${foregroundColor}/0.5)`;
   };
+  Chart.overrides.choropleth.backgroundColor = `oklch(${primaryColor})`;
 
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
@@ -69,14 +74,16 @@ export function initializeChart() {
           getThemeColors();
 
         for (const chart of Object.values(Chart.instances)) {
-          chart.options.borderColor = `hsl(${backgroundColor})`;
-          chart.options.color = `hsl(${foregroundColor})`;
+          Chart.defaults.backgroundColor = `oklch(${backgroundColor})`;
+          chart.options.color = `oklch(${foregroundColor})`;
+          chart.options.borderColor = `oklch(${backgroundColor})`;
+          Chart.overrides.pie.hoverBackgroundColor = `oklch(${primaryColor})`;
 
           Chart.overrides.choropleth.hoverBackgroundColor = (ctx) => {
             const { value } = ctx.dataset.data[ctx.dataIndex];
             return value > 0
-              ? `hsl(${primaryColor})`
-              : `hsl(${foregroundColor}/0.5)`;
+              ? `oklch(${primaryColor})`
+              : `oklch(${foregroundColor}/0.5)`;
           };
 
           chart.update();

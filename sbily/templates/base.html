@@ -27,7 +27,7 @@
   </head>
   <body>
     {% block body %}
-    <header class="sticky inset-x-0 top-0 z-[9999] h-16 border-b bg-secondary/60 backdrop-blur-md">
+    <header class="bg-secondary/60 sticky inset-x-0 top-0 z-9999 h-16 border-b backdrop-blur-md">
       <nav class="container flex size-full items-center justify-between gap-4 px-4 md:px-12">
         <a class="link group gap-2 text-lg font-bold" href="{% url 'home' %}">
           <img
@@ -44,15 +44,15 @@
         <div class="relative flex items-center gap-2">
           {% if request.user.is_authenticated %}
           <a
-            class="link relative border border-foreground/20 p-2 hover:border-foreground/40"
+            class="link border-foreground/20 relative border p-2 hover:border-foreground/40"
             href="{% url 'my_notifications' %}"
             title="See your notifications"
           >
             {% if user.get_unread_notifications_count > 0 %}
             <span
               class="
-                absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full border-2 border-secondary
-                bg-primary text-xs text-background dark:text-foreground
+                border-secondary bg-primary text-background absolute -top-1 -right-1 flex size-5 items-center
+                justify-center rounded-full border-2 text-xs dark:text-foreground
               "
             >
               {{ user.get_unread_notifications_count }}
@@ -76,7 +76,7 @@
           <div
             id="dropdown-menu-account-content"
             data-jswc-dropdown-animation="true"
-            class="dropdown-menu right-0 top-12 hidden"
+            class="dropdown-menu top-12 right-0 hidden"
           >
             <a class="dropdown-menu-item justify-between gap-3 px-2 text-start" href="{% url 'dashboard' %}">
               <div class="size-5">
@@ -112,7 +112,7 @@
             type="button"
             data-jswc-theme-toggle
             class="
-              link relative items-center justify-center border border-foreground/20 p-2 hover:border-foreground/40
+              link border-foreground/20 relative items-center justify-center border p-2 hover:border-foreground/40
             "
             title="Theme toggle"
           >
@@ -126,7 +126,7 @@
     <div class="min-h-screen">
       {% block content %}{% endblock content %}
     </div>
-    <footer class="border-t bg-secondary/60 py-12">
+    <footer class="bg-secondary/60 border-t py-12">
       <div class="container">
         <div class="mb-12 grid grid-cols-1 gap-8 md:grid-cols-1">
           <div>
@@ -188,7 +188,7 @@
         </div>
         <div class="separator"></div>
         <div class="mt-8 flex flex-col items-center justify-between md:flex-row">
-          <p class="text-sm text-muted-foreground">&copy; 2025 Sbily. All rights reserved.</p>
+          <p class="text-muted-foreground text-sm">&copy; 2025 Sbily. All rights reserved.</p>
           <div class="mt-4 flex gap-4 md:mt-0">
             <a
               class="text-muted-foreground duration-200 hover:text-foreground"

@@ -18,8 +18,8 @@ export default function PasswordChanged() {
 
   return (
     <Layout title={title} previewText={text}>
-      <Card className="rounded-[10px] border-l-4 border-solid border-primary py-[10px]">
-        <Heading as="h3" className="font-semibold text-primary">
+      <Card className="border-primary rounded-[10px] border-l-4 border-solid py-[10px]">
+        <Heading as="h3" className="text-primary font-semibold">
           Security Alert
         </Heading>
         <Text>
@@ -35,12 +35,7 @@ export default function PasswordChanged() {
         </Heading>
         {recommendations.map((recommendation, index) => (
           <Text key={index} className="mt-[10px] inline-flex items-start">
-            <span
-              className={`
-                mr-[12px] flex size-[18px] shrink-0 items-center justify-center rounded-[6px] border border-solid
-                border-primary pl-[2px] text-[18px] font-semibold leading-none text-primary
-              `}
-            >
+            <span className="border-primary text-primary mr-[12px] flex size-[18px] shrink-0 items-center justify-center rounded-[6px] border border-solid pl-[2px] text-[18px] leading-none font-semibold">
               ✓
             </span>
             {recommendation}

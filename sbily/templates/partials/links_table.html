@@ -47,7 +47,7 @@
         <button
           type="button"
           data-jswc-dialog-close
-          class="button-outline absolute right-4 top-4 rounded-xl border-0 p-2"
+          class="button-outline absolute top-4 right-4 rounded-xl border-0 p-2"
           aria-label="Close"
         >
           <i data-lucide="x" class="size-5"></i>
@@ -62,28 +62,28 @@
   <div class="mt-2 rounded-md border pb-2">
     <div class="max-h-[500px] w-full overflow-auto overscroll-contain">
       <table class="w-full caption-bottom text-sm">
-        <caption class="mt-4 text-sm text-muted-foreground">
+        <caption class="text-muted-foreground mt-4 text-sm">
           A list of your links.
         </caption>
         <thead>
-          <tr class="border-b duration-200 hover:bg-muted/50">
+          <tr class="hover:bg-muted/50 border-b duration-200">
             <th class="size-10 min-w-10 align-middle font-medium">
               <input id="check-all-links" type="checkbox" aria-label="Select all links" />
             </th>
-            <th class="h-12 whitespace-nowrap px-4 text-start align-middle font-medium text-muted-foreground">Shortened Path</th>
-            <th class="h-12 px-4 text-start align-middle font-medium text-muted-foreground">Destination URL</th>
-            <th class="h-12 px-4 text-start align-middle font-medium text-muted-foreground">Expire in</th>
-            <th class="h-12 px-4 text-start align-middle font-medium text-muted-foreground">Created at</th>
-            <th class="h-12 px-4 text-center align-middle font-medium text-muted-foreground">Clicks</th>
-            <th class="h-12 px-4 text-center align-middle font-medium text-muted-foreground">Is Active</th>
-            <th class="h-12 px-4 text-center align-middle font-medium text-muted-foreground">Actions</th>
+            <th class="text-muted-foreground h-12 px-4 text-start align-middle font-medium whitespace-nowrap">Shortened Path</th>
+            <th class="text-muted-foreground h-12 px-4 text-start align-middle font-medium">Destination URL</th>
+            <th class="text-muted-foreground h-12 px-4 text-start align-middle font-medium">Expire in</th>
+            <th class="text-muted-foreground h-12 px-4 text-start align-middle font-medium">Created at</th>
+            <th class="text-muted-foreground h-12 px-4 text-center align-middle font-medium">Clicks</th>
+            <th class="text-muted-foreground h-12 px-4 text-center align-middle font-medium">Is Active</th>
+            <th class="text-muted-foreground h-12 px-4 text-center align-middle font-medium">Actions</th>
           </tr>
         </thead>
         <tbody id="tbody">
           {% for link in links %}
           <tr
             {% if link.is_expired %}title="The link has expired!" {% endif %}
-            class="border-b duration-200 hover:bg-muted/50"
+            class="hover:bg-muted/50 border-b duration-200"
           >
             <td class="text-center align-middle font-medium">
               <input
@@ -115,10 +115,10 @@
             <td class="px-4 py-2 text-start align-middle font-medium">
               {{ link.destination_url|truncatechars:25 }}
             </td>
-            <td class="whitespace-nowrap px-4 py-2 text-start align-middle font-medium">
+            <td class="px-4 py-2 text-start align-middle font-medium whitespace-nowrap">
               {{ link.time_until_expiration_formatted }}
             </td>
-            <td class="whitespace-nowrap px-4 py-2 text-start align-middle font-medium">
+            <td class="px-4 py-2 text-start align-middle font-medium whitespace-nowrap">
               {{ link.created_at|date:"M d, Y" }}
             </td>
             <td class="px-4 py-2 text-center align-middle font-medium">

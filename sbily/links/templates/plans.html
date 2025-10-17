@@ -3,20 +3,12 @@
 {% block title %}Plans{% endblock title %}
 
 {% block content %}
-<main
-  class="
-    bg-[radial-gradient(hsl(var(--primary)/0.2)_1px,transparent_1px)] [background-size:16px_16px]
-    dark:bg-[radial-gradient(hsl(var(--secondary)/0.4)_1px,transparent_1px)]
-  "
->
+<main class="from-primary/20 bg-radial from-10% to-transparent to-10% bg-size-[16px_16px] dark:from-secondary/40">
   <section
-    class="
-      relative overflow-hidden bg-[radial-gradient(hsl(var(--primary)/0.5)_1px,transparent_1px)]
-      [background-size:16px_16px]
-    "
+    class="from-primary/50 relative overflow-hidden bg-radial from-10% to-transparent to-10% bg-size-[16px_16px]"
   >
-    <div class="absolute inset-0 z-0 bg-gradient-to-br from-primary/30 to-background"></div>
-    <div class="container relative z-10 mx-auto px-4 py-16 md:py-20">
+    <div class="from-primary/30 to-background absolute inset-0 z-0 bg-linear-to-br"></div>
+    <div class="relative z-10 container mx-auto px-4 py-16 md:py-20">
       <div class="text-center">
         <h1 class="mb-4 text-4xl font-bold md:text-5xl">Choose Your Plan</h1>
         <p class="mx-auto mb-8 max-w-2xl text-lg md:text-xl">
@@ -33,7 +25,7 @@
       <div class="mx-auto max-w-4xl">
         {% include "partials/plans.html" %}
 
-        <div class="mt-8 rounded-lg border border-border bg-background p-8 shadow-lg">
+        <div class="border-border bg-background mt-8 rounded-lg border p-8 shadow-lg">
           <div class="flex items-center justify-between border-b pb-6">
             <div>
               <h3 class="mb-2 text-2xl font-bold">Free</h3>
@@ -52,21 +44,21 @@
             {% endif %}
           </div>
 
-          <ul class="mb-8 mt-6 space-y-3">
+          <ul class="mt-6 mb-8 space-y-3">
             <li class="flex items-center gap-2">
-              <i data-lucide="check" class="size-4 text-primary"></i>
+              <i data-lucide="check" class="text-primary size-4"></i>
               <span>10 new links/mo</span>
             </li>
             <li class="flex items-center gap-2">
-              <i data-lucide="check" class="size-4 text-primary"></i>
+              <i data-lucide="check" class="text-primary size-4"></i>
               <span>Basic statistics</span>
             </li>
             <li class="flex items-center gap-2">
-              <i data-lucide="check" class="size-4 text-primary"></i>
+              <i data-lucide="check" class="text-primary size-4"></i>
               <span>30-day analytics retention</span>
             </li>
             <li class="flex items-center gap-2">
-              <i data-lucide="check" class="size-4 text-primary"></i>
+              <i data-lucide="check" class="text-primary size-4"></i>
               <span>Basic support</span>
             </li>
           </ul>
@@ -83,7 +75,7 @@
         <div class="mt-2 rounded-md border">
           <div class="size-full overflow-auto overscroll-contain">
             <table class="size-full">
-              <thead class="border-b bg-secondary/60">
+              <thead class="bg-secondary/60 border-b">
                 <tr class="text-left">
                   <th class="p-4">Feature</th>
                   <th class="p-4 text-center">Free</th>
@@ -93,40 +85,40 @@
                 </tr>
               </thead>
               <tbody>
-                <tr class="border-b border-dashed duration-200 hover:bg-muted/50">
+                <tr class="hover:bg-muted/50 border-b border-dashed duration-200">
                   <td class="p-4 font-medium">Links</td>
                   <td class="p-4 text-center">5 new links/mo</td>
                   <td class="p-4 text-center">25 new links/mo</td>
                   <td class="p-4 text-center">50 new links/mo</td>
                   <td class="p-4 text-center">100 new links/mo</td>
                 </tr>
-                <tr class="border-b border-dashed duration-200 hover:bg-muted/50">
+                <tr class="hover:bg-muted/50 border-b border-dashed duration-200">
                   <td class="p-4 font-medium">Basic Statistics</td>
-                  <td class="p-4 text-center"><i data-lucide="check" class="mx-auto size-4 text-primary"></i></td>
-                  <td class="p-4 text-center"><i data-lucide="check" class="mx-auto size-4 text-primary"></i></td>
-                  <td class="p-4 text-center"><i data-lucide="check" class="mx-auto size-4 text-primary"></i></td>
-                  <td class="p-4 text-center"><i data-lucide="check" class="mx-auto size-4 text-primary"></i></td>
+                  <td class="p-4 text-center"><i data-lucide="check" class="text-primary mx-auto size-4"></i></td>
+                  <td class="p-4 text-center"><i data-lucide="check" class="text-primary mx-auto size-4"></i></td>
+                  <td class="p-4 text-center"><i data-lucide="check" class="text-primary mx-auto size-4"></i></td>
+                  <td class="p-4 text-center"><i data-lucide="check" class="text-primary mx-auto size-4"></i></td>
                 </tr>
-                <tr class="border-b border-dashed duration-200 hover:bg-muted/50">
+                <tr class="hover:bg-muted/50 border-b border-dashed duration-200">
                   <td class="p-4 font-medium">Advanced Statistics</td>
-                  <td class="p-4 text-center"><i data-lucide="x" class="mx-auto size-4 text-muted-foreground"></i></td>
-                  <td class="p-4 text-center"><i data-lucide="check" class="mx-auto size-4 text-primary"></i></td>
-                  <td class="p-4 text-center"><i data-lucide="check" class="mx-auto size-4 text-primary"></i></td>
-                  <td class="p-4 text-center"><i data-lucide="check" class="mx-auto size-4 text-primary"></i></td>
+                  <td class="p-4 text-center"><i data-lucide="x" class="text-muted-foreground mx-auto size-4"></i></td>
+                  <td class="p-4 text-center"><i data-lucide="check" class="text-primary mx-auto size-4"></i></td>
+                  <td class="p-4 text-center"><i data-lucide="check" class="text-primary mx-auto size-4"></i></td>
+                  <td class="p-4 text-center"><i data-lucide="check" class="text-primary mx-auto size-4"></i></td>
                 </tr>
-                <tr class="border-b border-dashed duration-200 hover:bg-muted/50">
+                <tr class="hover:bg-muted/50 border-b border-dashed duration-200">
                   <td class="p-4 font-medium">Analytics Retention</td>
                   <td class="p-4 text-center">30-day</td>
                   <td class="p-4 text-center">1-year</td>
                   <td class="p-4 text-center">3-year</td>
                   <td class="p-4 text-center">5-year</td>
                 </tr>
-                <tr class="duration-200 hover:bg-muted/50">
+                <tr class="hover:bg-muted/50 duration-200">
                   <td class="p-4 font-medium">Priority Support</td>
-                  <td class="p-4 text-center"><i data-lucide="x" class="mx-auto size-4 text-muted-foreground"></i></td>
-                  <td class="p-4 text-center"><i data-lucide="check" class="mx-auto size-4 text-primary"></i></td>
-                  <td class="p-4 text-center"><i data-lucide="check" class="mx-auto size-4 text-primary"></i></td>
-                  <td class="p-4 text-center"><i data-lucide="check" class="mx-auto size-4 text-primary"></i></td>
+                  <td class="p-4 text-center"><i data-lucide="x" class="text-muted-foreground mx-auto size-4"></i></td>
+                  <td class="p-4 text-center"><i data-lucide="check" class="text-primary mx-auto size-4"></i></td>
+                  <td class="p-4 text-center"><i data-lucide="check" class="text-primary mx-auto size-4"></i></td>
+                  <td class="p-4 text-center"><i data-lucide="check" class="text-primary mx-auto size-4"></i></td>
                 </tr>
               </tbody>
             </table>
@@ -140,7 +132,7 @@
     <div class="container">
       <h2 class="mb-12 text-center text-3xl font-bold">Frequently Asked Questions</h2>
       <div class="mx-auto max-w-3xl space-y-6">
-        <div class="rounded-lg border bg-background/40 p-6 shadow-lg">
+        <div class="bg-background/40 rounded-lg border p-6 shadow-lg">
           <h3 class="mb-2 text-xl font-bold">Can I upgrade from Free to Premium?</h3>
           <p>Yes! You can upgrade to Premium at any time from your account settings. Your existing links will be preserved, and you'll immediately get access to premium features.</p>
         </div>
@@ -152,7 +144,7 @@
     <div class="container">
       <div class="mx-auto max-w-3xl text-center">
         <h2 class="mb-6 text-3xl font-bold">Ready to get started?</h2>
-        <p class="mb-8 text-lg text-muted-foreground">Join thousands of users who are already simplifying their link sharing with Sbily.</p>
+        <p class="text-muted-foreground mb-8 text-lg">Join thousands of users who are already simplifying their link sharing with Sbily.</p>
         <div class="flex flex-col justify-center gap-4 sm:flex-row">
           {% if request.user.is_authenticated %}
           <a class="button-primary" href="{% url "dashboard" %}">Go to dashboard</a>

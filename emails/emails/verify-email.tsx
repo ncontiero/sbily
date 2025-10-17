@@ -32,7 +32,7 @@ export default function VerifyEmail() {
         link="{{ verify_email_link }}"
       />
       <Section>
-        <Heading as="h3" className="mb-0 mt-[32px] text-[20px] font-semibold">
+        <Heading as="h3" className="mt-[32px] mb-0 text-[20px] font-semibold">
           Frequently Asked Questions
         </Heading>
         <Section>
@@ -42,7 +42,7 @@ export default function VerifyEmail() {
                 <Heading as="h4" className="m-0 text-[18px] font-semibold">
                   {question.question}
                 </Heading>
-                <Text className="mb-0 text-muted-foreground">
+                <Text className="text-muted-foreground mb-0">
                   {question.answer}
                 </Text>
               </Column>

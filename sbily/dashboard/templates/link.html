@@ -1,4 +1,4 @@
-<!-- eslint-disable tailwindcss/enforce-consistent-class-order -->
+<!-- eslint-disable tailwindcss/enforce-consistent-line-wrapping, tailwindcss/enforce-consistent-class-order -->
 {% extends "dashboard/base.html" %}
 
 {% block title %}Statistics for {{ link.shortened_path }}{% endblock title %}
@@ -105,10 +105,7 @@
   <div class="container mx-auto px-4">
     <form
       data-jswc-add-load
-      class="
-        {% if perms.links.view_advanced_statistics %}grid grid-cols-2 md:grid-cols-4{% else %}flex flex-col
-        sm:flex-row{% endif %} gap-4
-      "
+      class="{% if perms.links.view_advanced_statistics %}grid grid-cols-2 md:grid-cols-4{% else %}flex flex-col sm:flex-row{% endif %} gap-4"
       action="{% url 'link' link.shortened_path %}"
       method="get"
     >
@@ -192,10 +189,9 @@
         </select>
       </div>
       {% endif %}
-      <div class="
-        flex justify-center items-end gap-2 {% if perms.links.view_advanced_statistics %}col-span-2 md:col-span-1{%
-        endif %}
-      ">
+      <div
+        class="flex justify-center items-end gap-2 {% if perms.links.view_advanced_statistics %}col-span-2 md:col-span-1{% endif %}"
+      >
         <button type="submit" class="button-primary">Apply Filter</button>
         <a class="button-outline" href="{% url 'link' link.shortened_path %}#filters">
           Reset Filter
@@ -227,7 +223,7 @@
 {% if perms.links.view_advanced_statistics %}
 <section class="py-6">
   <div class="container mx-auto px-4">
-    <div class="rounded-lg border bg-background p-6 shadow-sm">
+    <div class="rounded-lg border bg-background p-6 shadow-xs">
       <h2 class="mb-4 px-4 text-lg font-bold">Top Countries</h2>
       <div class="flex h-fit justify-center lg:h-96">
         <canvas id="countriesAndCitiesChart"></canvas>

@@ -13,8 +13,8 @@ export default function EmailChanged() {
 
   return (
     <Layout title={title} previewText={text}>
-      <Card className="rounded-[10px] border-l-4 border-solid border-primary py-[10px]">
-        <Heading as="h3" className="font-semibold text-primary">
+      <Card className="border-primary rounded-[10px] border-l-4 border-solid py-[10px]">
+        <Heading as="h3" className="text-primary font-semibold">
           Email Change Notification
         </Heading>
         <Text>
@@ -28,18 +28,18 @@ export default function EmailChanged() {
       <Card variant="outline">
         <Row cellSpacing={8} className="ml-0 w-full max-w-[364px] table-fixed">
           <Column className="w-[100px]">
-            <Text className="m-0 text-muted-foreground">Previous:</Text>
+            <Text className="text-muted-foreground m-0">Previous:</Text>
           </Column>
-          <Column className="w-full rounded-[6px] bg-secondary px-[10px] py-[6px]">
-            <Text className="m-0 text-foreground">{`{{ old_email }}`}</Text>
+          <Column className="bg-secondary w-full rounded-[6px] px-[10px] py-[6px]">
+            <Text className="text-foreground m-0">{`{{ old_email }}`}</Text>
           </Column>
         </Row>
         <Row cellSpacing={8} className="ml-0 w-full max-w-[364px] table-fixed">
           <Column className="w-[100px]">
-            <Text className="m-0 text-muted-foreground">New:</Text>
+            <Text className="text-muted-foreground m-0">New:</Text>
           </Column>
-          <Column className="w-full rounded-[6px] bg-secondary px-[10px] py-[6px]">
-            <Text className="m-0 text-foreground">{`{{ user.email }}`}</Text>
+          <Column className="bg-secondary w-full rounded-[6px] px-[10px] py-[6px]">
+            <Text className="text-foreground m-0">{`{{ user.email }}`}</Text>
           </Column>
         </Row>
       </Card>
@@ -51,7 +51,7 @@ export default function EmailChanged() {
         <Button href={`{{ verify_email_link  }}`} className="my-[16px]">
           Verify New Email
         </Button>
-        <Text className="text-[14px] text-muted-foreground">
+        <Text className="text-muted-foreground text-[14px]">
           This verification link expires in 24 hours
         </Text>
       </Section>

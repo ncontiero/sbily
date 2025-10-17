@@ -10,7 +10,7 @@
     <input name="current_path" type="hidden" value="{{ request.path }}#{{ hash|default:'links-table' }}" />
     <div class="mt-2 flex flex-col">
       {% if link.expires_at %}
-      <p class="text-sm font-medium text-muted-foreground">
+      <p class="text-muted-foreground text-sm font-medium">
         {% if link.is_expired %}
         This link has expired!
         {% else %}
@@ -19,7 +19,7 @@
       </p>
       {% endif %}
     </div>
-    <div class="separator mb-4 mt-2"></div>
+    <div class="separator mt-2 mb-4"></div>
     <div class="mb-6 flex flex-col">
       <div class="mb-4 flex flex-col gap-2">
         <label class="label" for="update_destination_url">Destination URL</label>
@@ -35,7 +35,7 @@
       </div>
       <div class="mb-5 flex flex-col gap-2">
         <label class="label" for="update_shortened_path">
-          Shortened URL <span class="text-sm font-medium text-muted-foreground">(Optional)</span>
+          Shortened URL <span class="text-muted-foreground text-sm font-medium">(Optional)</span>
         </label>
         <div class="flex items-center rounded-md border">
           <label class="flex h-10 items-center px-3 py-2" for="update_shortened_path">
@@ -53,7 +53,7 @@
       </div>
       <div class="mb-5 flex flex-col">
         <label class="label mb-2" for="update_expires_at">
-          Expires At <span class="text-sm font-medium text-muted-foreground">(Optional)</span>
+          Expires At <span class="text-muted-foreground text-sm font-medium">(Optional)</span>
         </label>
         <input
           name="expires_at"
@@ -90,7 +90,7 @@
     <button
       type="button"
       data-jswc-dialog-close
-      class="button-outline absolute right-4 top-4 rounded-xl border-0 p-2"
+      class="button-outline absolute top-4 right-4 rounded-xl border-0 p-2"
       aria-label="Close"
     >
       <i data-lucide="x" class="size-5"></i>

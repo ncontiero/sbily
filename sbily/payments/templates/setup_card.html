@@ -7,17 +7,17 @@
   <div class="mx-auto max-w-lg">
     <h1 class="mb-4 text-2xl font-bold">Set Up Payment Method</h1>
 
-    <div class="rounded-lg border border-border bg-background p-6">
+    <div class="border-border bg-background rounded-lg border p-6">
       <!-- eslint-disable-next-line html/require-form-method -->
       <form id="payment-form">
         <div class="mb-4">
           <label class="mb-2 block text-sm font-medium" for="card-element">
             Credit or debit card
           </label>
-          <div id="card-element" class="rounded-md border border-border/70 p-3 duration-200 hover:border-border">
+          <div id="card-element" class="border-border/70 rounded-md border p-3 duration-200 hover:border-border">
             <!-- Stripe Elements will create form elements here -->
           </div>
-          <div id="card-errors" class="mt-2 text-sm text-destructive" role="alert"></div>
+          <div id="card-errors" class="text-destructive mt-2 text-sm" role="alert"></div>
         </div>
 
         <div class="mt-6 flex justify-between">

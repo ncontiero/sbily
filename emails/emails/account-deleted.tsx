@@ -12,8 +12,8 @@ export default function AccountDeleted() {
 
   return (
     <Layout title={title} previewText={text}>
-      <Card className="rounded-[10px] border-l-4 border-solid border-destructive py-[10px]">
-        <Heading as="h3" className="font-semibold text-destructive">
+      <Card className="border-destructive rounded-[10px] border-l-4 border-solid py-[10px]">
+        <Heading as="h3" className="text-destructive font-semibold">
           Account Permanently Deleted
         </Heading>
         <Text>
@@ -22,7 +22,7 @@ export default function AccountDeleted() {
         </Text>
       </Card>
       <Section className="text-center">
-        <Text className="mb-[6px] mt-[26px]">User account:</Text>
+        <Text className="mt-[26px] mb-[6px]">User account:</Text>
         <Card className="mt-0 w-fit p-[6px]">{`{{ username }}`}</Card>
       </Section>
       <Card variant="outline" className="mt-[32px] py-0">
@@ -44,7 +44,7 @@ export default function AccountDeleted() {
           future, you'll need to create a new account.
         </Text>
       </Card>
-      <Section className="mb-[24px] mt-[32px] text-center">
+      <Section className="mt-[32px] mb-[24px] text-center">
         <Text>
           We're sorry to see you go. If you'd like to share why you decided to
           delete your account, we'd appreciate your feedback.

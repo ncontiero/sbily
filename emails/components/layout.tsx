@@ -87,19 +87,14 @@ export function Layout({ title, previewText, children }: LayoutProps) {
         </Head>
         <Preview>{previewText}</Preview>
 
-        <Body className="m-auto bg-background font-sans">
-          <Container
-            className={`
-              mx-auto my-[40px] max-w-[600px] rounded-[6px] border border-solid border-transparent p-[20px]
-              md:border-border
-            `}
-          >
+        <Body className="bg-background m-auto font-sans">
+          <Container className="md:border-border mx-auto my-[40px] max-w-[600px] rounded-[6px] border border-solid border-transparent p-[20px]">
             <Header />
 
             {title ? (
               <Heading
                 as="h2"
-                className="my-[20px] text-center text-[26px] font-semibold text-foreground"
+                className="text-foreground my-[20px] text-center text-[26px] font-semibold"
               >
                 {title}
               </Heading>

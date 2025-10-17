@@ -9,16 +9,21 @@ type CustomConfig<T extends ChartType> = {
   config?: ChartConfiguration<T>;
 };
 
+function removeOklch(color: string) {
+  const match = color.match(/oklch\((.*)\)/);
+  return match ? match[1].trim() : color;
+}
+
 export function getThemeColors() {
   const styles = getComputedStyle(document.documentElement);
-  const primaryColor = styles.getPropertyValue("--primary").trim();
-  const foregroundColor = styles.getPropertyValue("--foreground").trim();
-  const backgroundColor = styles.getPropertyValue("--background").trim();
+  const primaryColor = styles.getPropertyValue("--color-primary").trim();
+  const foregroundColor = styles.getPropertyValue("--color-foreground").trim();
+  const backgroundColor = styles.getPropertyValue("--color-background").trim();
 
   return {
-    primaryColor,
-    foregroundColor,
-    backgroundColor,
+    primaryColor: removeOklch(primaryColor),
+    foregroundColor: removeOklch(foregroundColor),
+    backgroundColor: removeOklch(backgroundColor),
   };
 }
 
@@ -26,12 +31,21 @@ export function getChartColors(count: number) {
   const { primaryColor } = getThemeColors();
 
   const colors = [];
+
+  const primaryColorValues = primaryColor.split(" ");
+  const lightness = primaryColorValues[0];
+  const chroma = primaryColorValues[1];
+  const baseHue = Number.parseInt(primaryColorValues[2]);
   const opacity = 0.8;
 
-  // Primary color with varying brightness
+  if (count <= 1) {
+    colors.push(`oklch(${primaryColor} / ${opacity})`);
+    return colors;
+  }
+
   for (let i = 0; i < count; i++) {
-    const hue = Number.parseInt(primaryColor) + ((i * 30) % 360);
-    colors.push(`hsl(${hue}, 70%, 60%, ${opacity})`);
+    const hue = (baseHue + i * 15) % 360;
+    colors.push(`oklch(${lightness} ${chroma} ${hue} / ${opacity})`);
   }
 
   return colors;
@@ -53,8 +67,8 @@ export function getChartBarConfig({
         {
           label: dataLabel,
           data: data.map((d) => Number.parseInt(d)),
-          backgroundColor: `hsl(${primaryColor}/0.2)`,
-          borderColor: `hsl(${primaryColor})`,
+          backgroundColor: `oklch(${primaryColor}/0.2)`,
+          borderColor: primaryColor,
           borderWidth: 2,
           borderRadius: 5,
         },
@@ -64,7 +78,7 @@ export function getChartBarConfig({
       ...config?.options,
       responsive: true,
       maintainAspectRatio: false,
-      hoverBackgroundColor: `hsl(${primaryColor}/0.5)`,
+      hoverBackgroundColor: `oklch(${primaryColor}/0.5)`,
       plugins: {
         legend: {
           display: false,
@@ -82,8 +96,8 @@ export function getChartBarConfig({
         },
         y: {
           grid: {
-            color: `hsl(${foregroundColor}/0.2)`,
-            tickColor: `hsl(${foregroundColor}/0.2)`,
+            color: `oklch(${foregroundColor}/0.2)`,
+            tickColor: `oklch(${foregroundColor}/0.2)`,
           },
           beginAtZero: true,
           ticks: {

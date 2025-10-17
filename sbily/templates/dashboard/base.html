@@ -3,22 +3,23 @@
 {% block title %}Dashboard{% endblock title %}
 
 {% block content %}
-<main class="
-  min-h-screen bg-[radial-gradient(hsl(var(--primary)/0.2)_1px,transparent_1px)] pb-12 [background-size:16px_16px]
-  dark:bg-[radial-gradient(hsl(var(--secondary)/0.4)_1px,transparent_1px)]
-">
-  <section class="
-    relative overflow-hidden bg-[radial-gradient(hsl(var(--primary)/0.5)_1px,transparent_1px)]
-    [background-size:16px_16px]
-  ">
-    <div class="absolute inset-0 z-0 bg-gradient-to-br from-primary/30 to-background"></div>
-    <div class="container relative z-10 mx-auto px-4 py-12">
+<main
+  class="
+    from-primary/20 min-h-screen bg-radial from-10% to-transparent to-10% bg-size-[16px_16px] pb-12
+    dark:from-secondary/50
+  "
+>
+  <section
+    class="from-primary/50 relative overflow-hidden bg-radial from-10% to-transparent to-10% bg-size-[16px_16px]"
+  >
+    <div class="from-primary/30 to-background absolute inset-0 z-0 bg-linear-to-br"></div>
+    <div class="relative z-10 container mx-auto px-4 py-12">
       <div class="flex flex-col items-center justify-between gap-6 text-center md:flex-row md:text-start">
         <div>
           <h1 class="mb-2 text-3xl font-bold md:text-4xl">
             {% block dashboard_title %}Dashboard{% endblock dashboard_title %}
           </h1>
-          <p class="text-lg text-foreground/80">
+          <p class="text-foreground/80 text-lg">
             {% block dashboard_description %}
               Welcome back, {{ user.get_short_name }}
             {% endblock dashboard_description %}
@@ -43,7 +44,7 @@
             New Link
           </button>
           {% if not perms.links.view_advanced_statistics %}
-          <a class="button-outline gap-2 bg-background/30" href="{% url 'plans' %}">
+          <a class="button-outline bg-background/30 gap-2" href="{% url 'plans' %}">
             <i data-lucide="zap" class="size-5"></i>
             Upgrade to Premium
           </a>
@@ -58,19 +59,19 @@
   {% if not perms.links.view_advanced_statistics %}
   <section class="py-6">
     <div class="container mx-auto px-4">
-      <div class="mb-8 rounded-lg border border-primary/30 bg-secondary/50 p-6 text-center">
+      <div class="border-primary/30 bg-secondary/50 mb-8 rounded-lg border p-6 text-center">
         <h2 class="mb-4 text-xl font-bold">Unlock Advanced Analytics</h2>
         <p class="mb-4">Upgrade to Premium to access advanced analytics and get deeper insights into your link performance.</p>
         <div class="mx-auto mb-6 grid max-w-3xl gap-4 md:grid-cols-2">
-          <div class="rounded-lg border border-border bg-background p-4">
-            <i data-lucide="map" class="mx-auto mb-2 size-6 text-primary"></i>
+          <div class="border-border bg-background rounded-lg border p-4">
+            <i data-lucide="map" class="text-primary mx-auto mb-2 size-6"></i>
             <h3 class="mb-1 font-bold">Geographic Data</h3>
-            <p class="text-sm text-muted-foreground">See where your visitors are coming from around the world.</p>
+            <p class="text-muted-foreground text-sm">See where your visitors are coming from around the world.</p>
           </div>
-          <div class="rounded-lg border border-border bg-background p-4">
-            <i data-lucide="smartphone" class="mx-auto mb-2 size-6 text-primary"></i>
+          <div class="border-border bg-background rounded-lg border p-4">
+            <i data-lucide="smartphone" class="text-primary mx-auto mb-2 size-6"></i>
             <h3 class="mb-1 font-bold">Device Analytics</h3>
-            <p class="text-sm text-muted-foreground">Understand which devices your audience is using.</p>
+            <p class="text-muted-foreground text-sm">Understand which devices your audience is using.</p>
           </div>
         </div>
         <a class="button-primary" href="{% url 'plans' %}">Upgrade to Premium</a>
@@ -104,7 +105,7 @@
         </div>
         <div class="mb-5 flex flex-col gap-2">
           <label class="label" for="shortened_path">
-            Shortened URL <span class="text-sm font-medium text-muted-foreground">(Optional)</span>
+            Shortened URL <span class="text-muted-foreground text-sm font-medium">(Optional)</span>
           </label>
           <div class="flex items-center rounded-md border">
             <label class="flex h-10 items-center px-3 py-2" for="shortened_path">
@@ -121,7 +122,7 @@
         </div>
         <div class="flex flex-col">
           <label class="label mb-2" for="expires_at">
-            Expires At <span class="text-sm font-medium text-muted-foreground">(Optional)</span>
+            Expires At <span class="text-muted-foreground text-sm font-medium">(Optional)</span>
           </label>
           <input
             name="expires_at"
@@ -142,7 +143,7 @@
       <button
         type="button"
         data-jswc-dialog-close
-        class="button-outline absolute right-4 top-4 rounded-xl border-0 p-2"
+        class="button-outline absolute top-4 right-4 rounded-xl border-0 p-2"
         aria-label="Close"
       >
         <i data-lucide="x" class="size-5"></i>

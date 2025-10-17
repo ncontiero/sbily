@@ -3,7 +3,7 @@
 {% block title %}My Notifications{% endblock title %}
 
 {% block content %}
-<div class="mx-auto my-10 flex max-w-xl flex-col justify-center rounded-md border-2 border-secondary md:my-16">
+<div class="border-secondary mx-auto my-10 flex max-w-xl flex-col justify-center rounded-md border-2 md:my-16">
   <div class="border-b-2 p-6">
     <h1 class="text-lg font-bold">My Notifications</h1>
   </div>
@@ -19,14 +19,14 @@
     >
       <a
         class="
-          -z-[1px] flex items-center justify-between gap-4 rounded-md p-4 outline-none ring-ring duration-200
+          ring-ring -z-[1px] flex items-center justify-between gap-4 rounded-md p-4 outline-hidden duration-200
           hover:bg-secondary/60 focus:ring-2
         "
         href="{% url "my_notification" notification.id %}"
       >
         <div
           class="
-            {% if notification.is_read %}border-2{% else %}bg-blue-600 animate-bounce{% endif %} absolute left-2 top-2
+            {% if notification.is_read %}border-2{% else %}bg-blue-600 animate-bounce{% endif %} absolute top-2 left-2
             size-2.5 rounded-full
           "
         ></div>
@@ -38,18 +38,18 @@
             <p class="{% if notification.is_read %}opacity-80{% endif %}">
               {{ notification.title }}
             </p>
-            <span class="text-sm text-foreground/60">{{ notification.created_at|timesince }} ago</span>
+            <span class="text-foreground/60 text-sm">{{ notification.created_at|timesince }} ago</span>
           </div>
         </div>
       </a>
-      <div class="absolute right-2 top-2">
+      <div class="absolute top-2 right-2">
         <button
           type="button"
           data-jswc-dropdown
           data-jswc-target="dropdown-menu-notification-{{ notification.id }}"
           class="
-            button-outline p-1.5 opacity-0 duration-200 focus:opacity-100 group-focus-within:opacity-100
-            group-hover:opacity-100
+            button-outline p-1.5 opacity-0 duration-200 group-focus-within:opacity-100 group-hover:opacity-100
+            focus:opacity-100
           "
           aria-label="Open action menu for notification {{ notification.title }}"
           title="Open action menu for notification {{ notification.title }}"
@@ -66,7 +66,7 @@
             <span class="size-2 rounded-full bg-blue-600"></span>
             Mark as unread
             {% else %}
-            <span class="size-2 rounded-full border-2 border-foreground"></span>
+            <span class="border-foreground size-2 rounded-full border-2"></span>
             Mark as read
             {% endif %}
           </a>
@@ -106,7 +106,7 @@
             <button
               type="button"
               data-jswc-dialog-close
-              class="button-outline absolute right-4 top-4 rounded-xl border-0 p-2"
+              class="button-outline absolute top-4 right-4 rounded-xl border-0 p-2"
               aria-label="Close"
             >
               <i data-lucide="x" class="size-5"></i>
@@ -149,7 +149,7 @@
         <button
           type="button"
           data-jswc-dialog-close
-          class="button-outline absolute right-4 top-4 rounded-xl border-0 p-2"
+          class="button-outline absolute top-4 right-4 rounded-xl border-0 p-2"
           aria-label="Close"
         >
           <i data-lucide="x" class="size-5"></i>

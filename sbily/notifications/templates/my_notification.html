@@ -5,8 +5,8 @@
 {% block title %}{{ notification.title }}{% endblock title %}
 
 {% block content %}
-<div class="mx-auto my-16 flex max-w-xl flex-col justify-center rounded-md border-2 bg-secondary">
-  <div class="rounded-md bg-background p-6">
+<div class="bg-secondary mx-auto my-16 flex max-w-xl flex-col justify-center rounded-md border-2">
+  <div class="bg-background rounded-md p-6">
     <h1 class="text-lg font-bold">{{ notification.title }}</h1>
     <div class="mt-2 flex items-center gap-2 text-sm">
       <div class="flex items-center gap-1">
@@ -17,8 +17,8 @@
           {{ notification.get_type_display }}
         </span>
       </div>
-      <div class="size-2 rounded-full bg-foreground/50"></div>
-      <span class="flex items-center text-foreground/60">
+      <div class="bg-foreground/50 size-2 rounded-full"></div>
+      <span class="text-foreground/60 flex items-center">
         {{ notification.created_at|timesince }} ago
       </span>
     </div>
@@ -72,7 +72,7 @@
             <button
               type="button"
               data-jswc-dialog-close
-              class="button-outline absolute right-4 top-4 rounded-xl border-0 p-2"
+              class="button-outline absolute top-4 right-4 rounded-xl border-0 p-2"
               aria-label="Close"
             >
               <i data-lucide="x" class="size-5"></i>

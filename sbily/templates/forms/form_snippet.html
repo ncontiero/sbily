@@ -18,17 +18,17 @@
   <div class="flex flex-col gap-1.5">
     <label class="label {% if field.errors %}text-destructive{% endif %}" for="{{ field.id_for_label }}">
       {{ field.label }}{% if not field.field.required %}
-      <span class="text-xs font-medium text-foreground/60"> (Optional)</span>{% endif %}
+      <span class="text-foreground/60 text-xs font-medium"> (Optional)</span>{% endif %}
     </label>
     {{ field }}
   </div>
   {% if field.help_text %}
-  <span id="{{ field.auto_id }}_helptext" class="mt-0.5 text-xs text-foreground/60">
+  <span id="{{ field.auto_id }}_helptext" class="text-foreground/60 mt-0.5 text-xs">
     {{ field.help_text|safe }}
   </span>
   {% endif %}
   {% for error in field.errors %}
-  <span class="mt-1 text-sm font-medium text-destructive">{{ error|escape }}</span>
+  <span class="text-destructive mt-1 text-sm font-medium">{{ error|escape }}</span>
   {% endfor %}
 </div>
 {% endif %}

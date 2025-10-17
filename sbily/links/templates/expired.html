@@ -4,30 +4,24 @@
 
 {% block content %}
 <main
-  class="
-    bg-[radial-gradient(hsl(var(--primary)/0.2)_1px,transparent_1px)] [background-size:16px_16px]
-    dark:bg-[radial-gradient(hsl(var(--secondary)/0.4)_1px,transparent_1px)]
-  "
+  class="from-primary/20 bg-radial from-10% to-transparent to-10% bg-size-[16px_16px] dark:from-secondary/40"
 >
   <section
-    class="
-      relative overflow-hidden bg-[radial-gradient(hsl(var(--primary)/0.5)_1px,transparent_1px)]
-      [background-size:16px_16px]
-    "
+    class="from-primary/60 relative overflow-hidden bg-radial from-10% to-transparent to-10% bg-size-[16px_16px]"
   >
-    <div class="absolute inset-0 z-0 bg-gradient-to-br from-primary/30 to-background"></div>
-    <div class="container relative z-10 mx-auto px-4 py-20 md:py-28">
+    <div class="from-primary/30 to-background absolute inset-0 z-0 bg-linear-to-br"></div>
+    <div class="relative z-10 container mx-auto px-4 py-20 md:py-28">
       <div class="mx-auto flex max-w-2xl flex-col items-center gap-8 text-center">
         <div class="relative">
-          <div class="absolute -inset-3 rounded-full bg-primary/40 opacity-50 blur-lg"></div>
-          <div class="relative rounded-full border border-border bg-background p-4 shadow-lg">
+          <div class="bg-primary/40 absolute -inset-3 rounded-full opacity-50 blur-lg"></div>
+          <div class="border-border bg-background relative rounded-full border p-4 shadow-lg">
             <i data-lucide="clock-fading" class="size-20"></i>
           </div>
         </div>
 
         <div class="space-y-4">
           <h1 class="text-3xl font-bold md:text-5xl">This link has expired</h1>
-          <p class="mx-auto max-w-lg text-lg text-foreground/80 md:text-xl">
+          <p class="text-foreground/80 mx-auto max-w-lg text-lg md:text-xl">
             This link has expired. Please contact the link owner to get a new one.
           </p>
         </div>
@@ -57,33 +51,33 @@
         <h2 class="mb-6 text-2xl font-bold md:text-3xl">
           Full control over your links with Sbily
         </h2>
-        <p class="mb-12 text-lg text-muted-foreground">
+        <p class="text-muted-foreground mb-12 text-lg">
           Set custom expiration dates and manage your links with complete flexibility.
         </p>
 
         <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
-          <div class="rounded-lg border border-border bg-background/80 p-6 backdrop-blur-sm">
-            <div class="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-primary/10">
-              <i data-lucide="calendar-clock" class="size-6 text-primary"></i>
+          <div class="border-border bg-background/80 rounded-lg border p-6 backdrop-blur-xs">
+            <div class="bg-primary/10 mx-auto mb-4 flex size-12 items-center justify-center rounded-full">
+              <i data-lucide="calendar-clock" class="text-primary size-6"></i>
             </div>
             <h3 class="mb-2 font-semibold">Custom expiration</h3>
-            <p class="text-sm text-muted-foreground">Set the perfect lifespan for each link</p>
+            <p class="text-muted-foreground text-sm">Set the perfect lifespan for each link</p>
           </div>
 
-          <div class="rounded-lg border border-border bg-background/80 p-6 backdrop-blur-sm">
-            <div class="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-primary/10">
-              <i data-lucide="settings" class="size-6 text-primary"></i>
+          <div class="border-border bg-background/80 rounded-lg border p-6 backdrop-blur-xs">
+            <div class="bg-primary/10 mx-auto mb-4 flex size-12 items-center justify-center rounded-full">
+              <i data-lucide="settings" class="text-primary size-6"></i>
             </div>
             <h3 class="mb-2 font-semibold">Easy management</h3>
-            <p class="text-sm text-muted-foreground">Edit or extend expiration dates when needed</p>
+            <p class="text-muted-foreground text-sm">Edit or extend expiration dates when needed</p>
           </div>
 
-          <div class="rounded-lg border border-border bg-background/80 p-6 backdrop-blur-sm">
-            <div class="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-primary/10">
-              <i data-lucide="shield-check" class="size-6 text-primary"></i>
+          <div class="border-border bg-background/80 rounded-lg border p-6 backdrop-blur-xs">
+            <div class="bg-primary/10 mx-auto mb-4 flex size-12 items-center justify-center rounded-full">
+              <i data-lucide="shield-check" class="text-primary size-6"></i>
             </div>
             <h3 class="mb-2 font-semibold">Advanced security</h3>
-            <p class="text-sm text-muted-foreground">Keep your links secure with automatic expiration</p>
+            <p class="text-muted-foreground text-sm">Keep your links secure with automatic expiration</p>
           </div>
         </div>
       </div>
@@ -96,32 +90,32 @@
         <h2 class="mb-8 text-center text-2xl font-bold">Frequently asked questions</h2>
 
         <div class="space-y-4">
-          <div class="rounded-lg border border-border bg-background p-4">
+          <div class="border-border bg-background rounded-lg border p-4">
             <h3 class="flex items-start gap-2 text-sm font-semibold">
-              <i data-lucide="circle-help" class="mt-0.5 size-4 shrink-0 text-primary"></i>
+              <i data-lucide="circle-help" class="text-primary mt-0.5 size-4 shrink-0"></i>
               Can the link creator change the expiration date?
             </h3>
-            <p class="ml-6 mt-2 text-sm text-muted-foreground">
+            <p class="text-muted-foreground mt-2 ml-6 text-sm">
               Yes! The link creator can access their dashboard and modify the expiration date or even remove the time limit at any time.
             </p>
           </div>
 
-          <div class="rounded-lg border border-border bg-background p-4">
+          <div class="border-border bg-background rounded-lg border p-4">
             <h3 class="flex items-start gap-2 text-sm font-semibold">
-              <i data-lucide="circle-help" class="mt-0.5 size-4 shrink-0 text-primary"></i>
+              <i data-lucide="circle-help" class="text-primary mt-0.5 size-4 shrink-0"></i>
               How can I get a new link?
             </h3>
-            <p class="ml-6 mt-2 text-sm text-muted-foreground">
+            <p class="text-muted-foreground mt-2 ml-6 text-sm">
               Contact the person who shared the link. They can extend the expiration date or create a new link with a longer duration.
             </p>
           </div>
 
-          <div class="rounded-lg border border-border bg-background p-4">
+          <div class="border-border bg-background rounded-lg border p-4">
             <h3 class="flex items-start gap-2 text-sm font-semibold">
-              <i data-lucide="circle-help" class="mt-0.5 size-4 shrink-0 text-primary"></i>
+              <i data-lucide="circle-help" class="text-primary mt-0.5 size-4 shrink-0"></i>
               Can I create links without an expiration date?
             </h3>
-            <p class="ml-6 mt-2 text-sm text-muted-foreground">
+            <p class="text-muted-foreground mt-2 ml-6 text-sm">
               Yes! You can create links with unlimited duration or set any expiration period you desire.
             </p>
           </div>
@@ -136,21 +130,21 @@
         <h2 class="mb-6 text-2xl font-bold md:text-3xl">
           Take full control of your links
         </h2>
-        <p class="mb-12 text-lg text-muted-foreground">
+        <p class="text-muted-foreground mb-12 text-lg">
           With Sbily, you decide when and how your links should expire, ensuring your content stays relevant.
         </p>
 
         <div class="mx-auto grid max-w-2xl grid-cols-1 gap-6 sm:grid-cols-2">
-          <div class="flex flex-col items-center justify-center rounded-lg border border-border bg-background p-6">
-            <i data-lucide="infinity" class="mb-3 size-8 text-primary"></i>
+          <div class="border-border bg-background flex flex-col items-center justify-center rounded-lg border p-6">
+            <i data-lucide="infinity" class="text-primary mb-3 size-8"></i>
             <h3 class="mb-2 font-semibold">Permanent links</h3>
-            <p class="text-sm text-muted-foreground">Create links without expiration for lasting content</p>
+            <p class="text-muted-foreground text-sm">Create links without expiration for lasting content</p>
           </div>
 
-          <div class="flex flex-col items-center justify-center rounded-lg border border-border bg-background p-6">
-            <i data-lucide="clock" class="mb-3 size-8 text-primary"></i>
+          <div class="border-border bg-background flex flex-col items-center justify-center rounded-lg border p-6">
+            <i data-lucide="clock" class="text-primary mb-3 size-8"></i>
             <h3 class="mb-2 font-semibold">Scheduled expiration</h3>
-            <p class="text-sm text-muted-foreground">Set specific dates for campaigns and temporary events</p>
+            <p class="text-muted-foreground text-sm">Set specific dates for campaigns and temporary events</p>
           </div>
         </div>
       </div>
@@ -161,14 +155,14 @@
     <div class="container">
       <div
         class="
-          mx-auto max-w-3xl rounded-lg border border-primary/20 bg-gradient-to-r from-primary/10 to-background/30 p-8
+          border-primary/20 from-primary/10 to-background/30 mx-auto max-w-3xl rounded-lg border bg-linear-to-r p-8
           text-center md:p-12
         "
       >
         <h2 class="mb-4 text-2xl font-bold md:text-3xl">
           Ready to create your links?
         </h2>
-        <p class="mb-8 text-lg text-muted-foreground">
+        <p class="text-muted-foreground mb-8 text-lg">
           Join thousands of users who already trust Sbily to manage their links with security and flexibility.
         </p>
         <div class="flex flex-col justify-center gap-4 sm:flex-row">

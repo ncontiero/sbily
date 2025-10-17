@@ -18,10 +18,10 @@ export function Card({
   return (
     <Comp
       className={cn(
-        "mb-0 mt-[26px] rounded-[6px] p-[20px]",
+        "mt-[26px] mb-0 rounded-[6px] p-[20px]",
         variant === "default" && "bg-secondary",
         variant === "outline" &&
-          "border border-solid border-border bg-background",
+          "border-border bg-background border border-solid",
         className,
       )}
       {...props}

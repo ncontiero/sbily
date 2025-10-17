@@ -15,8 +15,8 @@
           <div class="mt-4 flex flex-col gap-4">
             <label
               class="
-                flex cursor-pointer items-center gap-2 rounded-md border p-4 duration-200 hover:border-border/80
-                has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-80 has-[:checked]:border-primary
+                hover:border-border/80 has-checked:border-primary flex cursor-pointer items-center gap-2 rounded-md
+                border p-4 duration-200 has-disabled:cursor-not-allowed has-disabled:opacity-80
               "
               for="yearly"
             >
@@ -26,8 +26,8 @@
                   id="yearly"
                   type="radio"
                   class="
-                    rounded-full ring-primary ring-offset-2 ring-offset-background duration-200
-                    focus-visible:outline-none focus-visible:ring-2
+                    ring-primary ring-offset-background rounded-full ring-offset-2 duration-200 focus-visible:ring-2
+                    focus-visible:outline-hidden
                   "
                   {% if plan_cycle == "yearly" and current_cycle != "yearly" %}checked{% endif %}
                   {% if current_cycle == "yearly" %}disabled{% endif %}
@@ -55,8 +55,8 @@
             </label>
             <label
               class="
-                flex cursor-pointer items-center gap-2 rounded-md border p-4 duration-200 hover:border-border/80
-                has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-80 has-[:checked]:border-primary
+                hover:border-border/80 has-checked:border-primary flex cursor-pointer items-center gap-2 rounded-md
+                border p-4 duration-200 has-disabled:cursor-not-allowed has-disabled:opacity-80
               "
               for="monthly"
             >
@@ -66,8 +66,8 @@
                   id="monthly"
                   type="radio"
                   class="
-                    rounded-full ring-primary ring-offset-2 ring-offset-background duration-200
-                    focus-visible:outline-none focus-visible:ring-2
+                    ring-primary ring-offset-background rounded-full ring-offset-2 duration-200 focus-visible:ring-2
+                    focus-visible:outline-hidden
                   "
                   {% if not plan_cycle or plan_cycle == "monthly" and current_cycle != "monthly" %}checked{% endif %}
                   {% if current_cycle == "monthly" %}disabled{% endif %}
@@ -123,8 +123,8 @@
             <div data-jwsc-tab-panel="default-method" class="hidden size-full flex-col data-[state=active]:flex">
               <label
                 class="
-                  flex cursor-pointer items-center gap-2 rounded-md border p-4 duration-200 hover:border-border/80
-                  has-[:checked]:border-primary
+                  hover:border-border/80 has-checked:border-primary flex cursor-pointer items-center gap-2 rounded-md
+                  border p-4 duration-200
                 "
                 for="default_payment_method"
               >
@@ -134,14 +134,14 @@
                     id="default_payment_method"
                     type="radio"
                     class="
-                      rounded-full ring-primary ring-offset-2 ring-offset-background duration-200
-                      focus-visible:outline-none focus-visible:ring-2
+                      ring-primary ring-offset-background rounded-full ring-offset-2 duration-200 focus-visible:ring-2
+                      focus-visible:outline-hidden
                     "
                     {% if default_payment_method %}checked{% endif %}
                   />
                 </div>
                 <div class="flex w-full justify-between gap-2">
-                  <div class="flex items-center gap-2 text-sm text-foreground/80">
+                  <div class="text-foreground/80 flex items-center gap-2 text-sm">
                     <i data-lucide="credit-card" class="size-5"></i>
                     <span>Card ending in •••• {{ user.card_last_four_digits }}</span>
                   </div>
@@ -154,23 +154,23 @@
                 <label class="mb-2 block text-sm font-medium" for="card-element">
                   Credit or debit card
                 </label>
-                <div id="card-element" class="rounded-md border border-border/70 p-3 duration-200 hover:border-border">
+                <div id="card-element" class="border-border/70 rounded-md border p-3 duration-200 hover:border-border">
                   <!-- Stripe Elements will create form elements here -->
                 </div>
-                <div id="card-errors" class="mt-2 text-sm text-destructive" role="alert"></div>
+                <div id="card-errors" class="text-destructive mt-2 text-sm" role="alert"></div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="mt-4 flex h-full flex-col rounded-md bg-secondary px-4 pt-4">
+      <div class="bg-secondary mt-4 flex h-full flex-col rounded-md px-4 pt-4">
         <h2 class="text-xl font-bold">Resume</h2>
         <div class="mt-6 flex flex-col">
           <div class="flex items-center gap-2 font-bold">
             <h3>{{ plan|capfirst }}</h3>
             <span data-jswc-upgrade="discount" class="badge-default">-20%</span>
           </div>
-          <span class="mt-1 text-xs text-muted-foreground">
+          <span class="text-muted-foreground mt-1 text-xs">
             Billed <span data-jswc-upgrade="billing-cycle">yearly</span>
           </span>
         </div>
@@ -179,10 +179,10 @@
             <span>{{ plan|capfirst }} Plan</span>
             <div class="flex flex-col">
               <span>$<span data-jswc-upgrade="monthly-amount">8.00</span></span>
-              <span class="text-end text-xs text-muted-foreground">/month</span>
+              <span class="text-muted-foreground text-end text-xs">/month</span>
             </div>
           </div>
-          <div class="separator mb-2 bg-background/60"></div>
+          <div class="separator bg-background/60 mb-2"></div>
           {% if discount_amount %}
           <div class="flex justify-between">
             <span>Unused time on {{ user.user_level|capfirst }}</span>
@@ -206,7 +206,7 @@
             <span>$<span data-jswc-upgrade="total-amount">96.00</span></span>
           </div>
         </div>
-        <div class="separator mb-6 mt-2 bg-background"></div>
+        <div class="separator bg-background mt-2 mb-6"></div>
         <div class="flex flex-col">
           <button type="submit" class="button-primary button-sm gap-1">
             Pay US$ <span data-jswc-upgrade="total-amount"></span>
@@ -218,7 +218,7 @@
           </button>
           <div class="mt-6 flex flex-col gap-2">
             {% if is_upgrade or not user.subscription_active %}
-            <div class="flex items-center gap-2 text-muted-foreground">
+            <div class="text-muted-foreground flex items-center gap-2">
               <span class="mt-0.5 h-full self-start">
                 <i data-lucide="circle-help"></i>
               </span>
@@ -227,7 +227,7 @@
               </span>
             </div>
             {% if show_limit_warning %}
-            <div class="flex items-center gap-2 text-muted-foreground">
+            <div class="text-muted-foreground flex items-center gap-2">
               <span class="mt-0.5 h-full self-start">
                 <i data-lucide="circle-help"></i>
               </span>
@@ -237,7 +237,7 @@
             </div>
             {% endif %}
             {% else %}
-            <div class="flex items-center gap-2 text-muted-foreground">
+            <div class="text-muted-foreground flex items-center gap-2">
               <span class="mt-0.5 h-full self-start">
                 <i data-lucide="circle-help"></i>
               </span>
