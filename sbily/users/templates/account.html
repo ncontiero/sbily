@@ -197,7 +197,7 @@
           <p class="card-footer-description">
             Please check your email for full access! If you haven't received the verification email, click the button below.
           </p>
-          <a class="button-outline mt-4 w-fit px-2 py-1" href="{% url "resend_verify_email" %}">
+          <a data-jswc-add-load class="button-outline w-fit px-2 py-1" href="{% url "resend_verify_email" %}">
             Resend verification email
           </a>
           {% else %}
@@ -225,7 +225,9 @@
                   with further instructions on how to change your email.
                 </p>
                 <div class="mt-4 flex items-center gap-2">
-                  <a class="button-primary w-fit" href="{% url 'change_email_instructions' %}">Change</a>
+                  <a data-jswc-add-load class="button-primary w-fit" href="{% url 'change_email_instructions' %}">
+                    Change
+                  </a>
                   <button type="button" data-jswc-dialog-close class="button-outline w-fit">
                     No, take me back
                   </button>

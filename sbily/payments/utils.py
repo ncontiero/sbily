@@ -6,6 +6,7 @@ from django.utils.timezone import now
 from django.utils.timezone import timedelta
 
 from sbily.users.models import User
+from sbily.users.roles import UserRole
 from sbily.utils.errors import bad_request_error
 
 if TYPE_CHECKING:
@@ -17,9 +18,9 @@ if TYPE_CHECKING:
 class PlanType(str, Enum):
     """Enum for available plan types."""
 
-    PREMIUM = User.ROLE_PREMIUM
-    BUSINESS = User.ROLE_BUSINESS
-    ADVANCED = User.ROLE_ADVANCED
+    PREMIUM = UserRole.PREMIUM.value
+    BUSINESS = UserRole.BUSINESS.value
+    ADVANCED = UserRole.ADVANCED.value
 
 
 class PlanCycle(str, Enum):

@@ -22,10 +22,6 @@ logger = logging.getLogger("payments.models")
 
 
 class Subscription(models.Model):
-    LEVEL_PREMIUM = PlanType.PREMIUM.value
-    LEVEL_BUSINESS = PlanType.BUSINESS.value
-    LEVEL_ADVANCED = PlanType.ADVANCED.value
-
     STATUS_ACTIVE = "active"
     STATUS_CANCELED = "canceled"
     STATUS_EXPIRED = "expired"
@@ -33,9 +29,9 @@ class Subscription(models.Model):
     STATUS_PASTDUE = "past_due"
 
     LEVEL_CHOICES = [
-        (LEVEL_PREMIUM, _("Premium")),
-        (LEVEL_BUSINESS, _("Business")),
-        (LEVEL_ADVANCED, _("Advanced")),
+        (PlanType.PREMIUM.value, _("Premium")),
+        (PlanType.BUSINESS.value, _("Business")),
+        (PlanType.ADVANCED.value, _("Advanced")),
     ]
 
     STATUS_CHOICES = [
@@ -50,7 +46,7 @@ class Subscription(models.Model):
         _("level"),
         max_length=10,
         choices=LEVEL_CHOICES,
-        default=LEVEL_PREMIUM,
+        default=PlanType.PREMIUM.value,
     )
     user = models.OneToOneField(
         User,
@@ -154,8 +150,8 @@ class Subscription(models.Model):
         cls,
         user: User,
         payment_method_id=None,
-        plan: str = PlanType.PREMIUM,
-        plan_cycle: str = PlanCycle.MONTHLY,
+        plan: str = PlanType.PREMIUM.value,
+        plan_cycle: str = PlanCycle.MONTHLY.value,
     ):
         """Create a subscription"""
 
@@ -167,7 +163,7 @@ class Subscription(models.Model):
             if not price:
                 return {"status": "error", "error": "Invalid plan or cycle"}
 
-            is_monthly = plan_cycle == PlanCycle.MONTHLY
+            is_monthly = plan_cycle == PlanCycle.MONTHLY.value
             sub, _ = cls.objects.get_or_create(
                 user=user,
                 defaults={
@@ -251,7 +247,7 @@ class Subscription(models.Model):
                     "metadata": {"plan": new_plan},
                     "duration": {
                         "interval": "month"
-                        if new_plan_cycle == PlanCycle.MONTHLY
+                        if new_plan_cycle == PlanCycle.MONTHLY.value
                         else "year",
                         "interval_count": 1,
                     },
@@ -269,8 +265,8 @@ class Subscription(models.Model):
         cls,
         user: User,
         payment_method_id=None,
-        new_plan: str = PlanType.PREMIUM,
-        new_plan_cycle: str = PlanCycle.MONTHLY,
+        new_plan: str = PlanType.PREMIUM.value,
+        new_plan_cycle: str = PlanCycle.MONTHLY.value,
     ):
         """Change a subscription"""
         try:

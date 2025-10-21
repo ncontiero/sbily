@@ -14,6 +14,10 @@ from django.utils.timezone import now
 from django.utils.timezone import timedelta
 from django.utils.translation import gettext_lazy as _
 
+from .roles import ROLE_CHOICES
+from .roles import LinkLimitMapping
+from .roles import UserLinkLimit
+from .roles import UserRole
 from .utils.data import generate_token
 
 BASE_URL = settings.BASE_URL or ""
@@ -22,30 +26,11 @@ logger = logging.getLogger("users.models")
 
 
 class User(AbstractUser):
-    ROLE_ADMIN = "admin"
-    ROLE_USER = "user"
-    ROLE_PREMIUM = "premium"
-    ROLE_BUSINESS = "business"
-    ROLE_ADVANCED = "advanced"
-
-    MONTHLY_LINK_LIMIT_PER_USER = 10
-    MONTHLY_LINK_LIMIT_PER_PREMIUM = 25
-    MONTHLY_LINK_LIMIT_PER_BUSINESS = 50
-    MONTHLY_LINK_LIMIT_PER_ADVANCED = 100
-
-    ROLE_CHOICES = [
-        (ROLE_ADMIN, _("Admin")),
-        (ROLE_USER, _("User")),
-        (ROLE_PREMIUM, _("Premium")),
-        (ROLE_BUSINESS, _("Business")),
-        (ROLE_ADVANCED, _("Advanced")),
-    ]
-
     role = models.CharField(
         _("role"),
         max_length=10,
         choices=ROLE_CHOICES,
-        default=ROLE_USER,
+        default=UserRole.USER.value,
         help_text=_("User role"),
     )
     email = models.EmailField(_("email address"), unique=True, blank=False, null=False)
@@ -61,7 +46,7 @@ class User(AbstractUser):
     )
     monthly_link_limit = models.PositiveIntegerField(
         _("monthly link limit"),
-        default=MONTHLY_LINK_LIMIT_PER_USER,
+        default=UserLinkLimit.USER.value,
         help_text=_("Monthly limit of links a user can create."),
     )
     monthly_limit_links_used = models.PositiveIntegerField(
@@ -92,12 +77,12 @@ class User(AbstractUser):
 
     @property
     def is_admin(self) -> bool:
-        return self.role == self.ROLE_ADMIN
+        return self.role == UserRole.ADMIN.value
 
     @property
     def is_free(self) -> bool:
         """Check if the user is on a free plan"""
-        return self.role == self.ROLE_USER
+        return self.role == UserRole.USER.value
 
     @property
     def subscription_active(self) -> bool:
@@ -112,17 +97,17 @@ class User(AbstractUser):
     @property
     def is_premium(self) -> bool:
         """Check if the user has a premium subscription"""
-        return self.user_level == self.ROLE_PREMIUM
+        return self.user_level == UserRole.PREMIUM.value
 
     @property
     def is_business(self) -> bool:
         """Check if the user has a business subscription"""
-        return self.user_level == self.ROLE_BUSINESS
+        return self.user_level == UserRole.BUSINESS.value
 
     @property
     def is_advanced(self) -> bool:
         """Check if the user has an advanced subscription"""
-        return self.user_level == self.ROLE_ADVANCED
+        return self.user_level == UserRole.ADVANCED.value
 
     @property
     def remaining_monthly_link_limit(self) -> int:
@@ -137,7 +122,7 @@ class User(AbstractUser):
 
     def save(self, *args, **kwargs):
         if self.pk is None and self.is_superuser:
-            self.role = self.ROLE_ADMIN
+            self.role = UserRole.ADMIN.value
 
         super().save(*args, **kwargs)
 
@@ -156,14 +141,8 @@ class User(AbstractUser):
     @transaction.atomic
     def choose_plan(self, plan: str) -> None:
         """Choose a plan for the user"""
-        from sbily.payments.utils import PlanType  # noqa: PLC0415
 
-        plan_config = {
-            PlanType.PREMIUM: self.MONTHLY_LINK_LIMIT_PER_PREMIUM,
-            PlanType.BUSINESS: self.MONTHLY_LINK_LIMIT_PER_BUSINESS,
-            PlanType.ADVANCED: self.MONTHLY_LINK_LIMIT_PER_ADVANCED,
-        }
-
+        plan_config = LinkLimitMapping.ROLE_TO_LIMIT
         if plan not in plan_config:
             valid_plans = ", ".join(plan_config.keys())
             msg = f"Invalid plan: {plan}, valid plans are: {valid_plans}"
@@ -189,8 +168,8 @@ class User(AbstractUser):
     @transaction.atomic
     def downgrade_to_free(self) -> None:
         """Downgrade user to free"""
-        self.role = self.ROLE_USER
-        self.monthly_link_limit = self.MONTHLY_LINK_LIMIT_PER_USER
+        self.role = UserRole.USER.value
+        self.monthly_link_limit = UserLinkLimit.USER.value
         self.monthly_limit_links_used = 0
         self.last_monthly_limit_reset = now()
         self.save(
