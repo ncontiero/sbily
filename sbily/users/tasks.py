@@ -192,7 +192,6 @@ def reset_user_monthly_link_limits(self) -> dict:
 
     users = User.objects.filter(
         last_monthly_limit_reset__lte=current_time - timedelta(days=30),
-        monthly_limit_links_used__gt=0,
     )
 
     count = users.update(
