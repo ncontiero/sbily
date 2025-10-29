@@ -36,7 +36,7 @@ function parseOkLab(
   colorString: string,
 ): { l: string; c: string; h: number; a?: string } | null {
   const match =
-    /^(?:oklch|lab)\(\s*([\d.]+%?)\s+([\d.]+%?)\s+([\d.]+%?)(?:\s*\/\s*([\d.]+%?))?\s*\)$/i.exec(
+    /^(?:oklch|lab)\(\s*([\d.]+%?)\s+([\d.]+%?)\s+([\d.-]+%?)(?:\s*\/\s*([\d.]+%?))?\s*\)$/i.exec(
       colorString,
     );
 
