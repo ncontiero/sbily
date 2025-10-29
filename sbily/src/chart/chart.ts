@@ -16,7 +16,7 @@ import {
   GeoFeature,
   ProjectionScale,
 } from "chartjs-chart-geo";
-import { getThemeColors } from "./utils";
+import { applyOpacity, getThemeColors } from "./utils";
 
 export { Chart };
 
@@ -42,27 +42,25 @@ export function initializeChart() {
     ArcElement,
   );
 
-  Chart.defaults.backgroundColor = `oklch(${backgroundColor})`;
-  Chart.defaults.color = `oklch(${foregroundColor})`;
-  Chart.defaults.borderColor = `oklch(${backgroundColor})`;
-  Chart.overrides.pie.borderColor = `oklch(${backgroundColor})`;
+  Chart.defaults.backgroundColor = backgroundColor;
+  Chart.defaults.color = foregroundColor;
+  Chart.defaults.borderColor = backgroundColor;
+  Chart.overrides.pie.borderColor = backgroundColor;
   Chart.defaults.font.family = "Inter";
-  Chart.overrides.pie.hoverBackgroundColor = `oklch(${primaryColor})`;
+  Chart.overrides.pie.hoverBackgroundColor = primaryColor;
 
   Chart.defaults.scales.color.ticks = {
     ...Chart.defaults.scales.color.ticks,
-    color: `oklch(${foregroundColor}/0.5)`,
+    color: applyOpacity(foregroundColor, 50),
   };
   Chart.defaults.scales.color.interpolate = (v) =>
-    v < 1 ? `oklch(${foregroundColor}/0.3)` : `oklch(${primaryColor}/0.8)`;
+    v < 1 ? applyOpacity(foregroundColor, 30) : applyOpacity(primaryColor, 80);
 
   Chart.overrides.choropleth.hoverBackgroundColor = (ctx) => {
     const { value } = ctx.dataset.data[ctx.dataIndex];
-    return value > 0
-      ? `oklch(${primaryColor})`
-      : `oklch(${foregroundColor}/0.5)`;
+    return value > 0 ? primaryColor : applyOpacity(foregroundColor, 50);
   };
-  Chart.overrides.choropleth.backgroundColor = `oklch(${primaryColor})`;
+  Chart.overrides.choropleth.backgroundColor = primaryColor;
 
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
@@ -74,16 +72,14 @@ export function initializeChart() {
           getThemeColors();
 
         for (const chart of Object.values(Chart.instances)) {
-          Chart.defaults.backgroundColor = `oklch(${backgroundColor})`;
-          chart.options.color = `oklch(${foregroundColor})`;
-          chart.options.borderColor = `oklch(${backgroundColor})`;
-          Chart.overrides.pie.hoverBackgroundColor = `oklch(${primaryColor})`;
+          Chart.defaults.backgroundColor = backgroundColor;
+          chart.options.color = foregroundColor;
+          chart.options.borderColor = backgroundColor;
+          Chart.overrides.pie.hoverBackgroundColor = primaryColor;
 
           Chart.overrides.choropleth.hoverBackgroundColor = (ctx) => {
             const { value } = ctx.dataset.data[ctx.dataIndex];
-            return value > 0
-              ? `oklch(${primaryColor})`
-              : `oklch(${foregroundColor}/0.5)`;
+            return value > 0 ? primaryColor : applyOpacity(foregroundColor, 50);
           };
 
           chart.update();

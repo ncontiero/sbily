@@ -9,9 +9,14 @@ type CustomConfig<T extends ChartType> = {
   config?: ChartConfiguration<T>;
 };
 
-function removeOklch(color: string) {
-  const match = color.match(/oklch\((.*)\)/);
-  return match ? match[1].trim() : color;
+export function applyOpacity(color: string, opacity: number) {
+  if (opacity < 0 || opacity > 100) {
+    throw new RangeError(
+      `applyOpacity: opacity must be between 0 and 100 (received ${opacity})`,
+    );
+  }
+
+  return `color-mix(in oklab, ${color} ${opacity}%, transparent)`;
 }
 
 export function getThemeColors() {
@@ -21,31 +26,62 @@ export function getThemeColors() {
   const backgroundColor = styles.getPropertyValue("--color-background").trim();
 
   return {
-    primaryColor: removeOklch(primaryColor),
-    foregroundColor: removeOklch(foregroundColor),
-    backgroundColor: removeOklch(backgroundColor),
+    primaryColor,
+    foregroundColor,
+    backgroundColor,
   };
 }
 
-export function getChartColors(count: number) {
-  const { primaryColor } = getThemeColors();
+function parseOkLab(
+  colorString: string,
+): { l: string; c: string; h: number; a?: string } | null {
+  const match =
+    /^(?:oklch|lab)\(\s*([\d.]+%?)\s+([\d.]+%?)\s+([\d.]+%?)(?:\s*\/\s*([\d.]+%?))?\s*\)$/i.exec(
+      colorString,
+    );
 
+  if (!match) {
+    console.warn(
+      "getChartColors: primaryColor is not a valid oklch() string.",
+      colorString,
+    );
+    return null;
+  }
+
+  const h = Number.parseFloat(match[3]);
+  return {
+    l: match[1],
+    c: match[2],
+    h: Number.isNaN(h) ? 0 : h,
+    a: match[4] ?? undefined,
+  };
+}
+
+export function getChartColors(count: number, opacity = 80) {
+  const { primaryColor } = getThemeColors();
   const colors = [];
 
-  const primaryColorValues = primaryColor.split(" ");
-  const lightness = primaryColorValues[0];
-  const chroma = primaryColorValues[1];
-  const baseHue = Number.parseInt(primaryColorValues[2]);
-  const opacity = 0.8;
-
   if (count <= 1) {
-    colors.push(`oklch(${primaryColor} / ${opacity})`);
+    colors.push(applyOpacity(primaryColor, opacity));
     return colors;
   }
 
+  const baseColor = parseOkLab(primaryColor);
+  if (!baseColor) {
+    for (let i = 0; i < count; i++) {
+      const newOpacity = opacity - i * (opacity / count);
+      colors.push(applyOpacity(primaryColor, Math.max(newOpacity, 0)));
+    }
+
+    return colors;
+  }
+
+  const baseHue = baseColor.h;
+
   for (let i = 0; i < count; i++) {
-    const hue = (baseHue + i * 15) % 360;
-    colors.push(`oklch(${lightness} ${chroma} ${hue} / ${opacity})`);
+    const newHue = (baseHue + i * 10) % 360;
+    const newColorString = `oklch(${baseColor.l} ${baseColor.c} ${newHue})`;
+    colors.push(applyOpacity(newColorString, opacity));
   }
 
   return colors;
@@ -67,7 +103,7 @@ export function getChartBarConfig({
         {
           label: dataLabel,
           data: data.map((d) => Number.parseInt(d)),
-          backgroundColor: `oklch(${primaryColor}/0.2)`,
+          backgroundColor: applyOpacity(primaryColor, 20),
           borderColor: primaryColor,
           borderWidth: 2,
           borderRadius: 5,
@@ -78,7 +114,7 @@ export function getChartBarConfig({
       ...config?.options,
       responsive: true,
       maintainAspectRatio: false,
-      hoverBackgroundColor: `oklch(${primaryColor}/0.5)`,
+      hoverBackgroundColor: applyOpacity(primaryColor, 50),
       plugins: {
         legend: {
           display: false,
@@ -96,8 +132,8 @@ export function getChartBarConfig({
         },
         y: {
           grid: {
-            color: `oklch(${foregroundColor}/0.2)`,
-            tickColor: `oklch(${foregroundColor}/0.2)`,
+            color: applyOpacity(foregroundColor, 20),
+            tickColor: applyOpacity(foregroundColor, 20),
           },
           beginAtZero: true,
           ticks: {
@@ -124,6 +160,7 @@ export function getChartPieConfig({
           label: dataLabel,
           data: data.map((d) => Number.parseInt(d)),
           backgroundColor: getChartColors(labels.length),
+          hoverBackgroundColor: getChartColors(labels.length, 100),
         },
       ],
     },
