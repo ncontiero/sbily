@@ -1,5 +1,6 @@
 import type { ChartConfiguration, ChartType } from "chart.js";
 import { type IChoroplethDataPoint, topojson } from "chartjs-chart-geo";
+import { modeLab, modeOklch, useMode } from "culori/fn";
 
 type Config<T extends ChartType> = ChartConfiguration<T>;
 type CustomConfig<T extends ChartType> = {
@@ -32,41 +33,19 @@ export function getThemeColors() {
   };
 }
 
-function parseOkLab(
-  colorString: string,
-): { l: string; c: string; h: number; a?: string } | null {
-  const match =
-    /^(?:oklch|lab)\(\s*([\d.]+%?)\s+([\d.]+%?)\s+([\d.-]+%?)(?:\s*\/\s*([\d.]+%?))?\s*\)$/i.exec(
-      colorString,
-    );
-
-  if (!match) {
-    console.warn(
-      "getChartColors: primaryColor is not a valid oklch() string.",
-      colorString,
-    );
-    return null;
-  }
-
-  const h = Number.parseFloat(match[3]);
-  return {
-    l: match[1],
-    c: match[2],
-    h: Number.isNaN(h) ? 0 : h,
-    a: match[4] ?? undefined,
-  };
-}
+useMode(modeLab);
+const toOklch = useMode(modeOklch);
 
 export function getChartColors(count: number, opacity = 80) {
   const { primaryColor } = getThemeColors();
-  const colors = [];
+  const colors: string[] = [];
 
   if (count <= 1) {
     colors.push(applyOpacity(primaryColor, opacity));
     return colors;
   }
 
-  const baseColor = parseOkLab(primaryColor);
+  const baseColor = toOklch(primaryColor);
   if (!baseColor) {
     for (let i = 0; i < count; i++) {
       const newOpacity = opacity - i * (opacity / count);
@@ -76,10 +55,10 @@ export function getChartColors(count: number, opacity = 80) {
     return colors;
   }
 
-  const baseHue = baseColor.h;
+  const baseHue = baseColor.h || 0;
 
   for (let i = 0; i < count; i++) {
-    const newHue = (baseHue + i * 10) % 360;
+    const newHue = (baseHue + i * 8) % 360;
     const newColorString = `oklch(${baseColor.l} ${baseColor.c} ${newHue})`;
     colors.push(applyOpacity(newColorString, opacity));
   }
