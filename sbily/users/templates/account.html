@@ -182,7 +182,7 @@
           {% else %}
           <div class="flex items-center rounded-md border p-4">
             <div class="flex items-center gap-2">
-              <span class="text-sm">contact@ncontiero.com</span>
+              <span class="text-sm">{{ user.email }}</span>
               <div
                 class="{% if not user.email_verified %}badge-destructive{% else %}badge-secondary{% endif %}"
               >
