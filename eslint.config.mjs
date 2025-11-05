@@ -19,9 +19,6 @@ export default ncontiero(
     },
     tailwindcss: {
       cssGlobalPath: "./sbily/src/index.css",
-      overrides: {
-        "tailwindcss/no-unknown-classes": "off",
-      },
     },
   },
   {
