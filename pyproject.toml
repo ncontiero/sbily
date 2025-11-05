@@ -44,7 +44,7 @@ dev = [
     "djlint==1.36.4",
     "pre-commit==4.3.0",
 
-    "django-debug-toolbar==6.0.0",
+    "django-debug-toolbar==6.1.0",
     "django-extensions==4.1",
 ]
 
