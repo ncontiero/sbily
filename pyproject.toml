@@ -15,7 +15,7 @@ dependencies = [
     "celery==5.5.3",
     "django-celery-beat==2.8.1",
     "flower==2.0.1",
-    "markdown==3.9",
+    "markdown==3.10",
     "stripe==13.0.1",
     "ua-parser[regex]==1.0.1",
     "user-agents==2.2.0",
