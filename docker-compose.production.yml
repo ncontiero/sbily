@@ -28,7 +28,7 @@ services:
       dockerfile: ./compose/production/postgres/Dockerfile
     image: sbily_production_postgres
     volumes:
-      - production_postgres_data:/var/lib/postgresql/data
+      - production_postgres_data:/var/lib/postgresql/18/docker
       - production_postgres_data_backups:/backups
     env_file:
       - ./.envs/.production/.postgres

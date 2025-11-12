@@ -31,7 +31,7 @@ services:
     image: sbily_production_postgres
     container_name: sbily_local_postgres
     volumes:
-      - sbily_local_postgres_data:/var/lib/postgresql/data
+      - sbily_local_postgres_data:/var/lib/postgresql/18/docker
       - sbily_local_postgres_data_backups:/backups
     env_file:
       - ./.envs/.local/.postgres
