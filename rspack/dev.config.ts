@@ -23,5 +23,6 @@ export default merge(commonConfig, {
     // We need hot=false (Disable HMR) to set liveReload=true
     hot: false,
     liveReload: true,
+    watchFiles: ["sbily/**/templates/**/*.html"],
   },
 });

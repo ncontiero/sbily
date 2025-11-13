@@ -24,10 +24,10 @@ export const commonConfig = defineConfig({
   output: {
     path: path.resolve(SBILY_PATH, "static/rspack_bundles/"),
     publicPath: "/static/rspack_bundles/",
-    filename: "js/[name]-[fullhash].js",
-    chunkFilename: "js/[name]-[hash].js",
-    cssFilename: "css/[name]-[contenthash].css",
-    assetModuleFilename: "assets/[name]-[hash][ext]",
+    filename: "js/[name].js",
+    chunkFilename: "js/[name].js",
+    cssFilename: "css/[name].css",
+    assetModuleFilename: "assets/[name][ext]",
     clean: true,
   },
   plugins: [
@@ -40,7 +40,7 @@ export const commonConfig = defineConfig({
   module: {
     rules: [
       {
-        test: /\.[jt]s$/,
+        test: /\.ts$/,
         use: [
           {
             loader: "builtin:swc-loader",
@@ -50,6 +50,7 @@ export const commonConfig = defineConfig({
             },
           },
         ],
+        type: "javascript/auto",
       },
       {
         test: /\.css$/,

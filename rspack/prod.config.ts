@@ -13,5 +13,9 @@ export default merge(commonConfig, {
   bail: true,
   output: {
     publicPath: `${staticUrl}rspack_bundles/`,
+    filename: "js/[name]-[fullhash].js",
+    chunkFilename: "js/[name]-[hash].js",
+    cssFilename: "css/[name]-[contenthash].css",
+    assetModuleFilename: "assets/[name]-[hash][ext]",
   },
 });

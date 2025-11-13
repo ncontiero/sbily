@@ -17,7 +17,7 @@
 }
 
 @theme inline {
-  --font-inter: Inter, sans-serif;
+  --font-inter: Inter, theme(--font-sans);
 
   --color-border: var(--border);
   --color-input: var(--input);
