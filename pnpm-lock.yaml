@@ -24,8 +24,8 @@ importers:
         specifier: ^4.0.2
         version: 4.0.2
       lucide:
-        specifier: ^0.553.0
-        version: 0.553.0
+        specifier: ^0.554.0
+        version: 0.554.0
     devDependencies:
       '@ncontiero/eslint-config':
         specifier: ^6.4.1
@@ -3122,8 +3122,8 @@ packages:
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
 
-  lucide@0.553.0:
-    resolution: {integrity: sha512-zdU8nM8mTqFUE6uBP+ncZRN+CTONxwhZbOL2dy+7gINRb1/6zCNQnv6nqpdSrEy5/gy/aJj6FxWHO8WdQgfN0g==}
+  lucide@0.554.0:
+    resolution: {integrity: sha512-heltqxp+r6FbXs5FKMwARbE9aiDLLz9rlAlOU48NYHU4nWi2oVkQIz+Uv7LHZNsFVfgtgLBv7VOjM7QUvT6F3A==}
 
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
@@ -7649,7 +7649,7 @@ snapshots:
     dependencies:
       yallist: 3.1.1
 
-  lucide@0.553.0: {}
+  lucide@0.554.0: {}
 
   magic-string@0.30.21:
     dependencies:
