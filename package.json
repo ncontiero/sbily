@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@fontsource/inter": "^5.2.8",
-    "@stripe/stripe-js": "^8.4.0",
+    "@stripe/stripe-js": "^8.5.2",
     "chart.js": "^4.5.1",
     "chartjs-chart-geo": "^4.3.6",
     "culori": "^4.0.2",
