@@ -19,7 +19,7 @@ dependencies = [
     "stripe==13.2.0",
     "ua-parser[regex]==1.0.1",
     "user-agents==2.2.0",
-    "geoip2==5.1.0",
+    "geoip2==5.2.0",
     "gunicorn==23.0.0",
     "psycopg[c]==3.2.12",
     "Collectfasta==3.3.1",
