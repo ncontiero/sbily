@@ -25,7 +25,7 @@
     "lucide": "^0.554.0"
   },
   "devDependencies": {
-    "@ncontiero/eslint-config": "^6.5.0",
+    "@ncontiero/eslint-config": "^6.5.1",
     "@rspack/cli": "^1.6.4",
     "@rspack/core": "^1.6.4",
     "@tailwindcss/postcss": "^4.1.17",
