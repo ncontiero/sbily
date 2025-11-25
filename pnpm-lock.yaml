@@ -28,7 +28,7 @@ importers:
         version: 0.554.0
     devDependencies:
       '@ncontiero/eslint-config':
-        specifier: ^6.4.1
+        specifier: ^6.5.0
         version: 6.5.0(@typescript-eslint/utils@8.47.0(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.1(jiti@2.6.1))(jiti@2.6.1)(tailwindcss@4.1.17)(typescript@5.9.3)
       '@rspack/cli':
         specifier: ^1.6.4
