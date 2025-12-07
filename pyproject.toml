@@ -21,7 +21,7 @@ dependencies = [
     "user-agents==2.2.0",
     "geoip2==5.2.0",
     "gunicorn==23.0.0",
-    "psycopg[c]==3.3.1",
+    "psycopg[c]==3.3.2",
     "Collectfasta==3.3.1",
 
     "django==5.2.9",
@@ -36,7 +36,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "Werkzeug[watchdog]==3.1.4",
-    "psycopg[binary]==3.3.1",
+    "psycopg[binary]==3.3.2",
     "watchfiles==1.1.1",
     "mypy==1.19.0",
     "django-stubs[compatible-mypy]==5.2.8",
