@@ -532,11 +532,11 @@ wheels = [
 
 [[package]]
 name = "django-webpack-loader"
-version = "3.2.2"
+version = "3.2.3"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/ca/72/294f2f1ce16bb8628c030be8a426ee1d73fbaf4c0bddeb092197621ff9b4/django_webpack_loader-3.2.2.tar.gz", hash = "sha256:6f53402e3147b5872fd1a7379d5ef6b3d838367e269cd99e5e55233e2c4c065c", size = 17865, upload-time = "2025-11-05T12:29:48.998Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/cd/4a/83aa8a9729d5c85e928e96fe42b2cde5db8f636e05de57f5f0235a52a64b/django_webpack_loader-3.2.3.tar.gz", hash = "sha256:81092499af8e0c9b3a0bad21324aca6e2ad786133b19248dae213eb9661a17f7", size = 17991, upload-time = "2025-12-09T16:59:52.871Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c6/22/361e2f0186147c9eec815117db1865d005ebb50566f613709ddf19e95bcf/django_webpack_loader-3.2.2-py2.py3-none-any.whl", hash = "sha256:bfdf0d4cc25718b72b70c1b2c6c7cceef4ff65388662b726743cffe6e3d81945", size = 20803, upload-time = "2025-11-05T12:29:47.406Z" },
+    { url = "https://files.pythonhosted.org/packages/6b/73/79ca8f2fa733a75e3feb21dc7bc67868d9a0156761ee99ac041aef268739/django_webpack_loader-3.2.3-py2.py3-none-any.whl", hash = "sha256:d070bfe8ea5bd6ed48810a8d247204bb7f672573bdb6a7b589f6b75998a45993", size = 20940, upload-time = "2025-12-09T16:59:51.313Z" },
 ]
 
 [[package]]
@@ -1344,7 +1344,7 @@ requires-dist = [
     { name = "django-cleanup", specifier = "==9.0.0" },
     { name = "django-redis", specifier = "==6.0.0" },
     { name = "django-storages", extras = ["s3"], specifier = "==1.14.6" },
-    { name = "django-webpack-loader", specifier = "==3.2.2" },
+    { name = "django-webpack-loader", specifier = "==3.2.3" },
     { name = "flower", specifier = "==2.0.1" },
     { name = "geoip2", specifier = "==5.2.0" },
     { name = "gunicorn", specifier = "==23.0.0" },
