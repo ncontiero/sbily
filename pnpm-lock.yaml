@@ -24,8 +24,8 @@ importers:
         specifier: ^4.0.2
         version: 4.0.2
       lucide:
-        specifier: ^0.556.0
-        version: 0.556.0
+        specifier: ^0.559.0
+        version: 0.559.0
     devDependencies:
       '@ncontiero/eslint-config':
         specifier: ^6.5.1
@@ -3025,8 +3025,8 @@ packages:
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
 
-  lucide@0.556.0:
-    resolution: {integrity: sha512-sJ6NrZ+Q2Fv0Uardg7nsgjoKZ3r70wp3n30fvfbxMt5Fi1fQy1deS99z1g3xQpObok+LT1LjjcCyojUKGIHo7A==}
+  lucide@0.559.0:
+    resolution: {integrity: sha512-H46WW4f/njBE5L5hA+Cpj1r/0Yr9nlmzuSrBGt0J6UNXukLtTEEA9VJWobNjLeOvJlIAKXai8DmcmPCZpeY40g==}
 
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
@@ -3285,6 +3285,7 @@ packages:
   next@16.0.7:
     resolution: {integrity: sha512-3mBRJyPxT4LOxAJI6IsXeFtKfiJUbjCLgvXO02fV8Wy/lIhPvP94Fe7dGhUgHXcQy4sSuYwQNcOLhIfOm0rL0A==}
     engines: {node: '>=20.9.0'}
+    deprecated: This version has a security vulnerability. Please upgrade to a patched version. See https://nextjs.org/blog/security-update-2025-12-11 for more details.
     hasBin: true
     peerDependencies:
       '@opentelemetry/api': ^1.1.0
@@ -7333,7 +7334,7 @@ snapshots:
     dependencies:
       yallist: 3.1.1
 
-  lucide@0.556.0: {}
+  lucide@0.559.0: {}
 
   magic-string@0.30.21:
     dependencies:
