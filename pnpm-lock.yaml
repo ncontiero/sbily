@@ -73,8 +73,8 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
       webpack-bundle-tracker:
-        specifier: ^3.2.2
-        version: 3.2.2
+        specifier: ^3.2.3
+        version: 3.2.3
       webpack-merge:
         specifier: ^6.0.1
         version: 6.0.1
@@ -3285,6 +3285,7 @@ packages:
   next@16.0.7:
     resolution: {integrity: sha512-3mBRJyPxT4LOxAJI6IsXeFtKfiJUbjCLgvXO02fV8Wy/lIhPvP94Fe7dGhUgHXcQy4sSuYwQNcOLhIfOm0rL0A==}
     engines: {node: '>=20.9.0'}
+    deprecated: This version has a security vulnerability. Please upgrade to a patched version. See https://nextjs.org/blog/security-update-2025-12-11 for more details.
     hasBin: true
     peerDependencies:
       '@opentelemetry/api': ^1.1.0
@@ -4127,8 +4128,8 @@ packages:
     engines: {node: '>= 10.13.0'}
     hasBin: true
 
-  webpack-bundle-tracker@3.2.2:
-    resolution: {integrity: sha512-S53PTDZEZTW0OIcC3X/1gVGdpyoY88zNdRsuDebG0eGs5jiddSt2o2NBKXPoLGrKrZUJvvXw59WIRppo7TjdfA==}
+  webpack-bundle-tracker@3.2.3:
+    resolution: {integrity: sha512-F2nrVLRVkJnck5ETFbRTvIzZv/pgdwzZtrJNw/NqrokO78hSII2a7DUVn2dmthgsm48EmTXObSqVmPkl7hSbEg==}
     engines: {node: '>=20.0.0'}
 
   webpack-dev-middleware@7.4.5:
@@ -8779,7 +8780,7 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  webpack-bundle-tracker@3.2.2: {}
+  webpack-bundle-tracker@3.2.3: {}
 
   webpack-dev-middleware@7.4.5:
     dependencies:
