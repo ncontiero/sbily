@@ -308,16 +308,16 @@ wheels = [
 
 [[package]]
 name = "collectfasta"
-version = "3.3.1"
+version = "3.3.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
     { name = "django-storages" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d4/c1/c682073f620635799feff603a3236d6a8df30f1275db9e769b07551e4358/collectfasta-3.3.1.tar.gz", hash = "sha256:ea4b1ce0de8d4ad14338a774639bc1f5b40a90173432bc9d5ae4cd04eec069ac", size = 21572, upload-time = "2025-08-24T09:15:09.704Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/00/6b/0a60d21e16357a9f3204f892cc17eaccc736d0213ff73db78ea4c03f8e34/collectfasta-3.3.3.tar.gz", hash = "sha256:0ba1ab40b72751d8b74f36cf3f20202788522c03d9cdb208574d5422221f0bb4", size = 22601, upload-time = "2025-12-25T17:35:40.308Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/74/7c/76a42753ccda28a19bb11044e92c490cc75af1a0ead2a0f41403ee3a6d2d/collectfasta-3.3.1-py2.py3-none-any.whl", hash = "sha256:8b1e538183d9f4db32c8822737b1618b913665616f10ae92d4f256326c75f160", size = 28405, upload-time = "2025-08-24T09:15:08.298Z" },
+    { url = "https://files.pythonhosted.org/packages/c5/87/ac848f30eeb532bd0ca13af246e0168a289bf88b56c3dee0f39c4cbd315d/collectfasta-3.3.3-py2.py3-none-any.whl", hash = "sha256:cfd968c9227115df8f33ce48ad19edc89b418f0172910f353b371cc8c93d33fb", size = 29440, upload-time = "2025-12-25T17:35:38.831Z" },
 ]
 
 [[package]]
@@ -1337,7 +1337,7 @@ dev = [
 requires-dist = [
     { name = "argon2-cffi", specifier = "==25.1.0" },
     { name = "celery", specifier = "==5.6.0" },
-    { name = "collectfasta", specifier = "==3.3.1" },
+    { name = "collectfasta", specifier = "==3.3.3" },
     { name = "dj-database-url", specifier = "==3.0.1" },
     { name = "django", specifier = "==5.2.9" },
     { name = "django-anymail", extras = ["brevo"], specifier = "==14.0" },
