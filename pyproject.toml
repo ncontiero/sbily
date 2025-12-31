@@ -12,7 +12,7 @@ dependencies = [
     "argon2-cffi==25.1.0",
     "redis==7.1.0",
     "hiredis==3.3.0",
-    "celery==5.6.0",
+    "celery==5.6.1",
     "django-celery-beat==2.8.1",
     "flower==2.0.1",
     "markdown==3.10",
