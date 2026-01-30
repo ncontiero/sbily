@@ -2,7 +2,7 @@
   "name": "sbily",
   "version": "1.0.0",
   "private": true,
-  "packageManager": "pnpm@10.28.1",
+  "packageManager": "pnpm@10.28.2",
   "description": "A Django project for a link shortener.",
   "author": "Nicolas Contiero <https://github.com/ncontiero>",
   "license": "MIT",
