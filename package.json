@@ -26,8 +26,8 @@
   },
   "devDependencies": {
     "@ncontiero/eslint-config": "^7.0.0",
-    "@rspack/cli": "^1.7.3",
-    "@rspack/core": "^1.7.3",
+    "@rspack/cli": "^1.7.4",
+    "@rspack/core": "^1.7.4",
     "@tailwindcss/postcss": "^4.1.18",
     "@tailwindcss/typography": "^0.5.19",
     "@types/culori": "^4.0.1",
