@@ -7,7 +7,7 @@ readme = "README.md"
 authors = [ { name = "Nicolas Contiero", email = "contact@ncontiero.com" }, ]
 dependencies = [
     "python-slugify==8.0.4",
-    "Pillow==12.1.0",
+    "Pillow==12.1.1",
     "python-decouple==3.8",
     "argon2-cffi==25.1.0",
     "redis==7.1.0",
