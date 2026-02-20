@@ -35,7 +35,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "Werkzeug[watchdog]==3.1.5",
+    "Werkzeug[watchdog]==3.1.6",
     "psycopg[binary]==3.3.2",
     "watchfiles==1.1.1",
     "mypy==1.19.1",
