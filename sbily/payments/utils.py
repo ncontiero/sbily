@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import StrEnum
 from typing import TYPE_CHECKING
 
 from django.conf import settings
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from .models import Subscription
 
 
-class PlanType(str, Enum):
+class PlanType(StrEnum):
     """Enum for available plan types."""
 
     PREMIUM = UserRole.PREMIUM.value
@@ -23,7 +23,7 @@ class PlanType(str, Enum):
     ADVANCED = UserRole.ADVANCED.value
 
 
-class PlanCycle(str, Enum):
+class PlanCycle(StrEnum):
     """Enum for available billing cycles."""
 
     MONTHLY = "monthly"
