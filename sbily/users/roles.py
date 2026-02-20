@@ -1,3 +1,4 @@
+from enum import IntEnum
 from enum import StrEnum
 
 from django.utils.translation import gettext_lazy as _
@@ -22,7 +23,7 @@ ROLE_CHOICES = [
 ]
 
 
-class UserLinkLimit(StrEnum):
+class UserLinkLimit(IntEnum):
     """Enum for user roles with link limits."""
 
     USER = 10
