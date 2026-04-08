@@ -44,8 +44,6 @@ DATABASES = {
     ),
 }
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
-# https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-DEFAULT_AUTO_FIELD
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # URLS
 # ------------------------------------------------------------------------------
