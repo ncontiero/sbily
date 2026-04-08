@@ -6,7 +6,6 @@
     "useDefineForClassFields": true,
 
     // Module system configuration
-    "baseUrl": ".",
     "module": "ESNext",
     "moduleResolution": "bundler",
     "paths": {
@@ -15,6 +14,7 @@
 
     // Import settings
     "resolveJsonModule": true,
+    "types": ["node"],
     "allowImportingTsExtensions": true,
 
     // Type checking and compilation settings
@@ -25,8 +25,9 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
+    "noUncheckedSideEffectImports": false,
     "isolatedModules": true,
-    "skipLibCheck": true,
+    "skipLibCheck": true
   },
   "include": ["sbily/src"],
   "exclude": ["node_modules"],
