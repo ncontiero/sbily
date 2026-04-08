@@ -7,7 +7,7 @@ readme = "README.md"
 authors = [ { name = "Nicolas Contiero", email = "contact@ncontiero.com" }, ]
 dependencies = [
     "python-slugify==8.0.4",
-    "Pillow==12.1.1",
+    "Pillow==12.2.0",
     "python-decouple==3.8",
     "argon2-cffi==25.1.0",
     "redis==7.4.0",
@@ -35,7 +35,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "Werkzeug[watchdog]==3.1.6",
+    "Werkzeug[watchdog]==3.1.8",
     "psycopg[binary]==3.3.3",
     "watchfiles==1.1.1",
     "mypy==1.20.0",
