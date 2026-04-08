@@ -1,7 +1,7 @@
 [project]
 name = "sbily"
 version = "0.1.0"
-requires-python = "==3.13.*"
+requires-python = "==3.14.*"
 description = "A Django project for a link shortener."
 readme = "README.md"
 authors = [ { name = "Nicolas Contiero", email = "contact@ncontiero.com" }, ]
@@ -50,7 +50,7 @@ dev = [
 
 # ==== mypy ====
 [tool.mypy]
-python_version = "3.13"
+python_version = "3.14"
 check_untyped_defs = true
 ignore_missing_imports = true
 warn_unused_ignores = true
@@ -88,7 +88,7 @@ indent_size = 2
 
 
 [tool.ruff]
-target-version = "py313"
+target-version = "py314"
 # Exclude a variety of commonly ignored directories.
 extend-exclude = [
     "*/migrations/*.py",
