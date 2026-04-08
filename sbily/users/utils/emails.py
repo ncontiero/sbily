@@ -1,9 +1,12 @@
+from typing import TYPE_CHECKING
+
 from django.conf import settings
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.timezone import now
 
-from sbily.users.models import User
+if TYPE_CHECKING:
+    from sbily.users.models import User
 
 BASE_URL: str = settings.BASE_URL or ""
 

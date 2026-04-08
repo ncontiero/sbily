@@ -2,11 +2,11 @@
 
 import logging
 import re
+from typing import TYPE_CHECKING
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
-from django.http import HttpRequest
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -16,6 +16,9 @@ from sbily.utils.data import validate
 
 from .models import LinkClick
 from .models import ShortenedLink
+
+if TYPE_CHECKING:
+    from django.http import HttpRequest
 
 LINK_EXPIRES_AT_EXCLUDE = r".\d*[-+]\d{2}:\d{2}"
 

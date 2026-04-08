@@ -1,12 +1,12 @@
 import contextlib
 import json
+from typing import TYPE_CHECKING
 
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from django.db.models import Q
 from django.db.models.functions import TruncDay
 from django.db.models.functions import TruncHour
-from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.utils import timezone
@@ -15,6 +15,9 @@ from sbily.links.models import ShortenedLink
 
 from .utils import filter_clicks_by_plan
 from .utils import get_user_clicks
+
+if TYPE_CHECKING:
+    from django.http import HttpRequest
 
 
 @login_required

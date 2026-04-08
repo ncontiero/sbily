@@ -5,12 +5,13 @@ from django.conf import settings
 from django.utils.timezone import now
 from django.utils.timezone import timedelta
 
-from sbily.users.models import User
 from sbily.users.roles import UserRole
 from sbily.utils.errors import bad_request_error
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+
+    from sbily.users.models import User
 
     from .models import Subscription
 
