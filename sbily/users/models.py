@@ -20,7 +20,7 @@ from .roles import UserLinkLimit
 from .roles import UserRole
 from .utils.data import generate_token
 
-BASE_URL = settings.BASE_URL or ""
+BASE_URL = getattr(settings, "BASE_URL", "")
 
 logger = logging.getLogger("users.models")
 
@@ -453,7 +453,7 @@ class Token(models.Model):
         user: User,
         token_type: str,
         expires_in: None | timedelta = None,
-    ) -> "Token":
+    ) -> Token:
         """
         Creates a new token for the specified user and type.
         If a token of the same type already exists for the user,
@@ -485,7 +485,7 @@ class Token(models.Model):
         cls,
         token_string: str,
         token_type: str | None = None,
-    ) -> "None | Token":
+    ) -> None | Token:
         """Returns a valid token by the value string or None"""
         query = cls.objects.filter(token=token_string, is_used=False)
 
@@ -505,7 +505,7 @@ class Token(models.Model):
         user: User,
         token_type: str,
         expires_in: None | timedelta = None,
-    ) -> tuple["Token", bool]:
+    ) -> tuple[Token, bool]:
         """Get or create a token for the user.
         If a valid token already exists, it will be returned.
         If no valid token exists, a new one will be created.

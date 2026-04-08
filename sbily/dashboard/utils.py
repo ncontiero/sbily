@@ -1,9 +1,14 @@
-from django.db.models import QuerySet
+from typing import TYPE_CHECKING
+
 from django.utils import timezone
 
 from sbily.links.models import LinkClick
-from sbily.users.models import User
 from sbily.users.roles import UserRole
+
+if TYPE_CHECKING:
+    from django.db.models import QuerySet
+
+    from sbily.users.models import User
 
 
 def filter_clicks_by_plan(clicks: QuerySet[LinkClick], user: User):

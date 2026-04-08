@@ -2,18 +2,21 @@ import contextlib
 import logging
 from datetime import datetime
 from decimal import Decimal
+from typing import TYPE_CHECKING
 
 from django.utils.timezone import now
-from stripe import Customer
-from stripe import Event
-from stripe import Invoice
-from stripe import Subscription as StripeSubscription
 
 from sbily.users.models import User
 
 from .models import Payment
 from .models import Subscription
 from .utils import PlanType
+
+if TYPE_CHECKING:
+    from stripe import Customer
+    from stripe import Event
+    from stripe import Invoice
+    from stripe import Subscription as StripeSubscription
 
 logger = logging.getLogger("payments.webhook")
 

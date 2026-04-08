@@ -1,11 +1,15 @@
 # ruff: noqa: BLE001
+from typing import TYPE_CHECKING
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpRequest
 from django.shortcuts import redirect
 from django.shortcuts import render
 
 from .models import Notification
+
+if TYPE_CHECKING:
+    from django.http import HttpRequest
 
 
 @login_required

@@ -1,9 +1,10 @@
 # ruff: noqa: BLE001
+from typing import TYPE_CHECKING
+
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth import logout
 from django.db import transaction
-from django.http import HttpRequest
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -24,6 +25,9 @@ from .forms import SignInForm
 from .forms import SignInWithEmailForm
 from .forms import SignUpForm
 from .tasks import send_sign_in_with_email
+
+if TYPE_CHECKING:
+    from django.http import HttpRequest
 
 
 def get_post_auth_redirect(request, user, form):

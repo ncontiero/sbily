@@ -1,5 +1,6 @@
 import logging
 import secrets
+from typing import TYPE_CHECKING
 from urllib.parse import urljoin
 
 from django.conf import settings
@@ -9,7 +10,6 @@ from django.core.validators import RegexValidator
 from django.db import IntegrityError
 from django.db import models
 from django.db import transaction
-from django.http import HttpRequest
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.timesince import timesince
@@ -18,7 +18,10 @@ from user_agents import parse
 
 from sbily.users.models import User
 
-SITE_BASE_URL = settings.BASE_URL or ""
+if TYPE_CHECKING:
+    from django.http import HttpRequest
+
+SITE_BASE_URL = getattr(settings, "BASE_URL", "")
 
 
 logger = logging.getLogger("links.models")
