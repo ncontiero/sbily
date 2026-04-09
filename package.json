@@ -22,7 +22,7 @@
     "chart.js": "^4.5.1",
     "chartjs-chart-geo": "^4.3.6",
     "culori": "^4.0.2",
-    "lucide": "^1.7.0"
+    "lucide": "^1.8.0"
   },
   "devDependencies": {
     "@ncontiero/eslint-config": "^7.1.0",
@@ -33,7 +33,7 @@
     "@types/culori": "^4.0.1",
     "@types/node": "^25.5.2",
     "cross-env": "^10.1.0",
-    "eslint": "^9.39.4",
+    "eslint": "^10.2.0",
     "postcss": "^8.5.9",
     "postcss-loader": "^8.2.1",
     "tailwindcss": "4.2.2",
