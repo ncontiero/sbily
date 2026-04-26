@@ -55,7 +55,7 @@ importers:
         specifier: ^10.2.1
         version: 10.2.1(jiti@2.6.1)
       postcss:
-        specifier: ^8.5.9
+        specifier: ^8.5.10
         version: 8.5.10
       postcss-loader:
         specifier: ^8.2.1
