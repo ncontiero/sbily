@@ -38,7 +38,7 @@ dev = [
     "Werkzeug[watchdog]==3.1.8",
     "psycopg[binary]==3.3.3",
     "watchfiles==1.1.1",
-    "mypy==1.20.0",
+    "mypy==1.20.2",
     "django-stubs[compatible-mypy]==6.0.2",
     "ruff==0.15.10",
     "djlint==1.36.4",
