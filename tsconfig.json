@@ -29,7 +29,7 @@
     "isolatedModules": true,
     "skipLibCheck": true
   },
-  "include": ["sbily/src"],
+  "include": ["**/*.ts"],
   "exclude": ["node_modules"],
   "ts-node": {
     "compilerOptions": {

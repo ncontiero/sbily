@@ -9,7 +9,7 @@ import {
   Html,
   Preview,
   Tailwind,
-} from "@react-email/components";
+} from "react-email";
 import { Footer } from "./footer";
 import { Header } from "./header";
 import { Text } from "./text";

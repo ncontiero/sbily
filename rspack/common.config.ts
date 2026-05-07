@@ -1,15 +1,7 @@
-import * as path from "node:path";
+import path from "node:path";
 import { defineConfig } from "@rspack/cli";
 import { rspack } from "@rspack/core";
 import BundleTracker from "webpack-bundle-tracker";
-
-// Target browsers, see: https://github.com/browserslist/browserslist
-const BROWSER_TARGETS = [
-  "chrome >= 87",
-  "edge >= 88",
-  "firefox >= 78",
-  "safari >= 14",
-];
 
 const BASE_PATH = path.join(__dirname, "../");
 const SBILY_PATH = path.join(BASE_PATH, "sbily");
@@ -35,7 +27,12 @@ export const commonConfig = defineConfig({
       path: path.resolve(BASE_PATH),
       filename: "webpack-stats.json",
     }),
-    new rspack.EnvironmentPlugin(["NODE_ENV", "STRIPE_PUBLIC_KEY"]),
+    new rspack.DefinePlugin({
+      "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
+      "process.env.STRIPE_PUBLIC_KEY": JSON.stringify(
+        process.env.STRIPE_PUBLIC_KEY,
+      ),
+    }),
   ],
   module: {
     rules: [
@@ -46,7 +43,6 @@ export const commonConfig = defineConfig({
             loader: "builtin:swc-loader",
             options: {
               jsc: { parser: { syntax: "typescript" } },
-              env: { targets: BROWSER_TARGETS },
             },
           },
         ],
@@ -62,9 +58,7 @@ export const commonConfig = defineConfig({
   optimization: {
     minimizer: [
       new rspack.SwcJsMinimizerRspackPlugin(),
-      new rspack.LightningCssMinimizerRspackPlugin({
-        minimizerOptions: { targets: BROWSER_TARGETS },
-      }),
+      new rspack.LightningCssMinimizerRspackPlugin(),
     ],
   },
   resolve: {

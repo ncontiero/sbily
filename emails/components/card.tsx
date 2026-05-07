@@ -1,5 +1,5 @@
 import type { ElementType } from "react";
-import { type SectionProps, Section } from "@react-email/components";
+import { type SectionProps, Section } from "react-email";
 import { cn } from "../utils/cn";
 
 interface CardProps extends SectionProps {

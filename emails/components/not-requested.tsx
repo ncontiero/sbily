@@ -1,4 +1,4 @@
-import { Hr, Section } from "@react-email/components";
+import { Hr, Section } from "react-email";
 import { Text } from "./text";
 
 export function NotRequested({ text }: { text: string }) {

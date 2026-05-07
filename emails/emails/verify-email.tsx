@@ -1,4 +1,4 @@
-import { Column, Heading, Row, Section } from "@react-email/components";
+import { Column, Heading, Row, Section } from "react-email";
 import { Action } from "../components/action";
 import { Card } from "../components/card";
 import { Layout } from "../components/layout";

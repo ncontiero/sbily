@@ -1,4 +1,4 @@
-import { Heading, Hr, Section } from "@react-email/components";
+import { Heading, Hr, Section } from "react-email";
 import { Text } from "./text";
 
 export function Header() {
