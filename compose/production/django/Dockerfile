@@ -87,7 +87,7 @@ ARG PORT=5000
 WORKDIR ${APP_HOME}
 
 RUN addgroup --system django \
-  && adduser --system --ingroup django django
+  && adduser --system --ingroup django --home /home/django django
 
 
 # Install required system dependencies
