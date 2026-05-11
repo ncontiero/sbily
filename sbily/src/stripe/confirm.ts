@@ -18,14 +18,14 @@ export async function initConfirmPayment() {
     "message-text",
   ) as HTMLSpanElement;
 
-  if (!confirmButton) return;
+  if (confirmButton == null) return;
 
   function showMessage(message: string): void {
     messageText.textContent = message;
     messageContainer.classList.remove("hidden");
   }
 
-  confirmButton.addEventListener("click", async () => {
+  const handleConfirm = async () => {
     setLoading(true);
 
     const url = new URL(redirectUrl);
@@ -36,7 +36,7 @@ export async function initConfirmPayment() {
         // Payment Intent
         const result = await stripe.confirmCardPayment(clientSecret);
         if (result.error) {
-          showMessage(result.error.message || "Payment failed");
+          showMessage(result.error.message ?? "Payment failed");
           setLoading(false);
           return;
         }
@@ -48,7 +48,7 @@ export async function initConfirmPayment() {
         // Setup Intent
         const result = await stripe.confirmCardSetup(clientSecret);
         if (result.error) {
-          showMessage(result.error.message || "Setup failed");
+          showMessage(result.error.message ?? "Setup failed");
           setLoading(false);
           return;
         }
@@ -69,6 +69,10 @@ export async function initConfirmPayment() {
       showMessage("An unexpected error occurred");
       setLoading(false);
     }
+  };
+
+  confirmButton.addEventListener("click", () => {
+    handleConfirm().catch(console.error);
   });
 
   function setLoading(isLoading: boolean): void {

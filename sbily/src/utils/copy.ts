@@ -40,5 +40,5 @@ export function copy(
     }
   };
 
-  copyToClipboard();
+  copyToClipboard().catch(console.error);
 }

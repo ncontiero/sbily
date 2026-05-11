@@ -9,7 +9,7 @@ const checkAllLinksCheckbox = document.getElementById(
 const linkActionGo = document.getElementById("link-action-go");
 linkActionGo?.addEventListener("click", (e: Event) => {
   const target = e.target as HTMLElement;
-  if (!target || !tbody) return;
+  if (target == null || !tbody) return;
 
   const action = (document.getElementById("action") as HTMLSelectElement)
     ?.value;
@@ -38,7 +38,7 @@ linkActionGo?.addEventListener("click", (e: Event) => {
     checkedLinks.forEach((checkbox) => {
       const li = document.createElement("li");
       const content = document.createElement("span");
-      content.textContent = checkbox.dataset.link || "";
+      content.textContent = checkbox.dataset.link ?? "";
       content.classList.add("text-primary");
       li.innerHTML = `Link: ${content.outerHTML}`;
       linksSelectedUl.append(li);
@@ -46,9 +46,8 @@ linkActionGo?.addEventListener("click", (e: Event) => {
   }
 
   const dialogTarget = target.dataset.jswcTarget;
-  const targetElement = dialogTarget
-    ? document.getElementById(dialogTarget)
-    : null;
+  const targetElement =
+    dialogTarget != null ? document.getElementById(dialogTarget) : null;
   if (targetElement) dialog(targetElement, { animation: true });
 });
 
@@ -57,7 +56,7 @@ function updateActionCounter(): void {
   if (!actionCounter) return;
 
   const actionCount = tbody?.querySelectorAll("input:checked");
-  actionCounter.textContent = actionCount?.length.toString() || "0";
+  actionCounter.textContent = actionCount?.length.toString() ?? "0";
 }
 
 function checkLink(checkbox: HTMLInputElement): void {
@@ -86,7 +85,7 @@ function checkAllLinks(): void {
         link.classList.remove("selected");
         link.classList.add("hover:bg-muted/50");
       }
-      (checkbox as HTMLInputElement).checked = isChecked;
+      checkbox.checked = isChecked;
     });
   });
 

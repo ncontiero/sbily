@@ -141,7 +141,7 @@ export async function initUpgradeCheckout() {
   const loader = createElement(Loader);
   loader.classList.add("animate-spin");
 
-  upgradeCheckoutForm.addEventListener("submit", async (e) => {
+  const handleSubmit = async (e: SubmitEvent) => {
     e.preventDefault();
 
     setLoading(submitButton, loader, true);
@@ -157,14 +157,14 @@ export async function initUpgradeCheckout() {
         const errorElement = document.getElementById("card-errors");
         if (errorElement) {
           errorElement.textContent =
-            result.error.message || "An error occurred.";
+            result.error.message ?? "An error occurred.";
         }
         setLoading(submitButton, loader, false, submitButtonContent);
         return;
       }
 
       const paymentMethodId =
-        result.setupIntent?.payment_method || defaultPaymentMethod;
+        result.setupIntent?.payment_method ?? defaultPaymentMethod;
 
       const url = new URL(redirectUrl);
       if (typeof paymentMethodId === "string") {
@@ -182,5 +182,9 @@ export async function initUpgradeCheckout() {
       }
       setLoading(submitButton, loader, false, submitButtonContent);
     }
+  };
+
+  upgradeCheckoutForm.addEventListener("submit", (e) => {
+    handleSubmit(e).catch(console.error);
   });
 }

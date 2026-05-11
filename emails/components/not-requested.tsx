@@ -6,7 +6,7 @@ export function NotRequested({ text }: { text: string }) {
     <Section>
       <Hr className="mt-[36px] mb-[20px]" />
       <Text className="mb-[6px] font-medium">Didn't request this?</Text>
-      <Text className="text-muted-foreground my-0 text-[14px]">{text}</Text>
+      <Text className="my-0 text-[14px] text-muted-foreground">{text}</Text>
     </Section>
   );
 }

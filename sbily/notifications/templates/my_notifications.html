@@ -3,9 +3,9 @@
 {% block title %}My Notifications{% endblock title %}
 
 {% block content %}
-<div class="border-secondary mx-auto my-10 flex max-w-xl flex-col justify-center rounded-md border-2 md:my-16">
+<div class="mx-auto my-10 flex max-w-xl flex-col justify-center rounded-md border-2 border-secondary md:my-16">
   <div class="border-b-2 p-6">
-    <h1 class="text-lg font-bold">My Notifications</h1>
+    <h1 class="card-title">My Notifications</h1>
   </div>
   <div class="flex flex-col gap-2 p-4">
     {% if notifications|length <= 0 %}
@@ -19,7 +19,7 @@
     >
       <a
         class="
-          ring-ring -z-[1px] flex items-center justify-between gap-4 rounded-md p-4 outline-hidden duration-200
+          z-[-1px] flex items-center justify-between gap-4 rounded-md p-4 ring-ring outline-hidden duration-200
           hover:bg-secondary/60 focus:ring-2
         "
         href="{% url "my_notification" notification.id %}"
@@ -38,7 +38,7 @@
             <p class="{% if notification.is_read %}opacity-80{% endif %}">
               {{ notification.title }}
             </p>
-            <span class="text-foreground/60 text-sm">{{ notification.created_at|timesince }} ago</span>
+            <span class="text-sm text-foreground/60">{{ notification.created_at|timesince }} ago</span>
           </div>
         </div>
       </a>
@@ -66,7 +66,7 @@
             <span class="size-2 rounded-full bg-blue-600"></span>
             Mark as unread
             {% else %}
-            <span class="border-foreground size-2 rounded-full border-2"></span>
+            <span class="size-2 rounded-full border-2 border-foreground"></span>
             Mark as read
             {% endif %}
           </a>
@@ -106,7 +106,7 @@
             <button
               type="button"
               data-jswc-dialog-close
-              class="button-outline absolute top-4 right-4 rounded-xl border-0 p-2"
+              class="dialog-close"
               aria-label="Close"
             >
               <i data-lucide="x" class="size-5"></i>
@@ -149,7 +149,7 @@
         <button
           type="button"
           data-jswc-dialog-close
-          class="button-outline absolute top-4 right-4 rounded-xl border-0 p-2"
+          class="dialog-close"
           aria-label="Close"
         >
           <i data-lucide="x" class="size-5"></i>

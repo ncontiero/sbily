@@ -26,10 +26,11 @@ export function initTabs() {
 
         const target = button.dataset.jwscTabValue;
         const targetElement =
-          target && document.querySelector(`[data-jwsc-tab-panel=${target}]`);
-        if (!targetElement) return;
+          target != null &&
+          document.querySelector(`[data-jwsc-tab-panel=${target}]`);
+        if (targetElement == null) return;
 
-        if (tabUrlQuery) {
+        if (tabUrlQuery != null && target != null) {
           urlParams.set(tabUrlQuery, target);
           const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
           window.history.replaceState({}, "", newUrl);
@@ -50,8 +51,8 @@ export function initTabs() {
       });
     });
 
-    const tabParam = urlParams.get(tabUrlQuery || tabDefault || "");
-    if (tabParam) {
+    const tabParam = urlParams.get(tabUrlQuery ?? tabDefault ?? "");
+    if (tabParam != null) {
       const tabButton = tabs.querySelector<HTMLButtonElement>(
         `[data-jwsc-tab-value=${tabParam}]`,
       );

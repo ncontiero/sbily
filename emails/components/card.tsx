@@ -13,7 +13,7 @@ export function Card({
   as,
   ...props
 }: CardProps) {
-  const Comp = as || Section;
+  const Comp = as ?? Section;
 
   return (
     <Comp
@@ -21,7 +21,7 @@ export function Card({
         "mt-[26px] mb-0 rounded-[6px] p-[20px]",
         variant === "default" && "bg-secondary",
         variant === "outline" &&
-          "border-border bg-background border border-solid",
+          "border border-solid border-border bg-background",
         className,
       )}
       {...props}

@@ -3,12 +3,12 @@
 {% block title %}Sign Up{% endblock title %}
 
 {% block content %}
-<div class="mx-auto mt-16 flex max-w-md flex-col items-center justify-center rounded-md border p-6">
+<div class="mx-auto mt-16 flex max-w-md flex-col items-center justify-center card p-6">
   <form data-jswc-add-load class="w-full" action="{% url 'sign_up' %}" method="post">
     {% csrf_token %}
     <div class="mt-2 mb-8 text-center">
       <h2 class="text-3xl font-bold">Create your account</h2>
-      <p class="text-foreground/60 mt-1 text-base font-medium">
+      <p class="mt-1 text-base font-medium text-foreground/60">
         Welcome! Please fill in the details to get started.
       </p>
     </div>

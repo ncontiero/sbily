@@ -7,18 +7,18 @@ export function initSwitch(): void {
 
     button.setAttribute("role", "switch");
     button.setAttribute("aria-checked", "false");
-    button.dataset.state = state || "unchecked";
+    button.dataset.state = state ?? "unchecked";
     button.classList.add("switch-button");
 
     const switchThumb =
       button.querySelector<HTMLElement>(".switch-thumb") ||
       document.createElement("span");
     switchThumb.classList.add("switch-thumb");
-    switchThumb.dataset.state = state || "unchecked";
+    switchThumb.dataset.state = state ?? "unchecked";
     button.append(switchThumb);
 
     const switchName = button.dataset.name;
-    if (switchName) {
+    if (switchName != null) {
       const switchInput = document.createElement("input");
       switchInput.classList.add("hidden");
       switchInput.type = "checkbox";

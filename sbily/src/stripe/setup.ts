@@ -53,7 +53,7 @@ export async function initSetupCardForm() {
 
   // Handle form submission
   const form = document.getElementById("payment-form") as HTMLFormElement;
-  if (!form) return;
+  if (form == null) return;
 
   const submitButton = document.getElementById(
     "submit-button",
@@ -61,7 +61,7 @@ export async function initSetupCardForm() {
   const spinner = document.getElementById("spinner") as HTMLDivElement;
   const buttonText = document.getElementById("button-text") as HTMLSpanElement;
 
-  form.addEventListener("submit", async (event) => {
+  const handleSubmit = async (event: SubmitEvent) => {
     event.preventDefault();
 
     setLoading(true);
@@ -77,7 +77,7 @@ export async function initSetupCardForm() {
         const errorElement = document.getElementById("card-errors");
         if (errorElement) {
           errorElement.textContent =
-            result.error.message || "An error occurred.";
+            result.error.message ?? "An error occurred.";
         }
         setLoading(false);
       } else {
@@ -85,7 +85,7 @@ export async function initSetupCardForm() {
         const setupIntentId = result.setupIntent.id;
 
         const url = new URL(redirectUrl);
-        if (paymentMethodId && typeof paymentMethodId === "string") {
+        if (paymentMethodId != null && typeof paymentMethodId === "string") {
           url.searchParams.append("payment_method", paymentMethodId);
         }
         url.searchParams.append("setup_intent", setupIntentId);
@@ -100,6 +100,10 @@ export async function initSetupCardForm() {
       }
       setLoading(false);
     }
+  };
+
+  form.addEventListener("submit", (event) => {
+    handleSubmit(event).catch(console.error);
   });
 
   function setLoading(isLoading: boolean): void {

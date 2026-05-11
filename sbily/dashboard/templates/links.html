@@ -3,13 +3,13 @@
 {% block title %}{{ block.super }} - My Links{% endblock title %}
 {% block dashboard_title %}My Links{% endblock dashboard_title %}
 {% block dashboard_description %}
-  Hello {{ user.get_short_name }}, you can see your links here.
+Hello {{ user.get_short_name }}, you can see your links here.
 {% endblock dashboard_description %}
 
 {% block dashboard_content %}
 <section id="links" class="py-8">
   <div class="container mx-auto flex flex-col justify-center gap-2 px-4">
-    <div class="bg-background relative flex-col justify-center rounded-md border p-6">
+    <div class="relative flex-col justify-center card bg-background p-6">
       <h2 class="my-2 text-2xl font-bold">Links</h2>
       <div class="mt-1 mb-2 flex flex-wrap gap-0.5">
         <span class="badge-default">

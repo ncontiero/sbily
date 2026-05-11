@@ -12,8 +12,8 @@ export default function AccountDeleted() {
 
   return (
     <Layout title={title} previewText={text}>
-      <Card className="border-destructive rounded-[10px] border-l-4 border-solid py-[10px]">
-        <Heading as="h3" className="text-destructive font-semibold">
+      <Card className="rounded-[10px] border-l-4 border-solid border-destructive py-[10px]">
+        <Heading as="h3" className="font-semibold text-destructive">
           Account Permanently Deleted
         </Heading>
         <Text>

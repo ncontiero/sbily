@@ -4,7 +4,7 @@
 {% block title %}Statistics for {{ link.shortened_path }}{% endblock title %}
 {% block dashboard_title %}Statistics for {{ link.shortened_path }}{% endblock dashboard_title %}
 {% block dashboard_description %}
-  Hello {{ user.get_short_name }}, see the performance of your link.
+Hello {{ user.get_short_name }}, see the performance of your link.
 {% endblock dashboard_description %}
 
 {% block dashboard_content %}
@@ -224,11 +224,11 @@
 <section class="py-6">
   <div class="container mx-auto px-4">
     <div class="rounded-lg border bg-background p-6 shadow-xs">
-      <h2 class="mb-4 px-4 text-lg font-bold">Top Countries</h2>
+      <h2 class="mb-4 px-4 card-title">Top Countries</h2>
       <div class="flex h-fit justify-center lg:h-96">
         <canvas id="countriesAndCitiesChart"></canvas>
       </div>
-      <div class="mt-10 rounded-md border pt-6">
+      <div class="mt-10 card pt-6">
         <h3 class="mb-8 px-4 font-bold md:mb-4">Top Countries and Cities Visitors</h3>
         <div class="max-h-[500px] w-full overflow-auto overscroll-contain">
           <table class="w-full border-t text-sm">

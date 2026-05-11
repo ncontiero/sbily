@@ -3,21 +3,21 @@
 {% block title %}Sign In{% endblock title %}
 
 {% block content %}
-<div class="mx-auto mt-16 flex max-w-md flex-col items-center justify-center rounded-md border p-6">
+<div class="mx-auto mt-16 flex max-w-md flex-col items-center justify-center card p-6">
   <form data-jswc-add-load class="w-full" action="{% url 'sign_in' %}" method="post">
     {% csrf_token %}
     <div class="mt-2 mb-8 text-center">
       <h2 class="text-3xl font-bold">Sign In</h2>
-      <p class="text-foreground/60 mt-1 text-base font-medium">
+      <p class="mt-1 text-base font-medium text-foreground/60">
         Welcome back! Please sign in to continue
       </p>
     </div>
     {{ form }}
     <div class="flex justify-between">
-      <a class="text-primary text-sm hover:underline" href="{% url "sign_in_with_email" %}">
+      <a class="text-sm text-primary hover:underline" href="{% url "sign_in_with_email" %}">
         Sign in with email
       </a>
-      <a class="text-primary text-sm hover:underline" href="{% url "forgot_password" %}">
+      <a class="text-sm text-primary hover:underline" href="{% url "forgot_password" %}">
         Forgot your password?
       </a>
     </div>

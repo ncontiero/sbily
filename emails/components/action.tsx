@@ -17,12 +17,12 @@ export function Action({
 }: ActionProps) {
   return (
     <>
-      <Section className="bg-secondary mt-[20px] rounded-[6px] p-[20px] text-center">
+      <Section className="mt-[20px] rounded-[6px] bg-secondary p-[20px] text-center">
         <Text>{text}</Text>
         <Button href={link} className="my-[16px]">
           {buttonText}
         </Button>
-        <Text className="text-muted-foreground text-[14px]">
+        <Text className="text-[14px] text-muted-foreground">
           Link expires in {expires}
         </Text>
       </Section>
@@ -30,7 +30,7 @@ export function Action({
         Having trouble with the button? You can also copy and paste this URL
         into your browser:
       </Text>
-      <Text className="border-border bg-background text-muted-foreground mt-[20px] rounded-[6px] border border-solid p-[20px]">
+      <Text className="mt-[20px] rounded-[6px] border border-solid border-border bg-background p-[20px] text-muted-foreground">
         {link}
       </Text>
     </>

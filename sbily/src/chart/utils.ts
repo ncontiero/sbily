@@ -3,12 +3,12 @@ import { type IChoroplethDataPoint, topojson } from "chartjs-chart-geo";
 import { modeLab, modeOklch, useMode } from "culori/fn";
 
 type Config<T extends ChartType> = ChartConfiguration<T>;
-type CustomConfig<T extends ChartType> = {
+interface CustomConfig<T extends ChartType> {
   labels: string[];
   data: string[];
   dataLabel: string;
   config?: ChartConfiguration<T>;
-};
+}
 
 export function applyOpacity(color: string, opacity: number) {
   if (opacity < 0 || opacity > 100) {
@@ -55,7 +55,7 @@ export function getChartColors(count: number, opacity = 80) {
     return colors;
   }
 
-  const baseHue = baseColor.h || 0;
+  const baseHue = baseColor.h ?? 0;
 
   for (let i = 0; i < count; i++) {
     const newHue = (baseHue + i * 8) % 360;
@@ -171,27 +171,28 @@ export async function getGeoCountries({
   countryData,
   countryLabels,
 }: GetGeoCountries) {
-  const countriesJson = await import("./countries-50m.json");
+  const countriesJson =
+    (await import("./countries-50m.json")) as unknown as TopoJSON.Topology;
 
   const countries = (
     topojson.feature(
-      countriesJson as any,
-      countriesJson.objects.countries as any,
+      countriesJson,
+      countriesJson.objects.countries,
     ) as unknown as GeoJSON.FeatureCollection
   ).features;
 
-  const labels = countries.map((d) => d.properties?.name);
+  const labels = countries.map((d) => d.properties?.name as string);
   const data = countries.map((d) => ({
     feature: d,
-    value: countryData[countryLabels.indexOf(d.properties?.name)] || 0,
+    value:
+      countryData[countryLabels.indexOf(d.properties?.name as string)] || 0,
   }));
 
   return { labels, data };
 }
 
 interface GetChartGetConfig
-  extends Partial<CustomConfig<"choropleth">>,
-    GetGeoCountries {}
+  extends Partial<CustomConfig<"choropleth">>, GetGeoCountries {}
 
 export async function getChartGetConfig({
   countryLabels,

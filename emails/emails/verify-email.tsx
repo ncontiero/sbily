@@ -42,7 +42,7 @@ export default function VerifyEmail() {
                 <Heading as="h4" className="m-0 text-[18px] font-semibold">
                   {question.question}
                 </Heading>
-                <Text className="text-muted-foreground mb-0">
+                <Text className="mb-0 text-muted-foreground">
                   {question.answer}
                 </Text>
               </Column>

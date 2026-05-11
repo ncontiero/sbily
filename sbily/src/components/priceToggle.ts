@@ -97,7 +97,7 @@ function selectCyclePlan(
 
   upgradeElements.forEach((element) => {
     const currentHref = element.getAttribute("href");
-    const url = new URL(currentHref || "", origin);
+    const url = new URL(currentHref ?? "", origin);
 
     if (selectedCycle === "yearly") {
       url.searchParams.append("cycle", "yearly");

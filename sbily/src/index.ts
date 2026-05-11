@@ -35,19 +35,19 @@ const initApp = (): void => {
   setTimeout(() => {
     document.documentElement.classList.replace("opacity-0", "opacity-100");
   }, 500);
-  initConfirmPayment();
-  initSetupCardForm();
-  initPriceToggle();
-  initUpgradeCheckout();
+  initThemeToggle();
   initDialog();
   initDropdownMenu();
   initSwitch();
-  initThemeToggle();
   initTabs();
   initBreadcrumb();
   initAddLoad();
+  initPriceToggle();
 
-  initStatsPages();
+  initConfirmPayment().catch(console.error);
+  initSetupCardForm().catch(console.error);
+  initUpgradeCheckout().catch(console.error);
+  initStatsPages().catch(console.error);
 };
 
 document.addEventListener("DOMContentLoaded", initApp);

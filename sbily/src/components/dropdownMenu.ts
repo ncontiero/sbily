@@ -24,7 +24,7 @@ export function initDropdownMenu() {
 
   dropdownButtons.forEach((button) => {
     const target = button.dataset.jswcTarget;
-    if (!target) return;
+    if (target == null) return;
 
     const targetElement = document.getElementById(target);
     if (!targetElement) return;
@@ -39,9 +39,10 @@ export function initDropdownMenu() {
       animation: targetElement.dataset.jswcDropdownAnimation === "true",
       preferredPosition:
         (targetElement.dataset.jswcDropdownPosition as Position) || "bottom",
-      offsetDistance: targetElement.dataset.jswcDropdownOffset
-        ? Number.parseInt(targetElement.dataset.jswcDropdownOffset)
-        : DEFAULT_OPTIONS.offsetDistance,
+      offsetDistance:
+        targetElement.dataset.jswcDropdownOffset != null
+          ? Number.parseInt(targetElement.dataset.jswcDropdownOffset)
+          : DEFAULT_OPTIONS.offsetDistance,
     };
 
     button.addEventListener("click", () =>
@@ -219,7 +220,7 @@ export function dropdownMenu(
     };
 
     if (options.animation) {
-      setTimeout(() => requestAnimationFrame(closeDropdownMenu), 200);
+      setTimeout(requestAnimationFrame, 200, closeDropdownMenu);
     } else {
       closeDropdownMenu();
     }

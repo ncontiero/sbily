@@ -18,7 +18,7 @@ export function initDialog(): void {
 
   dialogButtons.forEach((button) => {
     const target = button.dataset.jswcTarget;
-    if (!target) return;
+    if (target == null) return;
 
     const targetElement = document.getElementById(target);
     if (!targetElement) return;
@@ -116,7 +116,7 @@ export function dialog(
     };
 
     if (options.animation) {
-      setTimeout(() => requestAnimationFrame(closeDialog), 200);
+      setTimeout(requestAnimationFrame, 200, closeDialog);
     } else {
       closeDialog();
     }

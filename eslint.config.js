@@ -12,13 +12,20 @@ export default ncontiero(
       },
     },
     unicorn: {
-      overrides: { "unicorn/prefer-query-selector": "off" },
+      overrides: {
+        "unicorn/prefer-query-selector": "off",
+      },
     },
     toml: {
-      overrides: { "toml/indent": ["error", 4] },
+      overrides: {
+        "toml/indent": ["error", 4],
+      },
     },
     tailwindcss: {
       cssGlobalPath: "./sbily/src/index.css",
+    },
+    typescript: {
+      tsconfigPath: "./tsconfig.json",
     },
   },
   {

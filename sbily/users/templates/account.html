@@ -8,14 +8,14 @@
     <h1 class="text-2xl font-bold">Settings</h1>
     <p class="text-foreground/80">Manage your account settings.</p>
   </div>
-  <div class="separator my-6"></div>
+  <div class="my-6 separator"></div>
   <div class="flex flex-col gap-4 md:flex-row">
     <div class="flex overflow-hidden sm:overflow-visible md:w-1/4">
       <aside
         data-jwsc-tab-list
         data-jwsc-tab-default="account"
         data-jwsc-tab-url-query="tab"
-        class="text-muted-foreground flex w-full gap-1 overflow-x-scroll p-1 pb-1.5 md:flex-col md:overflow-x-auto"
+        class="flex w-full gap-1 overflow-x-scroll p-1 pb-1.5 text-muted-foreground md:flex-col md:overflow-x-auto"
       >
         <button type="button" data-jwsc-tab-value="account" class="tab-item">
           <i data-lucide="settings"></i>
@@ -44,7 +44,7 @@
         <h2 class="text-xl font-bold">My Account</h2>
         <p class="text-foreground/80">Manage your account settings.</p>
       </div>
-      <div class="separator mt-5 mb-7 w-full"></div>
+      <div class="mt-5 mb-7 separator w-full"></div>
       <form data-jswc-add-load class="card" action="{% url 'my_account' %}" method="post">
         {% csrf_token %}
         <div class="card-content">
@@ -61,7 +61,7 @@
           <button type="submit" class="button-primary button-sm">Update account</button>
         </div>
       </form>
-      <div class="card border-destructive mt-10">
+      <div class="mt-10 card border-destructive">
         <div class="card-content">
           <h3 class="card-title">Delete account</h3>
           <p class="card-description text-foreground/80">
@@ -80,7 +80,7 @@
           <div id="deactivate-dialog" data-jswc-dialog-animation="true" class="dialog hidden">
             <div class="flex flex-col">
               <div class="flex items-center justify-between">
-                <h4 class="text-lg font-bold">Are you sure?</h4>
+                <h4 class="card-title">Are you sure?</h4>
               </div>
               <div class="mt-4 flex flex-col gap-4 text-sm">
                 <p>
@@ -89,7 +89,7 @@
                 </p>
                 <ul class="list-inside list-disc">
                   <li>
-                      User: {{ user.username }}
+                    User: {{ user.username }}
                     <ul class="list-inside list-disc pl-2 sm:pl-6">
                       {% for link in user.shortened_links.all %}
                       <li>
@@ -101,7 +101,7 @@
                   </li>
                 </ul>
               </div>
-              <div class="separator my-6"></div>
+              <div class="my-6 separator"></div>
               <div>
                 <form data-jswc-add-load class="flex flex-col" action="{% url "delete_account" %}" method="post">
                   {% csrf_token %}
@@ -128,7 +128,7 @@
               <button
                 type="button"
                 data-jswc-dialog-close
-                class="button-outline absolute top-4 right-4 rounded-xl border-0 p-2"
+                class="dialog-close"
                 aria-label="Close"
               >
                 <i data-lucide="x" class="size-5"></i>
@@ -143,8 +143,8 @@
         <h2 class="text-xl font-bold">Email Settings</h2>
         <p class="text-foreground/80">Manage your email settings.</p>
       </div>
-      <div class="separator mt-5 w-full"></div>
-      <div class="card mt-7">
+      <div class="mt-5 separator w-full"></div>
+      <div class="mt-7 card">
         <div class="card-content">
           <h3 class="card-title">
             {% if token %}
@@ -180,7 +180,7 @@
             </div>
           </form>
           {% else %}
-          <div class="flex items-center rounded-md border p-4">
+          <div class="flex items-center card p-4">
             <div class="flex items-center gap-2">
               <span class="text-sm">{{ user.email }}</span>
               <div
@@ -236,7 +236,7 @@
               <button
                 type="button"
                 data-jswc-dialog-close
-                class="button-outline absolute top-4 right-4 rounded-xl border-0 p-2"
+                class="dialog-close"
                 aria-label="Close"
               >
                 <i data-lucide="x" class="size-5"></i>
@@ -252,7 +252,7 @@
         <h2 class="text-xl font-bold">My Plan</h2>
         <p class="text-foreground/80">Manage your subscription.</p>
       </div>
-      <div class="separator mt-5 mb-7 w-full"></div>
+      <div class="mt-5 mb-7 separator w-full"></div>
 
       <div class="card">
         <div class="card-content">
@@ -300,7 +300,7 @@
         </div>
       </div>
 
-      <div class="card mt-7">
+      <div class="mt-7 card">
         <div class="card-content">
           <h3 class="card-title">Link Usage</h3>
 
@@ -312,13 +312,13 @@
                   {{ user.monthly_limit_links_used }} / {{ user.monthly_link_limit }}
                 </span>
               </div>
-              <div class="bg-secondary/60 h-2 overflow-hidden rounded-full">
+              <div class="h-2 overflow-hidden rounded-full bg-secondary/60">
                 <div
-                  class="bg-primary h-full"
+                  class="h-full bg-primary"
                   style="width: {% widthratio user.monthly_limit_links_used user.monthly_link_limit 100 %}%"
                 ></div>
               </div>
-              <div class="text-foreground/80 mt-1 flex justify-between text-xs">
+              <div class="mt-1 flex justify-between text-xs text-foreground/80">
                 <span>Used</span>
                 <span>Total</span>
               </div>
@@ -330,29 +330,29 @@
         </div>
       </div>
 
-      <div class="card mt-7">
+      <div class="mt-7 card">
         <div class="card-content">
           <h3 class="card-title">Plan Features</h3>
           <ul class="mt-4 space-y-3">
             <li class="flex items-center gap-2">
-              <i data-lucide="check" class="text-primary size-4"></i>
+              <i data-lucide="check" class="size-4 text-primary"></i>
               <span>{{ user.monthly_link_limit }} new links/mo (resets monthly)</span>
             </li>
             {% if user.subscription_active %}
             <li class="flex items-center gap-2">
-              <i data-lucide="check" class="text-primary size-4"></i>
+              <i data-lucide="check" class="size-4 text-primary"></i>
               <span>Advanced statistics</span>
             </li>
             <li class="flex items-center gap-2">
-              <i data-lucide="check" class="text-primary size-4"></i>
+              <i data-lucide="check" class="size-4 text-primary"></i>
               <span>Priority support</span>
             </li>
             {% else %}
-            <li class="text-muted-foreground flex items-center gap-2">
+            <li class="flex items-center gap-2 text-muted-foreground">
               <i data-lucide="x" class="size-4"></i>
               <span>Advanced statistics</span>
             </li>
-            <li class="text-muted-foreground flex items-center gap-2">
+            <li class="flex items-center gap-2 text-muted-foreground">
               <i data-lucide="x" class="size-4"></i>
               <span>Priority support</span>
             </li>
@@ -373,9 +373,9 @@
             <h2 class="text-xl font-bold">Cancel {{ user.subscription.get_level_display }} Subscription</h2>
           </div>
           <div class="mt-4">
-            <div class="bg-secondary/40 mb-6 rounded-lg border p-4">
+            <div class="mb-6 rounded-lg border bg-secondary/40 p-4">
               <p class="text-foreground/80">
-                <i data-lucide="info" class="text-primary mr-1 inline-block size-4"></i>
+                <i data-lucide="info" class="mr-1 inline-block size-4 text-primary"></i>
                 You'll continue to have access to all {{ user.subscription.level }} features until the end of your current billing period on {{ user.subscription.end_date|date:"F j, Y" }}.
               </p>
             </div>
@@ -383,11 +383,11 @@
             <p class="mb-4">After your subscription ends:</p>
             <ul class="mb-6 space-y-2">
               <li class="flex items-center gap-2">
-                <i data-lucide="minus" class="text-destructive size-4"></i>
+                <i data-lucide="minus" class="size-4 text-destructive"></i>
                 <span>Your link limits will be reduced to 5 links;</span>
               </li>
               <li class="flex items-center gap-2">
-                <i data-lucide="minus" class="text-destructive size-4"></i>
+                <i data-lucide="minus" class="size-4 text-destructive"></i>
                 <span>You will lose access to {{ user.subscription.level }} features;</span>
               </li>
             </ul>
@@ -403,7 +403,7 @@
           <button
             type="button"
             data-jswc-dialog-close
-            class="button-outline absolute top-4 right-4 rounded-xl border-0 p-2"
+            class="dialog-close"
             aria-label="Close"
           >
             <i data-lucide="x" class="size-5"></i>
@@ -418,9 +418,9 @@
             <h2 class="text-xl font-bold">Resume {{ user.subscription.get_level_display }} Subscription</h2>
           </div>
           <div class="mt-4">
-            <div class="bg-secondary/40 mb-6 rounded-lg border p-4">
+            <div class="mb-6 rounded-lg border bg-secondary/40 p-4">
               <p class="text-foreground/80">
-                <i data-lucide="info" class="text-primary mr-1 inline-block size-4"></i>
+                <i data-lucide="info" class="mr-1 inline-block size-4 text-primary"></i>
                 Your {{ user.subscription.get_level_display }} subscription currently ends
                 on {{ user.subscription.end_date|date:"F j, Y" }}. By resuming, your subscription
                 will automatically renew after this date.
@@ -430,15 +430,15 @@
             <p class="mb-4">By resuming your subscription:</p>
             <ul class="mb-6 space-y-2">
               <li class="flex items-center gap-2">
-                <i data-lucide="check" class="text-primary size-4"></i>
+                <i data-lucide="check" class="size-4 text-primary"></i>
                 <span>You'll continue to enjoy all {{ user.subscription.get_level_display }} features without interruption;</span>
               </li>
               <li class="flex items-center gap-2">
-                <i data-lucide="check" class="text-primary size-4"></i>
+                <i data-lucide="check" class="size-4 text-primary"></i>
                 <span>Your subscription will automatically renew at the regular price;</span>
               </li>
               <li class="flex items-center gap-2">
-                <i data-lucide="check" class="text-primary size-4"></i>
+                <i data-lucide="check" class="size-4 text-primary"></i>
                 <span>You can cancel again at any time.</span>
               </li>
             </ul>
@@ -454,7 +454,7 @@
           <button
             type="button"
             data-jswc-dialog-close
-            class="button-outline absolute top-4 right-4 rounded-xl border-0 p-2"
+            class="dialog-close"
             aria-label="Close"
           >
             <i data-lucide="x" class="size-5"></i>
@@ -468,7 +468,7 @@
         <h2 class="text-xl font-bold">Billing</h2>
         <p class="text-foreground/80">Manage your payment methods and view your payments.</p>
       </div>
-      <div class="separator mt-5 mb-7 w-full"></div>
+      <div class="mt-5 mb-7 separator w-full"></div>
 
       <div class="card">
         <div class="card-content">
@@ -481,8 +481,8 @@
             {% endif %}
           </p>
           {% if user.card_last_four_digits %}
-          <div class="rounded-md border p-4">
-            <div class="text-foreground/80 flex items-center gap-2 text-sm">
+          <div class="card p-4">
+            <div class="flex items-center gap-2 text-sm text-foreground/80">
               <i data-lucide="credit-card" class="size-5"></i>
               <span>Card ending in •••• {{ user.card_last_four_digits }}</span>
             </div>
@@ -507,12 +507,12 @@
         </div>
       </div>
 
-      <div class="card mt-7">
+      <div class="mt-7 card">
         <div class="card-content pb-5">
           <h3 class="card-title">Invoice Balance</h3>
           <p class="card-description">
             These are the credits on your account:
-            <span class="text-lg font-bold">$ {{ user.customer_balance_format }}</span>
+            <span class="card-title">$ {{ user.customer_balance_format }}</span>
           </p>
         </div>
         <div class="card-footer">
@@ -522,28 +522,28 @@
         </div>
       </div>
 
-      <div class="card mt-7">
+      <div class="mt-7 card">
         <div class="card-content">
           <h3 class="card-title">Payments History</h3>
 
           {% if user.payments %}
-          <div class="mt-4 rounded-md border pb-2">
+          <div class="mt-4 card pb-2">
             <div class="size-full max-h-[500px] overflow-auto overscroll-contain">
               <table class="w-full caption-bottom text-sm">
-                <caption class="text-muted-foreground mt-4 text-sm">
+                <caption class="mt-4 text-sm text-muted-foreground">
                   A list of your payments.
                 </caption>
-                <thead class="hover:bg-muted/50 border-b duration-200">
+                <thead class="border-b duration-200 hover:bg-muted/50">
                   <tr>
-                    <th class="text-muted-foreground h-12 px-4 text-start align-middle font-medium">Date</th>
-                    <th class="text-muted-foreground h-12 px-4 text-start align-middle font-medium">Description</th>
-                    <th class="text-muted-foreground h-12 px-4 text-start align-middle font-medium">Amount</th>
-                    <th class="text-muted-foreground h-12 px-4 text-center align-middle font-medium">Status</th>
+                    <th class="h-12 px-4 text-start align-middle font-medium text-muted-foreground">Date</th>
+                    <th class="h-12 px-4 text-start align-middle font-medium text-muted-foreground">Description</th>
+                    <th class="h-12 px-4 text-start align-middle font-medium text-muted-foreground">Amount</th>
+                    <th class="h-12 px-4 text-center align-middle font-medium text-muted-foreground">Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {% for payment in user.payments.all %}
-                  <tr class="hover:bg-muted/50 border-b duration-200">
+                  <tr class="border-b duration-200 hover:bg-muted/50">
                     <td class="p-4 align-middle">{{ payment.payment_date|date:"M d, Y" }}</td>
                     <td class="p-4 align-middle">
                       {% if payment.invoice_url %}
@@ -565,7 +565,7 @@
             </div>
           </div>
           {% else %}
-          <p class="text-muted-foreground text-sm">No purchase history yet.</p>
+          <p class="text-sm text-muted-foreground">No purchase history yet.</p>
           {% endif %}
         </div>
       </div>
@@ -575,15 +575,15 @@
         <h2 class="text-xl font-bold">Account Security</h2>
         <p class="text-foreground/80">Manage your password and authentication settings.</p>
       </div>
-      <div class="separator mt-5 mb-7 w-full"></div>
+      <div class="mt-5 mb-7 separator w-full"></div>
       <div class="flex flex-col">
         <div class="card">
           <div class="card-content">
             <h3 class="card-title">Password</h3>
             <p class="card-description">This is your password.</p>
-            <div class="rounded-md border p-4">
+            <div class="card p-4">
               <div class="flex items-center gap-4">
-                <i data-lucide="lock-keyhole" class="text-primary size-5"></i>
+                <i data-lucide="lock-keyhole" class="size-5 text-primary"></i>
                 <span>**********</span>
               </div>
             </div>
@@ -591,7 +591,7 @@
           <div class="card-footer">
             <a
               class="
-                card-footer-description ring-ring rounded-md underline-offset-4 hover:underline focus-visible:ring-2
+                rounded-md card-footer-description underline-offset-4 ring-ring hover:underline focus-visible:ring-2
               "
               href="{% url 'forgot_password' %}?email={{ user.email|urlencode }}"
             >
@@ -630,7 +630,7 @@
                 <button
                   type="button"
                   data-jswc-dialog-close
-                  class="button-outline absolute top-4 right-4 rounded-xl border-0 p-2"
+                  class="dialog-close"
                   aria-label="Close"
                 >
                   <i data-lucide="x" class="size-5"></i>
@@ -639,7 +639,7 @@
             </div>
           </div>
         </div>
-        <form data-jswc-add-load class="card mt-7" action="{% url 'account_security' %}" method="post">
+        <form data-jswc-add-load class="mt-7 card" action="{% url 'account_security' %}" method="post">
           {% csrf_token %}
           <div class="card-content flex-row items-center justify-between">
             <label for="login_with_email">

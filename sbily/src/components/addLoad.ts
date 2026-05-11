@@ -12,7 +12,7 @@ export function setLoading(
     element.append(loader);
   } else {
     element.removeAttribute("disabled");
-    element.innerHTML = elementContent || element.innerHTML;
+    element.innerHTML = elementContent ?? element.innerHTML;
     element.querySelector("svg")?.remove();
   }
 }
