@@ -44,10 +44,10 @@ const initApp = (): void => {
   initAddLoad();
   initPriceToggle();
 
-  initConfirmPayment().catch(console.error);
-  initSetupCardForm().catch(console.error);
-  initUpgradeCheckout().catch(console.error);
-  initStatsPages().catch(console.error);
+  void initConfirmPayment();
+  void initSetupCardForm();
+  void initUpgradeCheckout();
+  void initStatsPages();
 };
 
 document.addEventListener("DOMContentLoaded", initApp);

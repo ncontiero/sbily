@@ -6,9 +6,9 @@ declare const redirectUrl: string;
 export async function initConfirmPayment() {
   const stripe = await initStripe();
 
-  const confirmButton = document.getElementById(
-    "confirm-button",
-  ) as HTMLButtonElement;
+  const confirmButton = document.getElementById("confirm-button") as
+    | HTMLButtonElement
+    | undefined;
   const spinner = document.getElementById("spinner") as HTMLDivElement;
   const buttonText = document.getElementById("button-text") as HTMLSpanElement;
   const messageContainer = document.getElementById(
@@ -18,11 +18,27 @@ export async function initConfirmPayment() {
     "message-text",
   ) as HTMLSpanElement;
 
-  if (confirmButton == null) return;
+  if (!confirmButton) return;
 
   function showMessage(message: string): void {
     messageText.textContent = message;
     messageContainer.classList.remove("hidden");
+  }
+  function setLoading(isLoading: boolean): void {
+    if (confirmButton) {
+      confirmButton.disabled = isLoading;
+    }
+
+    if (isLoading) {
+      // Disable the button and show spinner
+      spinner.classList.remove("hidden");
+      buttonText.classList.add("hidden");
+      return;
+    }
+
+    // Enable the button and hide spinner
+    spinner.classList.add("hidden");
+    buttonText.classList.remove("hidden");
   }
 
   const handleConfirm = async () => {
@@ -74,18 +90,4 @@ export async function initConfirmPayment() {
   confirmButton.addEventListener("click", () => {
     handleConfirm().catch(console.error);
   });
-
-  function setLoading(isLoading: boolean): void {
-    if (isLoading) {
-      // Disable the button and show spinner
-      confirmButton.disabled = true;
-      spinner.classList.remove("hidden");
-      buttonText.classList.add("hidden");
-    } else {
-      // Enable the button and hide spinner
-      confirmButton.disabled = false;
-      spinner.classList.add("hidden");
-      buttonText.classList.remove("hidden");
-    }
-  }
 }

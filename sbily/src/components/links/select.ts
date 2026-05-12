@@ -8,8 +8,8 @@ const checkAllLinksCheckbox = document.getElementById(
 
 const linkActionGo = document.getElementById("link-action-go");
 linkActionGo?.addEventListener("click", (e: Event) => {
-  const target = e.target as HTMLElement;
-  if (target == null || !tbody) return;
+  const target = e.target as HTMLElement | undefined;
+  if (!target || !tbody) return;
 
   const action = (document.getElementById("action") as HTMLSelectElement)
     ?.value;
@@ -46,8 +46,8 @@ linkActionGo?.addEventListener("click", (e: Event) => {
   }
 
   const dialogTarget = target.dataset.jswcTarget;
-  const targetElement =
-    dialogTarget != null ? document.getElementById(dialogTarget) : null;
+  if (!dialogTarget) return;
+  const targetElement = document.getElementById(dialogTarget);
   if (targetElement) dialog(targetElement, { animation: true });
 });
 

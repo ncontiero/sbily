@@ -91,7 +91,7 @@ export function Layout({ title, previewText, children }: LayoutProps) {
           <Container className="mx-auto my-[40px] max-w-[600px] rounded-[6px] border border-solid border-transparent p-[20px] md:border-border">
             <Header />
 
-            {title != null ? (
+            {title ? (
               <Heading
                 as="h2"
                 className="my-[20px] text-center text-[26px] font-semibold text-foreground"

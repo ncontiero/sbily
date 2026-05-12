@@ -18,7 +18,7 @@ export function initDialog(): void {
 
   dialogButtons.forEach((button) => {
     const target = button.dataset.jswcTarget;
-    if (target == null) return;
+    if (!target) return;
 
     const targetElement = document.getElementById(target);
     if (!targetElement) return;

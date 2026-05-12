@@ -18,7 +18,7 @@ export function initSwitch(): void {
     button.append(switchThumb);
 
     const switchName = button.dataset.name;
-    if (switchName != null) {
+    if (switchName) {
       const switchInput = document.createElement("input");
       switchInput.classList.add("hidden");
       switchInput.type = "checkbox";

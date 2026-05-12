@@ -52,8 +52,10 @@ export async function initSetupCardForm() {
   const { stripe, cardElement } = cardSetupElement;
 
   // Handle form submission
-  const form = document.getElementById("payment-form") as HTMLFormElement;
-  if (form == null) return;
+  const form = document.getElementById(
+    "payment-form",
+  ) as HTMLFormElement | null;
+  if (!form) return;
 
   const submitButton = document.getElementById(
     "submit-button",
