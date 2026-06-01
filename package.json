@@ -36,7 +36,7 @@
     "@types/node": "^25.7.0",
     "cross-env": "^10.1.0",
     "eslint": "^10.3.0",
-    "postcss": "^8.5.14",
+    "postcss": "^8.5.15",
     "postcss-loader": "^8.2.1",
     "rspack-merge": "^0.1.1",
     "tailwindcss": "4.3.0",
