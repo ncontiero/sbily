@@ -41,7 +41,7 @@ COPY --from=client-builder /app/sbily/static/rspack_bundles /app/sbily/static/rs
 COPY --from=client-builder /app/sbily/templates/emails /app/sbily/templates/emails
 
 # define an alias for the specific python version used in this file.
-FROM ghcr.io/astral-sh/uv:python3.14-bookworm-slim AS python-build-stage
+FROM ghcr.io/astral-sh/uv:python3.14-bookworm-slim@sha256:7cf77f594be8042dab6daa9fe326f90962252268b4f120a7f5dccce4d947e6c1 AS python-build-stage
 
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy UV_PYTHON_DOWNLOADS=0
 
@@ -79,7 +79,7 @@ COPY --from=client-build ${APP_HOME} ${APP_HOME}
 RUN uv sync --locked --no-dev
 
 # Python 'run' stage
-FROM python:3.14-slim-bookworm AS python-run-stage
+FROM python:3.14-slim-bookworm@sha256:a9bee15510a364124aa24692899d269835683b883de42f7ebec8c293cf679ccb AS python-run-stage
 
 ARG APP_HOME=/app
 ARG PORT=5000
