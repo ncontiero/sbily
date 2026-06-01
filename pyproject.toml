@@ -28,7 +28,7 @@ dependencies = [
     "django-cleanup==9.0.0",
     "dj-database-url==3.1.2",
     "django-redis==6.0.0",
-    "django-webpack-loader==3.2.3",
+    "django-webpack-loader==3.2.4",
     "django-storages[s3]==1.14.6",
     "django-anymail[brevo]==15.0",
 ]
