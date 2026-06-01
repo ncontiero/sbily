@@ -79,8 +79,8 @@ importers:
         specifier: ^6.0.3
         version: 6.0.3
       webpack-bundle-tracker:
-        specifier: ^3.2.3
-        version: 3.2.3
+        specifier: ^3.2.4
+        version: 3.2.4
 
   emails:
     dependencies:
@@ -3447,8 +3447,8 @@ packages:
   vscode-uri@3.1.0:
     resolution: {integrity: sha512-/BpdSx+yCQGnCvecbyXdxHDkuk55/G3xwnC0GqY4gmQ3j+A+g8kzzgB4Nk/SINjqn6+waqw3EgbVF2QKExkRxQ==}
 
-  webpack-bundle-tracker@3.2.3:
-    resolution: {integrity: sha512-F2nrVLRVkJnck5ETFbRTvIzZv/pgdwzZtrJNw/NqrokO78hSII2a7DUVn2dmthgsm48EmTXObSqVmPkl7hSbEg==}
+  webpack-bundle-tracker@3.2.4:
+    resolution: {integrity: sha512-ki8+AJ+qH6JFGVTZquy8+fkilPqbExSHqmZOSfFcEGlhodUcc63KfmmVJuUrVqBYn4R+/h3JATUrRO0pXvZ+UA==}
     engines: {node: '>=20.0.0'}
 
   when-exit@2.1.5:
@@ -7250,7 +7250,7 @@ snapshots:
 
   vscode-uri@3.1.0: {}
 
-  webpack-bundle-tracker@3.2.3: {}
+  webpack-bundle-tracker@3.2.4: {}
 
   when-exit@2.1.5: {}
 
