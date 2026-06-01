@@ -37,13 +37,13 @@ services:
       - ./.envs/.local/.postgres
 
   mailpit:
-    image: axllent/mailpit:latest
+    image: axllent/mailpit:latest@sha256:3bd7c2f2696deb35a4780d152b404dceec99cb041b942c0877b3b22384714f85
     container_name: sbily_local_mailpit
     ports:
       - "8025:8025"
 
   redis:
-    image: redis:8
+    image: redis:8@sha256:aa049e689e141a4358ad1d4562dc49c88a89fbab711fd8fcc33f684c80b26301
     container_name: sbily_local_redis
     volumes:
       - sbily_local_redis_data:/data
