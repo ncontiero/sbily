@@ -64,8 +64,8 @@ importers:
         specifier: ^8.2.1
         version: 8.2.1(@rspack/core@2.0.5)(postcss@8.5.15)(typescript@6.0.3)
       rspack-merge:
-        specifier: ^0.1.1
-        version: 0.1.1
+        specifier: ^1.0.0
+        version: 1.0.0
       tailwindcss:
         specifier: 4.3.0
         version: 4.3.0
@@ -3095,8 +3095,8 @@ packages:
     resolution: {integrity: sha512-g6QUff04oZpHs0eG5p83rFLhHeV00ug/Yf9nZM6fLeUrPguBTkTQOdpAWWspMh55TZfVQDPaN3NQJfbVRAxdIw==}
     engines: {iojs: '>=1.0.0', node: '>=0.10.0'}
 
-  rspack-merge@0.1.1:
-    resolution: {integrity: sha512-RHKi8nECjP0lM1V7RnM+8G8dRvWgrsnntzfogJQz7oSHo104ca4jsL3KN/0gru233n/lVGrqDPDNlCA4x0UNlg==}
+  rspack-merge@1.0.0:
+    resolution: {integrity: sha512-FabAYXpPy9PiGVBNKrgSGdivlx3g9uHNHqkkB5kRtxLlThSiiSm/sTKLQaRTzC3sNlG4j1/d9zN/zJQzHzZz5A==}
 
   run-parallel@1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
@@ -6795,7 +6795,7 @@ snapshots:
 
   reusify@1.1.0: {}
 
-  rspack-merge@0.1.1: {}
+  rspack-merge@1.0.0: {}
 
   run-parallel@1.2.0:
     dependencies:
