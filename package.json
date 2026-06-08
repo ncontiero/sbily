@@ -26,7 +26,7 @@
     "lucide": "^1.17.0"
   },
   "devDependencies": {
-    "@ncontiero/eslint-config": "^8.2.1",
+    "@ncontiero/eslint-config": "^8.2.2",
     "@rspack/cli": "^2.0.6",
     "@rspack/core": "^2.0.6",
     "@rspack/dev-server": "^2.0.3",
