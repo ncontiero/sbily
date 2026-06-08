@@ -24,7 +24,6 @@ export function copy(
 
   const copyToClipboard = async (): Promise<void> => {
     try {
-      // eslint-disable-next-line node/no-unsupported-features/node-builtins
       await navigator.clipboard.writeText(value);
       button.innerHTML = `${ICONS.success.outerHTML}${showMessage ? " Copied" : ""}`;
       toast(MESSAGES.success, "toast-success");

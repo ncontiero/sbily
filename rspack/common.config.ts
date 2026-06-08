@@ -1,9 +1,9 @@
 import path from "node:path";
 import { defineConfig } from "@rspack/cli";
-import { rspack } from "@rspack/core";
+import { type SwcLoaderOptions, rspack } from "@rspack/core";
 import BundleTracker from "webpack-bundle-tracker";
 
-const BASE_PATH = path.join(__dirname, "../");
+const BASE_PATH = path.join(import.meta.dirname, "../");
 const SBILY_PATH = path.join(BASE_PATH, "sbily");
 
 export const commonConfig = defineConfig({
@@ -37,13 +37,13 @@ export const commonConfig = defineConfig({
   module: {
     rules: [
       {
-        test: /\.ts$/,
+        test: /\.(?:js|jsx|ts|tsx)$/,
         use: [
           {
             loader: "builtin:swc-loader",
             options: {
-              jsc: { parser: { syntax: "typescript" } },
-            },
+              detectSyntax: "auto",
+            } satisfies SwcLoaderOptions,
           },
         ],
         type: "javascript/auto",
@@ -55,15 +55,9 @@ export const commonConfig = defineConfig({
       },
     ],
   },
-  optimization: {
-    minimizer: [
-      new rspack.SwcJsMinimizerRspackPlugin(),
-      new rspack.LightningCssMinimizerRspackPlugin(),
-    ],
-  },
   resolve: {
     modules: ["node_modules"],
-    extensions: ["...", ".ts"],
+    extensions: [".ts", ".tsx", ".js", ".jsx", ".json"],
     alias: {
       "@": path.resolve(SBILY_PATH, "src"),
     },

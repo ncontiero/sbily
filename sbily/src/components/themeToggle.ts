@@ -1,5 +1,3 @@
-/* eslint-disable node/no-unsupported-features/node-builtins */
-
 import { createElement, Moon, Sun } from "lucide";
 
 export function getTheme() {

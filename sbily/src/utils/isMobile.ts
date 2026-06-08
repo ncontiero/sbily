@@ -12,7 +12,6 @@ const MOBILE_PATTERN = /mobile/i;
 
 export function isMobile(): boolean {
   const userAgent: string =
-    // eslint-disable-next-line node/no-unsupported-features/node-builtins
     navigator?.userAgent ?? navigator?.vendor ?? window?.opera ?? "";
 
   return (
