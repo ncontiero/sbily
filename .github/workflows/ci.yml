@@ -28,7 +28,7 @@ jobs:
           enable-cache: true
 
       - name: Run pre-commit
-        run: uv run pre-commit --all-files
+        run: uv run pre-commit run --all-files
 
   # With no caching at all the entire ci process takes 3m to complete!
   docker:
