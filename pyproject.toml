@@ -40,8 +40,8 @@ dev = [
     "watchfiles==1.2.0",
     "mypy==2.1.0",
     "django-stubs[compatible-mypy]==6.0.5",
-    "ruff==0.15.16",
-    "djlint==1.39.0",
+    "ruff==0.15.18",
+    "djlint==1.39.2",
     "pre-commit==4.6.0",
 
     "django-debug-toolbar==6.3.0",
