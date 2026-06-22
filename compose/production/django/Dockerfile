@@ -79,7 +79,7 @@ COPY --from=client-build ${APP_HOME} ${APP_HOME}
 RUN uv sync --locked --no-dev
 
 # Python 'run' stage
-FROM python:3.14-slim-bookworm@sha256:a9bee15510a364124aa24692899d269835683b883de42f7ebec8c293cf679ccb AS python-run-stage
+FROM python:3.14-slim-bookworm@sha256:a70519002c49552ea0a853de47599cf40479b001bd7a624f1112eaf44dcaccc7 AS python-run-stage
 
 ARG APP_HOME=/app
 ARG PORT=5000
